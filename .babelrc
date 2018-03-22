@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "transform-async-to-generator",
+    "lodash"
+  ],
+  "presets": [
+    "es2015",
+    "stage-2"
+  ]
+}

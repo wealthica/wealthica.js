@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Addon Container</title>
+    <script type="text/javascript" src="../../dist/AddonContainer.min.js"></script>
+    <script type="text/javascript" src="../../node_modules/sinon/pkg/sinon.js"></script>
+  </head>
+  <body>
+    <iframe id="addon" src="http://localhost:9898/test/integration/addon.html" width="100" height="100"></iframe>
+
+    <script type="text/javascript">
+      window.iframe = document.getElementById('addon');
+      iframe.onload = function() {
+        window.container = new AddonContainer({
+          iframe: iframe,
+          options: {
+            test: 'test'
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
