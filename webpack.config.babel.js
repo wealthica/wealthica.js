@@ -30,7 +30,7 @@ const browserConfig = merge(baseConfig, {
   ]
 });
 
-const browserConfigMinified = merge(baseConfig, {
+const browserMinifiedConfig = merge(baseConfig, {
   devtool: 'source-map',
   plugins: [
     new ChunkRenamePlugin({
@@ -55,4 +55,4 @@ const commonJsConfig = merge(baseConfig, {
   ]
 });
 
-module.exports = [ browserConfig, browserConfigMinified, commonJsConfig ];
+module.exports = [ browserConfig, browserMinifiedConfig, commonJsConfig ];

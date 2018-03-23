@@ -98,4 +98,4 @@ class Addon extends EventEmitter {
   }
 }
 
-module.exports = Addon;
+export default Addon;

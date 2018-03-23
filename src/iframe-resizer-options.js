@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   heightCalculationMethod () {
     let mainContainer = document.getElementById('main_container');
 
