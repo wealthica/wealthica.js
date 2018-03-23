@@ -9,10 +9,7 @@
     "test:unit": "mocha test/unit/*.js -r jsdom-global/register -r babel-core/register",
     "test:integration": "mocha test/integration/bootstrap.js --recursive test/integration/*.test.js -r babel-core/register -r babel-polyfill -t 15000",
     "prebuild": "rimraf dist",
-    "build": "npm-run-all --parallel build:*",
-    "build:browser": "webpack",
-    "build:browser.min": "webpack --output-filename=[name].min.js -p",
-    "build:commonjs": "webpack --output-library-target=commonjs --output-filename=[name].commonjs.js"
+    "build": "webpack"
   },
   "author": "Wealthica Financial Technology Inc. <hello@wealthica.com> (https://wealthica.com/)",
   "license": "MIT",
@@ -33,6 +30,7 @@
     "babel-preset-stage-2": "6.24.1",
     "babel-register": "6.26.0",
     "chai": "4.1.2",
+    "chunk-rename-webpack-plugin": "1.1.1",
     "http-server": "0.11.1",
     "jsdom": "11.5.1",
     "jsdom-global": "3.0.2",
@@ -41,7 +39,9 @@
     "puppeteer": "1.2.0",
     "rimraf": "2.6.2",
     "sinon": "4.4.6",
-    "webpack": "3.10.0"
+    "uglifyjs-webpack-plugin": "1.2.4",
+    "webpack": "3.10.0",
+    "webpack-merge": "4.1.2"
   },
   "engines": {
     "node": "9.x",

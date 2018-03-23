@@ -13,13 +13,13 @@ npm install @wealthica/wealthica.js --save
 Then include this in the Add-on page:
 
 ```
-<script src="/path/to/dist/Addon.min.js"></script>
+<script src="/path/to/dist/addon.min.js"></script>
 ```
 
 And include this in the Container page for development:
 
 ```
-<script src="/path/to/dist/AddonContainer.min.js"></script>
+<script src="/path/to/dist/addon-container.min.js"></script>
 ```
 
 ## Usage
