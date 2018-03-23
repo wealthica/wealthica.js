@@ -45,12 +45,13 @@ const browserMinifiedConfig = merge(baseConfig, {
 
 const commonJsConfig = merge(baseConfig, {
   output: {
+    path: join(__dirname, 'lib'),
     libraryTarget: 'commonjs'
   },
   plugins: [
     new ChunkRenamePlugin({
-      Addon: 'addon.commonjs.js',
-      AddonContainer: 'addon-container.commonjs.js',
+      Addon: 'addon.js',
+      AddonContainer: 'addon-container.js',
     }),
   ]
 });

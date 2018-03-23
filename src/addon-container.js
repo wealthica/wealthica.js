@@ -101,4 +101,4 @@ class AddonContainer extends EventEmitter {
   }
 }
 
-export default AddonContainer;
+module.exports = AddonContainer;

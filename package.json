@@ -2,7 +2,7 @@
   "name": "@wealthica/wealthica.js",
   "version": "0.0.2",
   "description": "Official Wealthica Add-on Library",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "watch:test": "npm t -- --watch",
     "test": "npm-run-all test:*",

@@ -4670,10 +4670,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _isObject2 = __webpack_require__(26);
 
 var _isObject3 = _interopRequireDefault(_isObject2);
@@ -4832,7 +4828,7 @@ var AddonContainer = function (_EventEmitter) {
   return AddonContainer;
 }(_eventemitter2.default);
 
-exports.default = AddonContainer;
+module.exports = AddonContainer;
 
 /***/ }),
 /* 26 */
