@@ -36,7 +36,7 @@ describe('Addon', () => {
 
   describe('.request(params)', () => {
     it("should call channel's `request` method with the right params", () => {
-      let params = { method: 'GET', endpoint: 'test', query: { some: 'thing' }};
+      let params = { method: 'GET', endpoint: 'test', query: { some: 'thing' }, body: { another: 'thing' } };
       addon.request(params);
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
@@ -81,6 +81,27 @@ describe('Addon', () => {
 
     it('should still proceed if query is not provided', () => {
       let validParams = { method: 'GET', endpoint: 'test', query: undefined };
+      expect(addon.request.bind(addon, validParams)).not.to.throw();
+      let spyCall = addon.channel.call.lastCall;
+      let calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('request');
+      expect(calledArgs.params).to.deep.equal(validParams);
+    });
+
+    it('should raise an error if body is not an object', () => {
+      let errorMessage = 'Body must be an object';
+      let numCalls = addon.channel.call.getCalls().length;
+
+      ['string', 1, true, false, null, []].forEach((body) => {
+        expect(addon.request.bind(addon, { method: 'GET', endpoint: 'test', body: body })).to.throw(errorMessage);
+      });
+
+      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+    });
+
+    it('should still proceed if body is not provided', () => {
+      let validParams = { method: 'GET', endpoint: 'test', body: undefined };
       expect(addon.request.bind(addon, validParams)).not.to.throw();
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
