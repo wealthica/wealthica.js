@@ -46,12 +46,15 @@ class Addon extends EventEmitter {
     let self = this;
     if (!_.isPlainObject(params)) throw new Error('Params must be an object');
 
-    let method, endpoint, query;
-    ({ method, endpoint, query } = params);
+    let method, endpoint, query, body;
+    ({ method, endpoint, query, body } = params);
 
     if (!method || !endpoint || !_.isString(method) || !_.isString(endpoint))
       throw new Error('Invalid method or endpoint');
+
     if (!_.isUndefined(query) && !_.isPlainObject(query)) throw new Error('Query must be an object');
+
+    if (!_.isUndefined(body) && !_.isPlainObject(body)) throw new Error('Body must be an object');
 
     return new Promise((resolve, reject) => {
       self.channel.call({
