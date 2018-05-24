@@ -202,18 +202,24 @@ var container = new AddonContainer({
 Emitted when Add-on wants to open the Edit Transaction form.
 
 ```
-container.on('editTransaction', function(tx, options) {
+container.on('editTransaction', function(options, callback) {
   // Open the Edit Transaction form (example function)
   openEditTransaction(options.id);
 
   // Example listener
-  this.on('form:close', function(updatedTransaction) {
+  this.on('form:close', function(err, updatedTransaction) {
+    if (err) {
+      // Tell Add-on there was some problem
+      callback(err);
+      return;
+    }
+
     if (updatedTransaction) {
       // Tell Add-on the form has been closed and the transaction has been updated
-      tx.complete(updatedTransaction);
+      callback(null, updatedTransaction);
     } else {
       // Tell Add-on the form has been closed without changes to the transaction
-      tx.complete();
+      callback(null);
     }
   });
 });
@@ -224,7 +230,7 @@ container.on('editTransaction', function(tx, options) {
 Emitted when Add-on requests an API call.
 
 ```
-container.on('request', function(tx, options) {
+container.on('request', function(options, callback) {
   // Carry out the request (example function)
   callAPI({
     method: options.method,
@@ -232,10 +238,10 @@ container.on('request', function(tx, options) {
     data: options.query
   }).then(function(response) {
     // Return the response to Add-on
-    tx.complete(response);
+    callback(null, response);
   }).catch(function(err) {
     // Return the error to Add-on
-    tx.error(err);
+    callback(err);
   });
 });
 ```
@@ -245,14 +251,14 @@ container.on('request', function(tx, options) {
 Emitted when Add-on tells Container to persist some data.
 
 ```
-container.on('saveData', function(tx, data) {
+container.on('saveData', function(data, callback) {
   // Persist the data (example function)
   persistData(data).then(function() {
     // Tell Add-on that the data has been saved successfully
-    tx.complete();
+    callback(null);
   }).catch(function(err) {
     // Tell Add-on that there was some error saving the data
-    tx.error(err);
+    callback(err);
   });
 });
 ```

@@ -42,7 +42,14 @@ class AddonContainer extends EventEmitter {
         let eventName = event, eventData = data;
 
         tx.delayReturn(true);
-        self.emit(eventName, tx, eventData);
+
+        let callback = (err, result) => {
+          if (err) return tx.error(err);
+
+          tx.complete(result);
+        }
+
+        self.emit(eventName, eventData, callback);
       });
     }
 

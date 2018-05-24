@@ -4744,7 +4744,14 @@ var AddonContainer = function (_EventEmitter) {
             eventData = data;
 
         tx.delayReturn(true);
-        self.emit(eventName, tx, eventData);
+
+        var callback = function callback(err, result) {
+          if (err) return tx.error(err);
+
+          tx.complete(result);
+        };
+
+        self.emit(eventName, eventData, callback);
       });
     };
 
