@@ -42,7 +42,14 @@ class AddonContainer extends EventEmitter {
         let eventName = event, eventData = data;
 
         tx.delayReturn(true);
-        self.emit(eventName, tx, eventData);
+
+        let callback = (err, result) => {
+          if (err) return tx.error(err);
+
+          tx.complete(result);
+        }
+
+        self.emit(eventName, eventData, callback);
       });
     }
 
@@ -64,8 +71,8 @@ class AddonContainer extends EventEmitter {
       self.channel.call({
         method: '_event',
         params: params,
-        success (result) { resolve(result) },
-        error (err) { reject(err) }
+        success: resolve,
+        error: reject
       });
     });
   }
@@ -78,8 +85,8 @@ class AddonContainer extends EventEmitter {
       self.channel.call({
         method: 'update',
         params: data,
-        success (result) { resolve(result) },
-        error (err) { reject(err) }
+        success: resolve,
+        error: reject
       });
     });
   }
@@ -90,8 +97,8 @@ class AddonContainer extends EventEmitter {
     return new Promise((resolve, reject) => {
       self.channel.call({
         method: 'reload',
-        success () { resolve() },
-        error (err) { reject(err) }
+        success: resolve,
+        error: reject
       });
     });
   }
