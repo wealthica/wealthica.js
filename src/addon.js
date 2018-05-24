@@ -3,6 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
 import { iframeResizerContentWindow } from 'iframe-resizer';
 import * as _ from 'lodash';
+import API from './api';
 
 import iframeResizerOptions from './iframe-resizer-options';
 
@@ -14,6 +15,7 @@ class Addon extends EventEmitter {
 
     let self = this;
     self.options = options;
+    self.api = new API(self);
 
     self.channel = Channel.build({
       window: options.window || window.parent,

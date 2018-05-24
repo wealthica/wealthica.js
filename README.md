@@ -208,18 +208,14 @@ container.on('editTransaction', function(options, callback) {
 
   // Example listener
   this.on('form:close', function(err, updatedTransaction) {
-    if (err) {
-      // Tell Add-on there was some problem
-      callback(err);
-      return;
-    }
+    if (err) return callback(err);
 
     if (updatedTransaction) {
       // Tell Add-on the form has been closed and the transaction has been updated
       callback(null, updatedTransaction);
     } else {
       // Tell Add-on the form has been closed without changes to the transaction
-      callback(null);
+      callback();
     }
   });
 });
@@ -239,10 +235,7 @@ container.on('request', function(options, callback) {
   }).then(function(response) {
     // Return the response to Add-on
     callback(null, response);
-  }).catch(function(err) {
-    // Return the error to Add-on
-    callback(err);
-  });
+  }).catch(callback);
 });
 ```
 
@@ -255,11 +248,8 @@ container.on('saveData', function(data, callback) {
   // Persist the data (example function)
   persistData(data).then(function() {
     // Tell Add-on that the data has been saved successfully
-    callback(null);
-  }).catch(function(err) {
-    // Tell Add-on that there was some error saving the data
-    callback(err);
-  });
+    callback();
+  }).catch(callback);
 });
 ```
 
