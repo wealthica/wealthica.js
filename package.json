@@ -1,6 +1,6 @@
 {
   "name": "@wealthica/wealthica.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Official Wealthica Add-on Library",
   "main": "index.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "webpack-merge": "4.1.2"
   },
   "engines": {
-    "node": "9.x",
+    "node": "8.x",
     "npm": "5.x"
   }
 }
