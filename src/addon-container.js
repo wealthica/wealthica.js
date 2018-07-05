@@ -28,7 +28,7 @@ class AddonContainer extends EventEmitter {
     self.channel = Channel.build({
       window: options.iframe.contentWindow,
       origin: options.origin || '*',
-      scope: options.scope || 'default',
+      scope: options.scope || options.iframe.contentWindow.location.origin,
       postMessageObserver (origin, message) {
         self.emit('postMessage', origin, message);
       },
