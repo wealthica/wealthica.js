@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>Wealthica Sample Addon</title>
+  <style>
+    body { margin: 0; padding: 0; }
+  </style>
+  <script type="text/javascript" src="https://rawgit.com/wealthica/wealthica.js/sample-addon/dist/addon.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+</head>
+<body>
+  <h3>This is the sample addon.</h3>
+  <p>Try some of the actions below</p>
+  <p>
+    <button type="button" id="getTransactions">List Transactions</button>
+    <button type="button" id="getPositions">List Positions</button>
+  </p>
+  <div id="result"></div>
+
+  <script type="text/javascript">
+    var addon, addonOptions;
+
+    $(document).ready(function() {
+      addon = new Addon();
+
+      addon.on('init', function(options) {
+        console.log('sample addon init', options);
+        addonOptions = options;
+      });
+
+      $('#getTransactions').on('click', function() {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getTransactions().then(function(response) {
+          $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function(err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function() {
+          $('#getTransactions').removeAttr('disabled');
+        });
+      });
+
+      $('#getPositions').on('click', function() {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getPositions().then(function(response) {
+          $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function(err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function() {
+          $('#getPositions').removeAttr('disabled');
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
