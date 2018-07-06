@@ -1,7 +1,14 @@
 export default {
   heightCalculationMethod () {
-    let mainContainer = document.getElementById('main_container');
+    let body = document.body;
+    let html = document.documentElement;
 
-    return mainContainer ? mainContainer.scrollHeight : document.body.scrollHeight;
+    return Math.max.apply(null, [
+      body.scrollHeight,
+      body.offsetHeight,
+      html.clientHeight,
+      html.scrollHeight,
+      html.offsetHeight
+    ]);
   }
 }

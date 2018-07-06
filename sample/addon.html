@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>Wealthica Sample Add-on</title>
+  <style>
+    body { margin: 0; padding: 0; }
+  </style>
+  <script type="text/javascript" src="https://rawgit.com/wealthica/wealthica.js/master/dist/addon.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+</head>
+<body>
+  <h3>This is the Wealthica Sample Add-on.</h3>
+  <p>Try some of the actions below:</p>
+  <p>
+    <button type="button" disabled="disabled" id="getTransactions">List Transactions</button>
+    <button type="button" disabled="disabled" id="getPositions">List Positions</button>
+  </p>
+  <div id="result"></div>
+
+  <script type="text/javascript">
+    var addon, addonOptions;
+
+    $(document).ready(function() {
+      addon = new Addon();
+
+      addon.on('init', function(options) {
+        // Dashboard is ready and is signaling to the add-on that it should
+        // render using the passed in options (filters, language, etc.)
+        addonOptions = options;
+        $('button').removeAttr('disabled');
+      }).on('update', function(options) {
+        // Filters have been updated and Dashboard is passing in updated options
+        addonOptions = _.extend(addonOptions, options);
+      });
+
+      var getFilters = function (options) {
+        return {
+          from: options.dateRangeFilter && options.dateRangeFilter[0],
+          to: options.dateRangeFilter && options.dateRangeFilter[1],
+          groups: options.groupsFilter,
+          institutions: options.institutionsFilter,
+          investments: options.investmentsFilter === 'all' ? null: options.investmentsFilter,
+        }
+      }
+
+      $('#getTransactions').on('click', function() {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getTransactions(getFilters(addonOptions)).then(function(response) {
+          $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function(err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function() {
+          $('#getTransactions').removeAttr('disabled');
+        });
+      });
+
+      $('#getPositions').on('click', function() {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getPositions(getFilters(addonOptions)).then(function(response) {
+          $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function(err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function() {
+          $('#getPositions').removeAttr('disabled');
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

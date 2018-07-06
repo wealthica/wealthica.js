@@ -4797,7 +4797,7 @@ var Addon = function (_EventEmitter) {
     self.channel = _jsChannel2.default.build({
       window: options.window || window.parent,
       origin: '*',
-      scope: options.scope || 'default',
+      scope: options.scope || location.origin,
       postMessageObserver: function postMessageObserver(origin, message) {
         self.emit('postMessage', origin, message);
       },
@@ -5406,9 +5406,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = {
   heightCalculationMethod: function heightCalculationMethod() {
-    var mainContainer = document.getElementById('main_container');
+    var body = document.body;
+    var html = document.documentElement;
 
-    return mainContainer ? mainContainer.scrollHeight : document.body.scrollHeight;
+    return Math.max.apply(null, [body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight]);
   }
 };
 
