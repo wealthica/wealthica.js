@@ -7,15 +7,17 @@
   <style>
     body { margin: 0; padding: 0; }
   </style>
-  <script type="text/javascript" src="https://rawgit.com/wealthica/wealthica.js/sample-addon/dist/addon.min.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script type="text/javascript" src="https://rawgit.com/wealthica/wealthica.js/master/dist/addon.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
 </head>
 <body>
-  <h3>This is the sample addon.</h3>
-  <p>Try some of the actions below</p>
+  <h3>This is the Wealthica Sample Addon.</h3>
+  <p>Try some of the actions below:</p>
   <p>
-    <button type="button" id="getTransactions">List Transactions</button>
-    <button type="button" id="getPositions">List Positions</button>
+    <button type="button" disabled="disabled" id="getTransactions">List Transactions</button>
+    <button type="button" disabled="disabled" id="getPositions">List Positions</button>
   </p>
   <div id="result"></div>
 
@@ -26,14 +28,29 @@
       addon = new Addon();
 
       addon.on('init', function(options) {
-        console.log('sample addon init', options);
         addonOptions = options;
+        $('button').removeAttr('disabled');
+      }).on('update', function(options) {
+        addonOptions = _.extend(addonOptions, options);
       });
+
+      var getFilters = function (options) {
+        return {
+          from: options.dateRangeFilter && options.dateRangeFilter[0],
+          to: options.dateRangeFilter && options.dateRangeFilter[1],
+          groups: options.groupsFilter,
+          institutions: options.institutionsFilter,
+          investments: options.investmentsFilter === 'all' ? null: options.investmentsFilter,
+          assets: false,
+          liabilities: false,
+        }
+      }
 
       $('#getTransactions').on('click', function() {
         $(this).attr('disabled', 'disabled');
 
-        addon.api.getTransactions().then(function(response) {
+        var filters = _.omit(getFilters(addonOptions), 'assets', 'liabilities');
+        addon.api.getTransactions(filters).then(function(response) {
           $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function(err) {
           $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
@@ -45,7 +62,7 @@
       $('#getPositions').on('click', function() {
         $(this).attr('disabled', 'disabled');
 
-        addon.api.getPositions().then(function(response) {
+        addon.api.getPositions(getFilters(addonOptions)).then(function(response) {
           $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function(err) {
           $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
