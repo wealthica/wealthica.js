@@ -2,14 +2,14 @@
 
 This library provides the wrappers needed to setup communication between the Wealthica Dashboard and 3rd-party add-ons. Add-ons are loaded in the Wealthica Dashboard as iframes.
 
-To see how easy it is to develop an add-on for Wealthica, take a look at the Sample Add-on at `sample/addon.html` and the section below.
+To see how easy it is to develop an add-on for Wealthica, take a look at the Sample Add-on at `examples/addon.html` and the section below.
 
 ## Getting started
 
 1. Login to your [Wealthica](https://app.wealthica.com).
 2. Go to https://app.wealthica.com/addons/wealthica/wealthica-dev-addon and install the add-on. After that you will be redirected to the Developer Add-on page.
 3. Click on the cogwheel button next to the page title to open Configure modal.
-4. Enter https://rawgit.com/wealthica/wealthica.js/master/sample/index.html to the Add-on URL field and click Load to load the Sample Add-on.
+4. Enter https://rawgit.com/wealthica/wealthica.js/master/examples/addon.html to the Add-on URL field and click Load to load the Sample Add-on.
 5. Try some of the sample actions provided in the add-on.
 
 After trying out the Sample Add-on, it's time to make your own add-on:
