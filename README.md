@@ -1,5 +1,7 @@
 # wealthica.js
 
+[![Build Status](https://travis-ci.org/wealthica/wealthica.js.svg?branch=master)](https://travis-ci.org/wealthica/wealthica.js)
+
 This library provides the wrappers needed to setup communication between the Wealthica Dashboard and 3rd-party add-ons. Add-ons are loaded in the Wealthica Dashboard as iframes.
 
 To see how easy it is to develop an add-on for Wealthica, take a look at the Sample Add-on at `examples/addon.html` and the section below.
