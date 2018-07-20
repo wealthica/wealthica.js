@@ -111,25 +111,6 @@ addon.editTransaction({ id: 'TRANSACTION_ID' }).then(function (updatedTransactio
 });
 ```
 
-#### addon.request(options)
-
-This is used to make a request to the Wealthica API. Currently only `GET` API requests are supported.
-
-```
-addon.request({
-  method: 'GET',
-  endpoint: 'positions',
-  query: {
-    institutions: 'id1,id2',
-    assets: true,
-  }
-}).then(function (response) {
-
-}).catch(function (err) {
-
-});
-```
-
 #### addon.saveData(data)
 
 This method allows add-on to persist data to the Wealthica user preferences. You can use this method to persist user configuration options. The add-on will receive this data under the `data` options parameter [the next time it is initialized](#event-init). Each add-on can store up to 100 KB of data (plus 4 KB per widget). Please note data is stored unencrypted in our database and may not be suitable for storing sensitive information.
@@ -140,6 +121,85 @@ addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(funct
 }).catch(function (err) {
 
 });
+```
+
+### API helpers
+
+These are helper functions for requesting API calls. See our API docs for the full list of API endpoints, their parameters and what they do.
+
+For API endpoints that are not yet supported by the API helpers, see __Debug__ > __addon.request(options)__ section below.
+
+#### addon.api.getAssets(query)
+
+```
+addon.api.getAssets({ date: '2018-01-01' })
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getCurrencies(query)
+
+```
+addon.api.getCurrencies({ from: '2018-01-01', to: '2018-01-31' })
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getInstitutions(query)
+
+```
+addon.api.getInstitutions({ date: '2018-01-01' })
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getInstitution(id)
+
+```
+addon.api.getInstitution('institution-id')
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.pollInstitution(id, version)
+
+```
+addon.api.pollInstitution('institution-id', 1)
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.syncInstitution(id)
+
+```
+addon.api.syncInstitution('institution-id')
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.addInstitution(data)
+
+```
+addon.api.addInstitution({
+  name: 'Demo',
+  type: 'demo',
+  credentials: { username: 'wealthica', password: 'wealthica' }
+}).then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getLiabilities(query)
+
+```
+addon.api.getLiabilities({ date: '2018-01-01' })
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getPositions(query)
+
+```
+addon.api.getPositions({ groups: 'id1,id2', institutions: 'id1,id2' })
+  .then(function (response) { }).catch(function (err) { });
+```
+
+#### addon.api.getTransactions(query)
+
+```
+addon.api.getTransactions({ groups: 'id1,id2', institutions: 'id1,id2' })
+  .then(function (response) { }).catch(function (err) { });
 ```
 
 ## Debug
@@ -160,6 +220,21 @@ Emitted every time the add-on receives a message from the Wealthica Dashboard.
 addon.on('gotMessage', function (origin, message) {
   console.log(arguments);
 });
+```
+
+#### addon.request(options)
+
+This is used to make a request to API endpoints that are not currently supported by `addon.api`. Currently only `GET` API requests are supported.
+
+```
+addon.request({
+  method: 'GET',
+  endpoint: 'positions',
+  query: {
+    institutions: 'id1,id2',
+    assets: true,
+  }
+}).then(function (response) { }).catch(function (err) { });
 ```
 
 ## Development
