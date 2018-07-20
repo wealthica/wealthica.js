@@ -93,12 +93,12 @@ addon.on('update', function (options) {
 });
 ```
 
-#### addon.editTransaction(options)
+#### addon.editTransaction(id)
 
 This method opens the Edit Transaction form on the Dashboard and waits for user to update the transaction or to close the edit modal. The `updatedTransaction` parameter is provided when the transaction has been updated.
 
 ```
-addon.editTransaction({ id: 'TRANSACTION_ID' }).then(function (updatedTransaction) {
+addon.editTransaction('transaction-id').then(function (updatedTransaction) {
   // The form has been closed
 
   if (updatedTransaction) {

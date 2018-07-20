@@ -82,16 +82,15 @@ class Addon extends EventEmitter {
     });
   }
 
-  editTransaction (options={}) {
+  editTransaction (id) {
     let self = this;
 
-    if (!_.isPlainObject(options)) throw new Error('Options must be an object');
-    if (!options.id || !_.isString(options.id)) throw new Error('Invalid id');
+    if (!id || !_.isString(id)) throw new Error('Invalid id');
 
     return new Promise((resolve, reject) => {
       self.channel.call({
         method: 'editTransaction',
-        params: options,
+        params: id,
         success (transaction) { resolve(transaction) },
         error (err) { reject(err) }
       });

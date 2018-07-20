@@ -157,14 +157,14 @@ describe('Addon', () => {
     });
   });
 
-  describe('.editTransaction(options)', () => {
+  describe('.editTransaction(id)', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.on('editTransaction', (options, callback) => {
-            if (options.shouldUpdate) {
+          container.on('editTransaction', (id, callback) => {
+            if (id === 'shouldUpdate') {
               callback(null, { updated: true });
-            } else if (options.shouldClose) {
+            } else if (id === 'shouldClose') {
               callback(null);
             } else {
               callback('error');
@@ -178,64 +178,64 @@ describe('Addon', () => {
 
     it('should receive success result with updated transaction from AddonContainer', async () => {
       let addonFrame = (await page.frames())[1];
-      let options = { id: 'test', shouldUpdate: true };
+      let id = 'shouldUpdate';
 
-      let result = await addonFrame.evaluate((options) => {
+      let result = await addonFrame.evaluate((id) => {
         return new Promise((resolve, reject) => {
-          addon.editTransaction(options).then((updated) => {
+          addon.editTransaction(id).then((updated) => {
             if (!updated) return resolve({ updated: false });
             resolve(updated);
           }).catch((err) => {
             resolve(err);
           });
         });
-      }, options);
+      }, id);
       let call = await getSpyCall('editTransaction');
 
       expect(call).to.exist;
-      expect(call[1]).to.deep.equal(options);
+      expect(call[1]).to.deep.equal(id);
       expect(result).to.deep.equal({ updated: true });
     });
 
     it('should receive success result without updated transaction from AddonContainer', async () => {
       let addonFrame = (await page.frames())[1];
-      let options = { id: 'test', shouldClose: true };
+      let id = 'shouldClose';
 
-      let result = await addonFrame.evaluate((options) => {
+      let result = await addonFrame.evaluate((id) => {
         return new Promise((resolve, reject) => {
-          addon.editTransaction(options).then((updated) => {
+          addon.editTransaction(id).then((updated) => {
             if (!updated) return resolve({ updated: false });
             resolve(updated);
           }).catch((err) => {
             resolve(err);
           });
         });
-      }, options);
+      }, id);
       let call = await getSpyCall('editTransaction');
 
       expect(call).to.exist;
-      expect(call[1]).to.deep.equal(options);
+      expect(call[1]).to.deep.equal(id);
       expect(result).to.deep.equal({ updated: false });
     });
 
     it('should receive error result from AddonContainer', async () => {
       let addonFrame = (await page.frames())[1];
-      let options = { id: 'test' };
+      let id = 'test';
 
-      let result = await addonFrame.evaluate((options) => {
+      let result = await addonFrame.evaluate((id) => {
         return new Promise((resolve, reject) => {
-          addon.editTransaction(options).then((updated) => {
+          addon.editTransaction(id).then((updated) => {
             if (!updated) return resolve({ updated: false });
             resolve(updated);
           }).catch((err) => {
             resolve(err);
           });
         });
-      }, options);
+      }, id);
       let call = await getSpyCall('editTransaction');
 
       expect(call).to.exist;
-      expect(call[1]).to.deep.equal(options);
+      expect(call[1]).to.deep.equal(id);
       expect(result).to.deep.equal('error');
     });
   });

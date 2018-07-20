@@ -4886,18 +4886,15 @@ var Addon = function (_EventEmitter) {
     }
   }, {
     key: 'editTransaction',
-    value: function editTransaction() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
+    value: function editTransaction(id) {
       var self = this;
 
-      if (!(0, _isPlainObject3.default)(options)) throw new Error('Options must be an object');
-      if (!options.id || !(0, _isString3.default)(options.id)) throw new Error('Invalid id');
+      if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
       return new _es6Promise.Promise(function (resolve, reject) {
         self.channel.call({
           method: 'editTransaction',
-          params: options,
+          params: id,
           success: function success(transaction) {
             resolve(transaction);
           },
