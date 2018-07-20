@@ -9,12 +9,10 @@ class API {
   getAssets (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'assets',
-        query,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'assets',
+      query,
     });
   }
 
@@ -22,12 +20,10 @@ class API {
   getCurrencies (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'currencies',
-        query,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'currencies',
+      query,
     });
   }
 
@@ -35,57 +31,47 @@ class API {
   getInstitutions (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'institutions',
-        query,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'institutions',
+      query,
     });
   }
 
   getInstitution (id) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: `institutions/${id}`,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: `institutions/${id}`,
     });
   }
 
   pollInstitution (id, v) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: `institutions/${id}/poll?v=${v}`,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: `institutions/${id}/poll?v=${v}`,
     });
   }
 
   syncInstitution (id) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'POST',
-        endpoint: `institutions/${id}/sync`,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'POST',
+      endpoint: `institutions/${id}/sync`,
     });
   }
 
   addInstitution (data) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'POST',
-        endpoint: `institutions`,
-        body: data,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'POST',
+      endpoint: `institutions`,
+      body: data,
     });
   }
 
@@ -93,12 +79,10 @@ class API {
   getLiabilities (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'liabilities',
-        query,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'liabilities',
+      query,
     });
   }
 
@@ -106,12 +90,10 @@ class API {
   getPositions (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'positions',
-        query,
-      }).then(resolve).catch(reject);
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'positions',
+      query,
     });
   }
 
@@ -119,13 +101,11 @@ class API {
   getTransactions (query) {
     let self = this;
 
-    return new Promise((resolve, reject) => {
-      self.addon.request({
-        method: 'GET',
-        endpoint: 'transactions',
-        query,
-      }).then(resolve).catch(reject);
-    });
+    return self.addon.request({
+      method: 'GET',
+      endpoint: 'transactions',
+      query,
+    })
   }
 }
 

@@ -5250,12 +5250,10 @@ var API = function () {
     value: function getAssets(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'assets',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'assets',
+        query: query
       });
     }
 
@@ -5266,12 +5264,10 @@ var API = function () {
     value: function getCurrencies(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'currencies',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'currencies',
+        query: query
       });
     }
 
@@ -5282,12 +5278,10 @@ var API = function () {
     value: function getInstitutions(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'institutions',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'institutions',
+        query: query
       });
     }
   }, {
@@ -5295,11 +5289,9 @@ var API = function () {
     value: function getInstitution(id) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'institutions/' + id
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'institutions/' + id
       });
     }
   }, {
@@ -5307,11 +5299,9 @@ var API = function () {
     value: function pollInstitution(id, v) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'institutions/' + id + '/poll?v=' + v
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'institutions/' + id + '/poll?v=' + v
       });
     }
   }, {
@@ -5319,11 +5309,9 @@ var API = function () {
     value: function syncInstitution(id) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'POST',
-          endpoint: 'institutions/' + id + '/sync'
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'POST',
+        endpoint: 'institutions/' + id + '/sync'
       });
     }
   }, {
@@ -5331,12 +5319,10 @@ var API = function () {
     value: function addInstitution(data) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'POST',
-          endpoint: 'institutions',
-          body: data
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'POST',
+        endpoint: 'institutions',
+        body: data
       });
     }
 
@@ -5347,12 +5333,10 @@ var API = function () {
     value: function getLiabilities(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'liabilities',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'liabilities',
+        query: query
       });
     }
 
@@ -5363,12 +5347,10 @@ var API = function () {
     value: function getPositions(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'positions',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'positions',
+        query: query
       });
     }
 
@@ -5379,12 +5361,10 @@ var API = function () {
     value: function getTransactions(query) {
       var self = this;
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        self.addon.request({
-          method: 'GET',
-          endpoint: 'transactions',
-          query: query
-        }).then(resolve).catch(reject);
+      return self.addon.request({
+        method: 'GET',
+        endpoint: 'transactions',
+        query: query
       });
     }
   }]);
