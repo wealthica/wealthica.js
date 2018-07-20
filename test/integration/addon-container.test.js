@@ -6,14 +6,14 @@ describe('AddonContainer', () => {
   const getSpyCall = async (eventName) => {
     let spyCallsHandle = await addonFrame.evaluateHandle(() => {
       return new Promise((resolve, reject) => {
-        setTimeout(function() {
-          resolve(addon.emit.getCalls().map(function(c) { return c.args }));
+        setTimeout(() => {
+          resolve(addon.emit.getCalls().map((c) => c.args));
         });
       });
     });
 
     let spyCalls = await spyCallsHandle.jsonValue();
-    return _.find(spyCalls, (c) => { return c[0] === eventName });
+    return _.find(spyCalls, (c) => c[0] === eventName);
   }
 
   before(async () => {

@@ -1,12 +1,12 @@
 import { Promise } from 'es6-promise';
 
 class API {
-  constructor(addon) {
+  constructor (addon) {
     this.addon = addon;
   }
 
   // Assets
-  getAssets(query) {
+  getAssets (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -19,7 +19,7 @@ class API {
   }
 
   // Currencies
-  getCurrencies(query) {
+  getCurrencies (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ class API {
   }
 
   // Institutions
-  getInstitutions(query) {
+  getInstitutions (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -44,7 +44,7 @@ class API {
     });
   }
 
-  getInstitution(id) {
+  getInstitution (id) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -55,7 +55,7 @@ class API {
     });
   }
 
-  pollInstitution(id, v) {
+  pollInstitution (id, v) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -66,7 +66,7 @@ class API {
     });
   }
 
-  syncInstitution(id) {
+  syncInstitution (id) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -77,7 +77,7 @@ class API {
     });
   }
 
-  addInstitution(data) {
+  addInstitution (data) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ class API {
   }
 
   // liabilities
-  getLiabilities(query) {
+  getLiabilities (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -103,7 +103,7 @@ class API {
   }
 
   // Positions
-  getPositions(query) {
+  getPositions (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -116,7 +116,7 @@ class API {
   }
 
   // Transactions
-  getTransactions(query) {
+  getTransactions (query) {
     let self = this;
 
     return new Promise((resolve, reject) => {

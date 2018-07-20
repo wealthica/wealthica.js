@@ -48,10 +48,10 @@ The `Addon` class is intended to be used by add-ons to setup their side of commu
 
 ```
 var addon = new Addon({
-  // (required) The 'scope' of the messages.
+  // (optional) The 'scope' of the messages.
   // Scope needs to follow the following formula:
   // `ADDON_ID/[widgets/reports]/[WIDGET_ID|REPORT_ID]`.
-  // Defaults to 'default' (for development only).
+  // Defaults to location.origin (for development only).
   scope: 'addon-id/widgets/widget-id'
 });
 ```
@@ -99,7 +99,7 @@ addon.on('update', function (options) {
 This method opens the Edit Transaction form on the Dashboard and waits for user to update the transaction or to close the edit modal. The `updatedTransaction` parameter is provided when the transaction has been updated.
 
 ```
-addon.editTransaction({ id: 'TRANSACTION_ID' }).then(function(updatedTransaction) {
+addon.editTransaction({ id: 'TRANSACTION_ID' }).then(function (updatedTransaction) {
   // The form has been closed
 
   if (updatedTransaction) {
@@ -107,7 +107,7 @@ addon.editTransaction({ id: 'TRANSACTION_ID' }).then(function(updatedTransaction
   } else {
     // Nothing changed
   }
-}).catch(function(err) {
+}).catch(function (err) {
 
 });
 ```
@@ -124,9 +124,9 @@ addon.request({
     institutions: 'id1,id2',
     assets: true,
   }
-}).then(function(response) {
+}).then(function (response) {
 
-}).catch(function(err) {
+}).catch(function (err) {
 
 });
 ```
@@ -136,9 +136,9 @@ addon.request({
 This method allows add-on to persist data to the Wealthica user preferences. You can use this method to persist user configuration options. The add-on will receive this data under the `data` options parameter [the next time it is initialized](#event-init). Each add-on can store up to 100 KB of data (plus 4 KB per widget). Please note data is stored unencrypted in our database and may not be suitable for storing sensitive information.
 
 ```
-addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(function() {
+addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(function () {
 
-}).catch(function(err) {
+}).catch(function (err) {
 
 });
 ```

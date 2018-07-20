@@ -10,7 +10,7 @@ import iframeResizerOptions from './iframe-resizer-options';
 window.iFrameResizer = iframeResizerOptions;
 
 class Addon extends EventEmitter {
-  constructor(options={}) {
+  constructor (options={}) {
     super();
 
     let self = this;
@@ -44,7 +44,7 @@ class Addon extends EventEmitter {
     }
   }
 
-  request(params) {
+  request (params) {
     let self = this;
     if (!_.isPlainObject(params)) throw new Error('Params must be an object');
 
@@ -68,7 +68,7 @@ class Addon extends EventEmitter {
     });
   }
 
-  saveData(data) {
+  saveData (data) {
     let self = this;
     if (!_.isPlainObject(data)) throw new Error('Data must be an object');
 
@@ -82,7 +82,7 @@ class Addon extends EventEmitter {
     });
   }
 
-  editTransaction(options={}) {
+  editTransaction (options={}) {
     let self = this;
 
     if (!_.isPlainObject(options)) throw new Error('Options must be an object');
@@ -98,7 +98,7 @@ class Addon extends EventEmitter {
     });
   }
 
-  destroy() {
+  destroy () {
     this.channel.destroy();
   }
 }

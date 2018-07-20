@@ -6,14 +6,14 @@ describe('Addon', () => {
   const getSpyCall = async (eventName) => {
     let spyCallsHandle = await page.evaluateHandle(() => {
       return new Promise((resolve, reject) => {
-        setTimeout(function() {
-          resolve(container.emit.getCalls().map(function(c) { return c.args }));
+        setTimeout(() => {
+          resolve(container.emit.getCalls().map((c) => c.args));
         });
       });
     });
 
     let spyCalls = await spyCallsHandle.jsonValue();
-    return _.find(spyCalls, (c) => { return c[0] === eventName });
+    return _.find(spyCalls, (c) => c[0] === eventName);
   }
 
   before(async () => {
@@ -47,7 +47,7 @@ describe('Addon', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.on('request', function(params, callback) {
+          container.on('request', (params, callback) => {
             if (params.query && params.query.shouldSuccess) {
               callback(null, { success: true });
             } else {
@@ -103,7 +103,7 @@ describe('Addon', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.on('saveData', function(data, callback) {
+          container.on('saveData', (data, callback) => {
             if (data.shouldSave) {
               callback();
             } else {
@@ -161,7 +161,7 @@ describe('Addon', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.on('editTransaction', function(options, callback) {
+          container.on('editTransaction', (options, callback) => {
             if (options.shouldUpdate) {
               callback(null, { updated: true });
             } else if (options.shouldClose) {
