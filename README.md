@@ -75,7 +75,7 @@ addon.on('init', function (options) {
 
 #### event: 'reload'
 
-Emitted when Wealthica Dashboard needs add-on to reload.
+Emitted when there are important changes in Wealthica Dashboard (e.g. user has just added a new institution, or removed an asset). This suggests add-ons reload their data and render accordingly.
 
 ```
 addon.on('reload', function () {
