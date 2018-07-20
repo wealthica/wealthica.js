@@ -127,7 +127,7 @@ addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(funct
 
 These are helper functions for requesting API calls. See our API docs for the full list of API endpoints, their parameters and what they do.
 
-For API endpoints that are not yet supported by the API helpers, see __Debug__ > __addon.request(options)__ section below.
+For API endpoints that are not yet supported by the API helpers, see [addon.request](#addonrequestoptions) in the Debug section below.
 
 #### addon.api.getAssets(query)
 
