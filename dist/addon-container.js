@@ -4727,7 +4727,7 @@ var AddonContainer = function (_EventEmitter) {
     self.channel = _jsChannel2.default.build({
       window: options.iframe.contentWindow,
       origin: options.origin || '*',
-      scope: options.scope || options.iframe.contentWindow.location.origin,
+      scope: options.id || options.iframe.contentWindow.location.origin,
       postMessageObserver: function postMessageObserver(origin, message) {
         self.emit('postMessage', origin, message);
       },

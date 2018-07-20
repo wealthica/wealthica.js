@@ -48,11 +48,10 @@ The `Addon` class is intended to be used by add-ons to setup their side of commu
 
 ```
 var addon = new Addon({
-  // (optional) The 'scope' of the messages.
-  // Scope needs to follow the following formula:
-  // `ADDON_ID/[widgets/reports]/[WIDGET_ID|REPORT_ID]`.
-  // Defaults to location.origin (for development only).
-  scope: 'addon-id/widgets/widget-id'
+  // (optional) The 'id' of the add-on / widget.
+  // This is only required in the add-on release preparation process.
+  // For add-on development with the Developer Add-on, this should not be set.
+  id: 'addon-id' | 'addon-id/widgets/widget-id'
 });
 ```
 

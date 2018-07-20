@@ -20,7 +20,7 @@ class Addon extends EventEmitter {
     self.channel = Channel.build({
       window: options.window || window.parent,
       origin: '*',
-      scope: options.scope || location.origin,
+      scope: options.id || location.origin,
       postMessageObserver (origin, message) {
         self.emit('postMessage', origin, message);
       },

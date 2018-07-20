@@ -4797,7 +4797,7 @@ var Addon = function (_EventEmitter) {
     self.channel = _jsChannel2.default.build({
       window: options.window || window.parent,
       origin: '*',
-      scope: options.scope || location.origin,
+      scope: options.id || location.origin,
       postMessageObserver: function postMessageObserver(origin, message) {
         self.emit('postMessage', origin, message);
       },
