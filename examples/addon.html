@@ -36,20 +36,10 @@
         addonOptions = _.extend(addonOptions, options);
       });
 
-      var getFilters = function (options) {
-        return {
-          from: options.dateRangeFilter && options.dateRangeFilter[0],
-          to: options.dateRangeFilter && options.dateRangeFilter[1],
-          groups: options.groupsFilter,
-          institutions: options.institutionsFilter,
-          investments: options.investmentsFilter === 'all' ? null: options.investmentsFilter,
-        }
-      }
-
       $('#getTransactions').on('click', function () {
         $(this).attr('disabled', 'disabled');
 
-        addon.api.getTransactions(getFilters(addonOptions)).then(function (response) {
+        addon.api.getTransactions(getQueryFromOptions(addonOptions)).then(function (response) {
           $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function (err) {
           $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
@@ -61,7 +51,7 @@
       $('#getPositions').on('click', function () {
         $(this).attr('disabled', 'disabled');
 
-        addon.api.getPositions(getFilters(addonOptions)).then(function (response) {
+        addon.api.getPositions(getQueryFromOptions(addonOptions)).then(function (response) {
           $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function (err) {
           $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
@@ -69,6 +59,17 @@
           $('#getPositions').removeAttr('disabled');
         });
       });
+
+      // Compose a query object from the addon options to pass to the API calls.
+      function getQueryFromOptions (options) {
+        return {
+          from: options.dateRangeFilter && options.dateRangeFilter[0],
+          to: options.dateRangeFilter && options.dateRangeFilter[1],
+          groups: options.groupsFilter,
+          institutions: options.institutionsFilter,
+          investments: options.investmentsFilter === 'all' ? null: options.investmentsFilter,
+        }
+      }
     });
   </script>
 
