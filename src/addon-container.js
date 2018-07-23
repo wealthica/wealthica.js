@@ -5,7 +5,7 @@ import { iframeResizer } from 'iframe-resizer';
 import * as _ from 'lodash';
 
 class AddonContainer extends EventEmitter {
-  constructor(options={}) {
+  constructor (options={}) {
     super();
 
     let self = this;
@@ -28,7 +28,7 @@ class AddonContainer extends EventEmitter {
     self.channel = Channel.build({
       window: options.iframe.contentWindow,
       origin: options.origin || '*',
-      scope: options.scope || options.iframe.contentWindow.location.origin,
+      scope: options.id || options.iframe.contentWindow.location.origin,
       postMessageObserver (origin, message) {
         self.emit('postMessage', origin, message);
       },
@@ -62,7 +62,7 @@ class AddonContainer extends EventEmitter {
     });
   }
 
-  trigger(eventName, eventData) {
+  trigger (eventName, eventData) {
     let self = this;
     let params = { eventName: eventName };
     if (eventData) params.eventData = eventData;
@@ -77,7 +77,7 @@ class AddonContainer extends EventEmitter {
     });
   }
 
-  update(data) {
+  update (data) {
     let self = this;
     if (!_.isObject(data)) throw new Error('Data must be an object');
 
@@ -91,7 +91,7 @@ class AddonContainer extends EventEmitter {
     });
   }
 
-  reload() {
+  reload () {
     let self = this;
 
     return new Promise((resolve, reject) => {
@@ -103,7 +103,7 @@ class AddonContainer extends EventEmitter {
     });
   }
 
-  destroy() {
+  destroy () {
     this.channel.destroy();
   }
 }

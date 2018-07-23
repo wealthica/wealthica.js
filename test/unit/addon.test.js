@@ -134,15 +134,15 @@ describe('Addon', () => {
     });
   });
 
-  describe('.editTransaction(options)', () => {
+  describe('.editTransaction(id)', () => {
     it("should call channel's `editTransaction` method with the id", () => {
-      let options = { id: 'test', somethingelse: 'somethingelse' };
-      addon.editTransaction(options);
+      let id = 'test';
+      addon.editTransaction(id);
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('editTransaction');
-      expect(calledArgs.params.id).to.deep.equal(options.id);
+      expect(calledArgs.params).to.deep.equal(id);
     });
 
     it('should raise an error if id is missing or invalid', () => {
@@ -150,7 +150,7 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.editTransaction.bind(addon, { id: invalid })).to.throw(errorMessage);
+        expect(addon.editTransaction.bind(addon, invalid)).to.throw(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);

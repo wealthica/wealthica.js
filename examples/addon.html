@@ -23,20 +23,45 @@
   <script type="text/javascript">
     var addon, addonOptions;
 
-    $(function() {
+    $(function () {
       addon = new Addon();
 
-      addon.on('init', function(options) {
+      addon.on('init', function (options) {
         // Dashboard is ready and is signaling to the add-on that it should
         // render using the passed in options (filters, language, etc.)
         addonOptions = options;
         $('button').removeAttr('disabled');
-      }).on('update', function(options) {
+      }).on('update', function (options) {
         // Filters have been updated and Dashboard is passing in updated options
         addonOptions = _.extend(addonOptions, options);
       });
 
-      var getFilters = function (options) {
+      $('#getTransactions').on('click', function () {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getTransactions(getQueryFromOptions(addonOptions)).then(function (response) {
+          $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function (err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function () {
+          $('#getTransactions').removeAttr('disabled');
+        });
+      });
+
+      $('#getPositions').on('click', function () {
+        $(this).attr('disabled', 'disabled');
+
+        addon.api.getPositions(getQueryFromOptions(addonOptions)).then(function (response) {
+          $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
+        }).catch(function (err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function () {
+          $('#getPositions').removeAttr('disabled');
+        });
+      });
+
+      // Compose a query object from the addon options to pass to the API calls.
+      function getQueryFromOptions (options) {
         return {
           from: options.dateRangeFilter && options.dateRangeFilter[0],
           to: options.dateRangeFilter && options.dateRangeFilter[1],
@@ -45,30 +70,6 @@
           investments: options.investmentsFilter === 'all' ? null: options.investmentsFilter,
         }
       }
-
-      $('#getTransactions').on('click', function() {
-        $(this).attr('disabled', 'disabled');
-
-        addon.api.getTransactions(getFilters(addonOptions)).then(function(response) {
-          $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
-        }).catch(function(err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
-        }).finally(function() {
-          $('#getTransactions').removeAttr('disabled');
-        });
-      });
-
-      $('#getPositions').on('click', function() {
-        $(this).attr('disabled', 'disabled');
-
-        addon.api.getPositions(getFilters(addonOptions)).then(function(response) {
-          $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
-        }).catch(function(err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
-        }).finally(function() {
-          $('#getPositions').removeAttr('disabled');
-        });
-      });
     });
   </script>
 

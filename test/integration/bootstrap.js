@@ -13,7 +13,7 @@ const opts = {
 };
 
 // expose variables
-before (async function () {
+before (async () => {
   global.expect = expect;
   global.server = fork('node_modules/.bin/http-server', [ '.',  '-p9898' ], {
     stdio: 'ignore'
@@ -24,7 +24,7 @@ before (async function () {
 });
 
 // close browser and reset global variables
-after (async function () {
+after (async () => {
   server.kill('SIGTERM');
   await browser.close();
 
