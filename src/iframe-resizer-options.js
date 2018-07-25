@@ -6,8 +6,6 @@ export default {
     return Math.max.apply(null, [
       body.scrollHeight,
       body.offsetHeight,
-      html.clientHeight,
-      html.scrollHeight,
       html.offsetHeight
     ]);
   }
