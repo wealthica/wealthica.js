@@ -26,6 +26,8 @@ After trying out the Sample Add-on, it's time to make your own add-on:
 2. From Wealthica navigate to the Developer Add-on and open the Configure modal and load your add-on.
 3. Take a look at the [APIs](#apis) section below and start writing your add-on.
 
+For a more advanced example, take a look at our [Wealthica Cryptos Addon code](https://github.com/wealthica/wealthica-cryptos-addon).
+
 ## Installation
 
 ```
