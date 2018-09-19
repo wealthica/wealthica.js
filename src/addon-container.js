@@ -24,11 +24,13 @@ class AddonContainer extends EventEmitter {
       },
     }, options.iframe);
 
+    self.id = options.id || options.iframe.src;
+
     // Create js channel
     self.channel = Channel.build({
       window: options.iframe.contentWindow,
       origin: options.origin || '*',
-      scope: options.id || options.iframe.contentWindow.location.origin,
+      scope: self.id,
       postMessageObserver (origin, message) {
         self.emit('postMessage', origin, message);
       },

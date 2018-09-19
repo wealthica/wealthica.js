@@ -50,8 +50,15 @@ describe('AddonContainer', () => {
         return Promise.resolve(window.addonOptions);
       });
       let options = await optionsHandle.jsonValue();
-
       expect(options).to.deep.equal({ test: 'test' });
+    });
+
+    it('should default id to addon iframe src', async () => {
+      let idHandle = await page.evaluateHandle(() => {
+        return Promise.resolve(window.container.id);
+      });
+      let id = await idHandle.jsonValue();
+      expect(id).to.equal('http://localhost:9898/test/integration/addon.html');
     });
   });
 

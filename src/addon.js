@@ -16,11 +16,12 @@ class Addon extends EventEmitter {
     let self = this;
     self.options = options;
     self.api = new API(self);
+    self.id = options.id || location.href;
 
     self.channel = Channel.build({
       window: options.window || window.parent,
       origin: '*',
-      scope: options.id || location.origin,
+      scope: self.id,
       postMessageObserver (origin, message) {
         self.emit('postMessage', origin, message);
       },

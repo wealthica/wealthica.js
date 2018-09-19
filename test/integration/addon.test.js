@@ -43,6 +43,17 @@ describe('Addon', () => {
     });
   });
 
+  describe('init', () => {
+    it('should default id to addon iframe src', async () => {
+      let addonFrame = (await page.frames())[1];
+      let idHandle = await addonFrame.evaluateHandle(() => {
+        return Promise.resolve(window.addon.id);
+      });
+      let id = await idHandle.jsonValue();
+      expect(id).to.equal('http://localhost:9898/test/integration/addon.html');
+    });
+  });
+
   describe('.request(params)', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
