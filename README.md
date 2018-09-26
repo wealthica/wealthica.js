@@ -4,13 +4,70 @@
 
 Extend Wealthica by writing your own add-ons and widgets.
 
-[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 45+ Canadian financial institutions and investment platforms.
+[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 50+ Canadian financial institutions and investment platforms.
 
 This library provides the wrappers needed to setup the communication between the Wealthica Dashboard and 3rd-party add-ons. It aims to be simple to use and allows anyone with basic knowledge of JavaScript to write their own add-on.
 
 Not sure where to start? Take a [look at the Sample Add-on code](https://github.com/wealthica/wealthica.js/blob/master/examples/addon.html) and see the instructions below to load it into your Wealthica Dashboard.
 
 Ready to publish your add-on to the Wealthica Add-ons store? [Contact us](mailto:hello@wealthica.com).
+
+## Financial Institutions
+
+Wealthica supports connecting to the following Canadian financial institutions and investment portals. Support for importing positions (holdings), transactions and account statements varies. [Visit our website](https://wealthica.com) for the most recent list of supported institutions.
+
+- AGF
+- Aligned Capital Partners
+- Assante
+- BMO InvestorLine
+- BMO Nesbitt Burns
+- Canaccord Genuity
+- CIBC Investor's Edge
+- CIBC Wood Gundy
+- Credential Asset Management
+- Desjardins Valeurs Mobilières (VMD)
+- Desjardins Courtage en Ligne (Disnat)
+- Desjardins Financial Security (SFL)
+- Épargne Placement Québec
+- EQ Bank
+- Fondaction CSN
+- Fonds de solidarité FTQ
+- Festion FÉRIQUE
+- HollisWealth
+- HSBC InvestDirect
+- Industrial Alliance Financial Group
+- Industrial Alliance Investia
+- Industrial Alliance Securities
+- Interactive Brokers
+- Investors Group
+- IPC Investment
+- IPC Securities
+- Laurentian Bank Direct Brokerage
+- Manulife Group Retirement (GRS)
+- Manulife VIP Room (previously Standard Life)
+- Manulife Securities
+- National Bank Independent Network (NBCN)
+- National Bank Direct Brokerage
+- National Bank Financial
+- National Bank Private Banking 1859
+- National Bank Trust
+- Nest Wealth
+- Qtrade Investor
+- Quadrus
+- Questrade
+- RBC Direct Investing
+- RBC Dominion Securities
+- Richardson GMP
+- Scotia iTrade
+- Sun Life Financial
+- Tangerine
+- TD Direct Investing
+- TD Waterhouse
+- Virtual Brokers
+- WealthBar
+- Wealthsimple
+- Wellington-Altus Private Wealth
+
 
 ## Getting started
 
