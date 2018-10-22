@@ -33,7 +33,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - EQ Bank
 - Fondaction CSN
 - Fonds de solidarité FTQ
-- Festion FÉRIQUE
+- Gestion FÉRIQUE
 - Great-West Group Retirement (GRS)
 - HollisWealth
 - HSBC InvestDirect
