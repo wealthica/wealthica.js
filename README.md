@@ -20,6 +20,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Aligned Capital Partners
 - Assante
 - BMO InvestorLine
+- BMO adviceDirect
 - BMO Nesbitt Burns
 - Canaccord Genuity
 - CIBC Investor's Edge
@@ -33,6 +34,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Fondaction CSN
 - Fonds de solidarité FTQ
 - Festion FÉRIQUE
+- Great-West Group Retirement (GRS)
 - HollisWealth
 - HSBC InvestDirect
 - Industrial Alliance Financial Group
@@ -67,7 +69,6 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - WealthBar
 - Wealthsimple
 - Wellington-Altus Private Wealth
-
 
 ## Getting started
 
