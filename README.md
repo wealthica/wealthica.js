@@ -28,7 +28,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Credential Asset Management
 - Desjardins Valeurs Mobilières (VMD)
 - Desjardins Courtage en Ligne (Disnat)
-- Desjardins Financial Security (SFL)
+- Desjardins Financial Security Investments (SFL)
 - Épargne Placement Québec
 - EQ Bank
 - Fondaction CSN
