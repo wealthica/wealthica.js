@@ -4,7 +4,7 @@
 
 Extend Wealthica by writing your own add-ons and widgets.
 
-[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 50+ Canadian financial institutions and investment platforms.
+[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 55+ Canadian financial institutions and investment platforms.
 
 This library provides the wrappers needed to setup the communication between the Wealthica Dashboard and 3rd-party add-ons. It aims to be simple to use and allows anyone with basic knowledge of JavaScript to write their own add-on.
 
@@ -25,7 +25,9 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Canaccord Genuity
 - CIBC Investor's Edge
 - CIBC Wood Gundy
+- Computershare Employee Online
 - Credential Asset Management
+- Cumberland Private Wealth
 - Desjardins Valeurs Mobilières (VMD)
 - Desjardins Courtage en Ligne (Disnat)
 - Desjardins Financial Security Investments (SFL)
@@ -35,6 +37,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Fonds de solidarité FTQ
 - Gestion FÉRIQUE
 - Great-West Group Retirement (GRS)
+- Harbourfront Wealth Management
 - HollisWealth
 - HSBC InvestDirect
 - Industrial Alliance Financial Group
@@ -48,6 +51,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Manulife Group Retirement (GRS)
 - Manulife VIP Room (previously Standard Life)
 - Manulife Securities
+- MD Financial Management
 - National Bank Independent Network (NBCN)
 - National Bank Direct Brokerage
 - National Bank Financial
