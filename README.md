@@ -52,7 +52,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Manulife VIP Room (previously Standard Life)
 - Manulife Securities
 - MD Financial Management
-- National Bank Independent Network (NBCN)
+- National Bank Independent Network (NBIN and NBCN)
 - National Bank Direct Brokerage
 - National Bank Financial
 - National Bank Private Banking 1859
