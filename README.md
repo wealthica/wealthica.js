@@ -44,7 +44,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Industrial Alliance Investia
 - Industrial Alliance Securities
 - Interactive Brokers
-- Investors Group
+- Investors Group (IG Wealth Management)
 - IPC Investment
 - IPC Securities
 - Laurentian Bank Direct Brokerage
