@@ -82,6 +82,21 @@ class Addon extends EventEmitter {
     });
   }
 
+  addTransaction (attrs) {
+    let self = this;
+
+    if (!_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
+
+    return new Promise((resolve, reject) => {
+      self.channel.call({
+        method: 'addTransaction',
+        params: attrs,
+        success (transaction) { resolve(transaction) },
+        error (err) { reject(err) }
+      });
+    });
+  }
+
   editTransaction (id) {
     let self = this;
 

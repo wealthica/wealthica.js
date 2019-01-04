@@ -157,6 +157,24 @@ addon.on('update', function (options) {
 });
 ```
 
+#### addon.addTransaction(attrs)
+
+This method opens the Add Transaction form on the Dashboard and waits for user to submit the transaction or to close the modal. Pass an `attrs` object to pre-populate the transaction form. The `newTransaction` parameter is provided when a new transaction has been created.
+
+```
+addon.addTransaction({ description: "Some description" }).then(function (newTransaction) {
+  // The form has been closed
+
+  if (newTransaction) {
+    // A new transaction has been created
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
 #### addon.editTransaction(id)
 
 This method opens the Edit Transaction form on the Dashboard and waits for user to update the transaction or to close the edit modal. The `updatedTransaction` parameter is provided when the transaction has been updated.

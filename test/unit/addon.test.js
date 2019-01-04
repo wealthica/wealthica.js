@@ -134,6 +134,29 @@ describe('Addon', () => {
     });
   });
 
+  describe('.addTransaction(attrs)', () => {
+    it("should call channel's `addTransaction` method with the attrs", () => {
+      let attrs = { test: 1 };
+      addon.addTransaction(attrs);
+      let spyCall = addon.channel.call.lastCall;
+      let calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('addTransaction');
+      expect(calledArgs.params).to.equal(attrs);
+    });
+
+    it('should raise an error if attrs is invalid', () => {
+      let errorMessage = 'Attrs must be an object';
+      let numCalls = addon.channel.call.getCalls().length;
+
+      [1, true, false, null, undefined, [], ''].forEach((invalid) => {
+        expect(addon.addTransaction.bind(addon, invalid)).to.throw(errorMessage);
+      });
+
+      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+    });
+  });
+
   describe('.editTransaction(id)', () => {
     it("should call channel's `editTransaction` method with the id", () => {
       let id = 'test';
