@@ -85,7 +85,7 @@ class Addon extends EventEmitter {
   addTransaction (attrs) {
     let self = this;
 
-    if (!_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
+    if (!_.isUndefined(attrs) && !_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
 
     return new Promise((resolve, reject) => {
       self.channel.call({

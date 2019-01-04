@@ -4889,7 +4889,7 @@ var Addon = function (_EventEmitter) {
     value: function addTransaction(attrs) {
       var self = this;
 
-      if (!(0, _isPlainObject3.default)(attrs)) throw new Error('Attrs must be an object');
+      if (!(0, _isUndefined3.default)(attrs) && !(0, _isPlainObject3.default)(attrs)) throw new Error('Attrs must be an object');
 
       return new _es6Promise.Promise(function (resolve, reject) {
         self.channel.call({

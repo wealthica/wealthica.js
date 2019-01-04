@@ -149,7 +149,7 @@ describe('Addon', () => {
       let errorMessage = 'Attrs must be an object';
       let numCalls = addon.channel.call.getCalls().length;
 
-      [1, true, false, null, undefined, [], ''].forEach((invalid) => {
+      [1, true, false, null, [], ''].forEach((invalid) => {
         expect(addon.addTransaction.bind(addon, invalid)).to.throw(errorMessage);
       });
 
