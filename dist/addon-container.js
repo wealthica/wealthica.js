@@ -4736,7 +4736,7 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    var _arr = ['saveData', 'request', 'editTransaction'];
+    var _arr = ['saveData', 'request', 'addTransaction', 'editTransaction'];
 
     var _loop = function _loop() {
       var event = _arr[_i];
