@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <title>Wealthica Sample Add-on</title>
+  <title>Wealthica Example Add-on</title>
   <style>
     body { margin: 0; padding: 0; }
   </style>
@@ -12,11 +12,12 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
 </head>
 <body>
-  <h3>This is the Wealthica Sample Add-on.</h3>
+  <h3>This is the Wealthica Example Add-on.</h3>
   <p>Try some of the actions below:</p>
   <p>
     <button type="button" disabled="disabled" id="getTransactions">List Transactions</button>
     <button type="button" disabled="disabled" id="getPositions">List Positions</button>
+    <button type="button" disabled="disabled" id="addTransaction">Add Transaction</button>
   </p>
   <div id="result"></div>
 
@@ -34,6 +35,20 @@
       }).on('update', function (options) {
         // Filters have been updated and Dashboard is passing in updated options
         addonOptions = _.extend(addonOptions, options);
+      });
+
+      $('#addTransaction').on('click', function () {
+        $(this).attr('disabled', 'disabled');
+
+        addon.addTransaction({
+          description: "New transaction from Example Add-on"
+        }).then(function (transaction) {
+          $('#result').html('New transaction:<br><code>' + JSON.stringify(transaction) + '</code>');
+        }).catch(function (err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function () {
+          $('#addTransaction').removeAttr('disabled');
+        });
       });
 
       $('#getTransactions').on('click', function () {
