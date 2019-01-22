@@ -30,6 +30,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Cumberland Private Wealth
 - Desjardins Valeurs Mobilières (VMD)
 - Desjardins Courtage en Ligne (Disnat)
+- Desjardins Private Wealth (GPD)
 - Desjardins Financial Security Investments (SFL)
 - Épargne Placement Québec
 - EQ Bank
@@ -61,6 +62,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Qtrade Investor
 - Quadrus
 - Questrade
+- Raymond James
 - RBC Direct Investing
 - RBC Dominion Securities
 - Richardson GMP
