@@ -30,6 +30,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Cumberland Private Wealth
 - Desjardins Valeurs Mobilières (VMD)
 - Desjardins Courtage en Ligne (Disnat)
+- Desjardins Private Wealth (GPD)
 - Desjardins Financial Security Investments (SFL)
 - Épargne Placement Québec
 - EQ Bank
@@ -44,7 +45,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Industrial Alliance Investia
 - Industrial Alliance Securities
 - Interactive Brokers
-- Investors Group
+- Investors Group (IG Wealth Management)
 - IPC Investment
 - IPC Securities
 - Laurentian Bank Direct Brokerage
@@ -52,7 +53,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Manulife VIP Room (previously Standard Life)
 - Manulife Securities
 - MD Financial Management
-- National Bank Independent Network (NBCN)
+- National Bank Independent Network (NBIN and NBCN)
 - National Bank Direct Brokerage
 - National Bank Financial
 - National Bank Private Banking 1859
@@ -61,6 +62,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Qtrade Investor
 - Quadrus
 - Questrade
+- Raymond James
 - RBC Direct Investing
 - RBC Dominion Securities
 - Richardson GMP
