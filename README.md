@@ -4,7 +4,7 @@
 
 Extend Wealthica by writing your own add-ons and widgets.
 
-[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 55+ Canadian financial institutions and investment platforms.
+[Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 60+ Canadian financial institutions and investment platforms.
 
 This library provides the wrappers needed to setup the communication between the Wealthica Dashboard and 3rd-party add-ons. It aims to be simple to use and allows anyone with basic knowledge of JavaScript to write their own add-on.
 
@@ -32,6 +32,8 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Desjardins Courtage en Ligne (Disnat)
 - Desjardins Private Wealth (GPD)
 - Desjardins Financial Security Investments (SFL)
+- Echelon Wealth Partners
+- EdgePoint Wealth Management
 - Épargne Placement Québec
 - EQ Bank
 - Fondaction CSN
