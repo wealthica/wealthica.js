@@ -67,7 +67,6 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - Raymond James
 - RBC Direct Investing
 - RBC Dominion Securities
-- Richardson GMP
 - Scotia iTrade
 - Sun Life Financial
 - Tangerine
