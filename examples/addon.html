@@ -18,7 +18,9 @@
     <button type="button" disabled="disabled" id="getTransactions">List Transactions</button>
     <button type="button" disabled="disabled" id="getPositions">List Positions</button>
     <button type="button" disabled="disabled" id="addTransaction">Add Transaction</button>
+    <button type="button" disabled="disabled" id="saveData">Save Data</button>
   </p>
+  <textarea id="data" rows="8" cols="100"></textarea>
   <div id="result"></div>
 
   <script type="text/javascript">
@@ -32,9 +34,11 @@
         // render using the passed in options (filters, language, etc.)
         addonOptions = options;
         $('button').removeAttr('disabled');
+        showAddonData(addonOptions.data, true);
       }).on('update', function (options) {
         // Filters have been updated and Dashboard is passing in updated options
         addonOptions = _.extend(addonOptions, options);
+        showAddonData(addonOptions.data);
       });
 
       $('#addTransaction').on('click', function () {
@@ -74,6 +78,25 @@
           $('#getPositions').removeAttr('disabled');
         });
       });
+
+      $('#saveData').on('click', function () {
+        $(this).attr('disabled', 'disabled');
+        let newData = $('#data').val();
+
+        addon.saveData(newData ? JSON.parse(newData) : {}).catch(function (err) {
+          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        }).finally(function () {
+          $('#saveData').removeAttr('disabled');
+        });
+      });
+
+      // Show addon data in result box and optionally update the text input.
+      function showAddonData(data, updateInput) {
+        $('#result').html('Addon data:<br><code>' + JSON.stringify(data) + '</code>');
+        if (updateInput && data) {
+          $('#data').val(JSON.stringify(data));
+        }
+      }
 
       // Compose a query object from the addon options to pass to the API calls.
       function getQueryFromOptions (options) {
