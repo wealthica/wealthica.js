@@ -83,11 +83,17 @@
         $(this).attr('disabled', 'disabled');
         let newData = $('#data').val();
 
-        addon.saveData(newData ? JSON.parse(newData) : {}).catch(function (err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
-        }).finally(function () {
+        try {
+          addon.saveData(newData ? JSON.parse(newData) : null).catch(function (err) {
+            $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+          }).finally(function () {
+            $('#saveData').removeAttr('disabled');
+          });
+        } catch (e) {
+          $('#result').html('Error:<br><code>' + e.message + '</code>');
+        } finally {
           $('#saveData').removeAttr('disabled');
-        });
+        }
       });
 
       // Show addon data in result box and optionally update the text input.
