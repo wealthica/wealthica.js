@@ -7,9 +7,7 @@ class API {
 
   // Assets
   getAssets (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'assets',
       query,
@@ -18,9 +16,7 @@ class API {
 
   // Currencies
   getCurrencies (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'currencies',
       query,
@@ -29,9 +25,7 @@ class API {
 
   // Institutions
   getInstitutions (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'institutions',
       query,
@@ -39,36 +33,28 @@ class API {
   }
 
   getInstitution (id) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: `institutions/${id}`,
     });
   }
 
   pollInstitution (id, v) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: `institutions/${id}/poll?v=${v}`,
     });
   }
 
   syncInstitution (id) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'POST',
       endpoint: `institutions/${id}/sync`,
     });
   }
 
   addInstitution (data) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'POST',
       endpoint: `institutions`,
       body: data,
@@ -77,9 +63,7 @@ class API {
 
   // liabilities
   getLiabilities (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'liabilities',
       query,
@@ -88,9 +72,7 @@ class API {
 
   // Positions
   getPositions (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'positions',
       query,
@@ -99,9 +81,7 @@ class API {
 
   // Transactions
   getTransactions (query) {
-    let self = this;
-
-    return self.addon.request({
+    return this.addon.request({
       method: 'GET',
       endpoint: 'transactions',
       query,

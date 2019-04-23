@@ -1,7 +1,7 @@
 export default {
   heightCalculationMethod () {
-    let body = document.body;
-    let html = document.documentElement;
+    const body = document.body;
+    const html = document.documentElement;
 
     return Math.max.apply(null, [
       body.scrollHeight,
