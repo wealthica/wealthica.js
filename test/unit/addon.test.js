@@ -1,4 +1,8 @@
-import { expect } from 'chai';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
+const { expect } = chai;
+
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 import Addon from '../../src/addon';
@@ -50,7 +54,7 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       ['string', 1, true, false, undefined, null, []].forEach((params) => {
-        expect(addon.request.bind(addon, params)).to.throw(errorMessage);
+        expect(addon.request(params)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -61,8 +65,10 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.request.bind(addon, { method: invalid, endpoint: 'test' })).to.throw(errorMessage);
-        expect(addon.request.bind(addon, { method: 'test', endpoint: invalid })).to.throw(errorMessage);
+        expect(addon.request({ method: invalid, endpoint: 'test' }))
+          .to.eventually.be.rejectedWith(errorMessage);
+        expect(addon.request({ method: 'test', endpoint: invalid }))
+          .to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -73,7 +79,8 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       ['string', 1, true, false, null, []].forEach((query) => {
-        expect(addon.request.bind(addon, { method: 'GET', endpoint: 'test', query: query })).to.throw(errorMessage);
+        expect(addon.request({ method: 'GET', endpoint: 'test', query: query }))
+          .to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -81,7 +88,7 @@ describe('Addon', () => {
 
     it('should still proceed if query is not provided', () => {
       let validParams = { method: 'GET', endpoint: 'test', query: undefined };
-      expect(addon.request.bind(addon, validParams)).not.to.throw();
+      addon.request(validParams);
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
 
@@ -94,7 +101,8 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       ['string', 1, true, false, null, []].forEach((body) => {
-        expect(addon.request.bind(addon, { method: 'GET', endpoint: 'test', body: body })).to.throw(errorMessage);
+        expect(addon.request({ method: 'GET', endpoint: 'test', body: body }))
+          .to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -102,7 +110,7 @@ describe('Addon', () => {
 
     it('should still proceed if body is not provided', () => {
       let validParams = { method: 'GET', endpoint: 'test', body: undefined };
-      expect(addon.request.bind(addon, validParams)).not.to.throw();
+      addon.request(validParams);
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
 
@@ -127,7 +135,7 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, undefined, [], ''].forEach((invalid) => {
-        expect(addon.saveData.bind(addon, invalid)).to.throw(errorMessage);
+        expect(addon.saveData(invalid)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -150,7 +158,7 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, [], ''].forEach((invalid) => {
-        expect(addon.addTransaction.bind(addon, invalid)).to.throw(errorMessage);
+        expect(addon.addTransaction(invalid)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
@@ -173,7 +181,7 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.editTransaction.bind(addon, invalid)).to.throw(errorMessage);
+        expect(addon.editTransaction(invalid)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);
