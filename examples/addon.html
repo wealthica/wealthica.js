@@ -49,7 +49,7 @@
         }).then(function (transaction) {
           $('#result').html('New transaction:<br><code>' + JSON.stringify(transaction) + '</code>');
         }).catch(function (err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+          $('#result').html('Error:<br><code>' + err + '</code>');
         }).finally(function () {
           $('#addTransaction').removeAttr('disabled');
         });
@@ -61,7 +61,7 @@
         addon.api.getTransactions(getQueryFromOptions(addonOptions)).then(function (response) {
           $('#result').html('List Transactions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function (err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+          $('#result').html('Error:<br><code>' + err + '</code>');
         }).finally(function () {
           $('#getTransactions').removeAttr('disabled');
         });
@@ -73,7 +73,7 @@
         addon.api.getPositions(getQueryFromOptions(addonOptions)).then(function (response) {
           $('#result').html('List Positions Result:<br><code>' + JSON.stringify(response) + '</code>');
         }).catch(function (err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+          $('#result').html('Error:<br><code>' + err + '</code>');
         }).finally(function () {
           $('#getPositions').removeAttr('disabled');
         });
@@ -83,8 +83,16 @@
         $(this).attr('disabled', 'disabled');
         let newData = $('#data').val();
 
-        addon.saveData(newData ? JSON.parse(newData) : {}).catch(function (err) {
-          $('#result').html('Error:<br><code>' + JSON.stringify(err) + '</code>');
+        // Try parsing textarea value to a JSON object before passing to addon.saveData(data)
+        try { newData = JSON.parse(newData) }
+        catch (e) {
+          $('#result').html('Error:<br><code>Data must be JSON</code>');
+          $('#saveData').removeAttr('disabled');
+          return;
+        }
+
+        addon.saveData(newData).catch(function (err) {
+          $('#result').html('Error:<br><code>' + err + '</code>');
         }).finally(function () {
           $('#saveData').removeAttr('disabled');
         });

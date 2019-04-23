@@ -1,4 +1,8 @@
-import { expect } from 'chai';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+chai.use(chaiAsPromised);
+const { expect } = chai;
+
 import sinon from 'sinon';
 import AddonContainer from '../../src/addon-container';
 
@@ -74,7 +78,7 @@ describe('AddonContainer', () => {
       let numCalls = container.channel.call.getCalls().length;
 
       ['string', 1, true, false, undefined, null].forEach((params) => {
-        expect(container.update.bind(container, params)).to.throw(errorMessage);
+        expect(container.update(params)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(container.channel.call.getCalls().length).to.equal(numCalls);

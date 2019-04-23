@@ -13,31 +13,30 @@ class Addon extends EventEmitter {
   constructor (options={}) {
     super();
 
-    let self = this;
-    self.options = options;
-    self.api = new API(self);
+    this.options = options;
+    this.api = new API(this);
 
-    self.channel = Channel.build({
+    this.channel = Channel.build({
       window: options.window || window.parent,
       origin: '*',
       scope: options.id || location.origin,
-      postMessageObserver (origin, message) {
-        self.emit('postMessage', origin, message);
+      postMessageObserver: (origin, message) => {
+        this.emit('postMessage', origin, message);
       },
-      gotMessageObserver (origin, message) {
-        self.emit('gotMessage', origin, message);
+      gotMessageObserver: (origin, message) => {
+        this.emit('gotMessage', origin, message);
       },
     });
 
     for (let event of ['init', 'update', 'reload', '_event']) {
-      self.channel.bind(event, (tx, data) => {
+      this.channel.bind(event, (tx, data) => {
         let eventName = event, eventData = data;
 
         if (event === '_event') {
           eventName = data.eventName;
           eventData = data.eventData;
         }
-        self.emit(eventName, eventData);
+        this.emit(eventName, eventData);
 
         return 'success';
       })
@@ -45,21 +44,22 @@ class Addon extends EventEmitter {
   }
 
   request (params) {
-    let self = this;
-    if (!_.isPlainObject(params)) throw new Error('Params must be an object');
-
-    let method, endpoint, query, body;
-    ({ method, endpoint, query, body } = params);
-
-    if (!method || !endpoint || !_.isString(method) || !_.isString(endpoint))
-      throw new Error('Invalid method or endpoint');
-
-    if (!_.isUndefined(query) && !_.isPlainObject(query)) throw new Error('Query must be an object');
-
-    if (!_.isUndefined(body) && !_.isPlainObject(body)) throw new Error('Body must be an object');
-
     return new Promise((resolve, reject) => {
-      self.channel.call({
+      if (!_.isPlainObject(params)) throw new Error('Params must be an object');
+
+      let method, endpoint, query, body;
+      ({ method, endpoint, query, body } = params);
+
+      if (!method || !endpoint || !_.isString(method) || !_.isString(endpoint))
+        throw new Error('Invalid method or endpoint');
+
+      if (!_.isUndefined(query) && !_.isPlainObject(query))
+        throw new Error('Query must be an object');
+
+      if (!_.isUndefined(body) && !_.isPlainObject(body))
+        throw new Error('Body must be an object');
+
+      this.channel.call({
         method: 'request',
         params: params,
         success (response) { resolve(response) },
@@ -69,11 +69,10 @@ class Addon extends EventEmitter {
   }
 
   saveData (data) {
-    let self = this;
-    if (!_.isPlainObject(data)) throw new Error('Data must be an object');
-
     return new Promise((resolve, reject) => {
-      self.channel.call({
+      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+
+      this.channel.call({
         method: 'saveData',
         params: data,
         success () { resolve() },
@@ -83,12 +82,11 @@ class Addon extends EventEmitter {
   }
 
   addTransaction (attrs) {
-    let self = this;
-
-    if (!_.isUndefined(attrs) && !_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
-
     return new Promise((resolve, reject) => {
-      self.channel.call({
+      if (!_.isUndefined(attrs) && !_.isPlainObject(attrs))
+        throw new Error('Attrs must be an object');
+
+      this.channel.call({
         method: 'addTransaction',
         params: attrs,
         success (transaction) { resolve(transaction) },
@@ -98,12 +96,10 @@ class Addon extends EventEmitter {
   }
 
   editTransaction (id) {
-    let self = this;
-
-    if (!id || !_.isString(id)) throw new Error('Invalid id');
-
     return new Promise((resolve, reject) => {
-      self.channel.call({
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
         method: 'editTransaction',
         params: id,
         success (transaction) { resolve(transaction) },
