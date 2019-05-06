@@ -5365,6 +5365,17 @@ var API = function () {
         query: query
       });
     }
+
+    // User
+
+  }, {
+    key: 'getUser',
+    value: function getUser() {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'users/me'
+      });
+    }
   }]);
 
   return API;

@@ -87,6 +87,14 @@ class API {
       query,
     })
   }
+
+  // User
+  getUser () {
+    return this.addon.request({
+      method: 'GET',
+      endpoint: 'users/me',
+    })
+  }
 }
 
 module.exports = API;
