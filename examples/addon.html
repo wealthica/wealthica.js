@@ -81,7 +81,7 @@
 
       $('#saveData').on('click', function () {
         $(this).attr('disabled', 'disabled');
-        let newData = $('#data').val();
+        var newData = $('#data').val();
 
         // Try parsing textarea value to a JSON object before passing to addon.saveData(data)
         try { newData = JSON.parse(newData) }

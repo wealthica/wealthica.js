@@ -287,6 +287,12 @@ addon.api.getTransactions({ groups: 'id1,id2', institutions: 'id1,id2' })
   .then(function (response) { }).catch(function (err) { });
 ```
 
+#### addon.api.getUser()
+
+```
+addon.api.getUser().then(function (response) { }).catch(function (err) { });
+```
+
 ## Debug
 
 #### event: 'postMessage'
