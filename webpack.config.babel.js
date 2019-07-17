@@ -14,8 +14,9 @@ const baseConfig = {
     filename: '[name].js',
     library: '[name]'
   },
+  mode: 'none',
   module: {
-    loaders: [
+    rules: [
       { test: /\.js$/, loader: 'babel-loader', include },
     ]
   }
