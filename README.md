@@ -82,7 +82,7 @@ Wealthica supports connecting to the following Canadian financial institutions a
 1. Login to your [Wealthica](https://app.wealthica.com).
 2. Install the [Developer Add-on](https://app.wealthica.com/addons/details?id=wealthica/wealthica-dev-addon). After that you will be redirected to the Developer Add-on page.
 3. Click on the button next to the page title to open the Configure modal.
-4. Enter https://rawgit.com/wealthica/wealthica.js/master/examples/addon.html to the Add-on URL field and click Load to load the Sample Add-on.
+4. Enter https://wealthica.github.io/wealthica.js/example.html to the Add-on URL field and click Load to load the Sample Add-on.
 5. Try some of the sample actions provided in the add-on.
 
 After trying out the Sample Add-on, it's time to make your own add-on:
