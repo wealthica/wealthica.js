@@ -8,7 +8,7 @@ Extend Wealthica by writing your own add-ons and widgets.
 
 This library provides the wrappers needed to setup the communication between the Wealthica Dashboard and 3rd-party add-ons. It aims to be simple to use and allows anyone with basic knowledge of JavaScript to write their own add-on.
 
-Not sure where to start? Take a [look at the Sample Add-on code](https://github.com/wealthica/wealthica.js/blob/master/examples/addon.html) and see the instructions below to load it into your Wealthica Dashboard.
+Not sure where to start? Take a [look at the Example Add-on code](https://github.com/wealthica/wealthica.js/blob/master/example.html) and see the instructions below to load it into your Wealthica Dashboard.
 
 Ready to publish your add-on to the Wealthica Add-ons store? [Contact us](mailto:hello@wealthica.com).
 
@@ -82,12 +82,12 @@ Wealthica supports connecting to the following Canadian financial institutions a
 1. Login to your [Wealthica](https://app.wealthica.com).
 2. Install the [Developer Add-on](https://app.wealthica.com/addons/details?id=wealthica/wealthica-dev-addon). After that you will be redirected to the Developer Add-on page.
 3. Click on the button next to the page title to open the Configure modal.
-4. Enter https://wealthica.github.io/wealthica.js/example.html to the Add-on URL field and click Load to load the Sample Add-on.
+4. Enter https://wealthica.github.io/wealthica.js/example.html to the Add-on URL field and click Load to load the Example Add-on.
 5. Try some of the sample actions provided in the add-on.
 
-After trying out the Sample Add-on, it's time to make your own add-on:
+After trying out the Example Add-on, it's time to make your own add-on:
 
-1. Clone Sample Add-on or create your own add-on page.
+1. Clone Example Add-on or create your own add-on page.
 2. From Wealthica navigate to the Developer Add-on and open the Configure modal and load your add-on.
 3. Take a look at the [APIs](#apis) section below and start writing your add-on.
 
