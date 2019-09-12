@@ -26,20 +26,25 @@ Wealthica supports connecting to the following Canadian financial institutions a
 - CIBC Investor's Edge
 - CIBC Wood Gundy
 - Computershare Employee Online
+- Computershare Exempt Market (Private Capital Investor)
 - Credential Asset Management
 - Cumberland Private Wealth
 - Desjardins Valeurs Mobilières (VMD)
 - Desjardins Courtage en Ligne (Disnat)
 - Desjardins Private Wealth (GPD)
-- Desjardins Financial Security Investments (SFL)
+- Desjardins Insurance Retirement (DFS GRS)
+- Desjardins Financial Security (DFS Investments)
+- SFL Investments (Desjardins)
 - Echelon Wealth Partners
 - EdgePoint Wealth Management
 - Épargne Placement Québec
 - EQ Bank
+- Fidelity Investments Canada
 - Fondaction CSN
 - Fonds de solidarité FTQ
 - Gestion FÉRIQUE
 - Great-West Group Retirement (GRS)
+- Hampton Securities
 - Harbourfront Wealth Management
 - HollisWealth
 - HSBC InvestDirect
