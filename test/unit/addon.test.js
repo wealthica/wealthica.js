@@ -188,6 +188,29 @@ describe('Addon', () => {
     });
   });
 
+  describe('.addInvestment(attrs)', () => {
+    it("should call channel's `addInvestment` method with the attrs", () => {
+      let attrs = { test: 1 };
+      addon.addInvestment(attrs);
+      let spyCall = addon.channel.call.lastCall;
+      let calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('addInvestment');
+      expect(calledArgs.params).to.equal(attrs);
+    });
+
+    it('should raise an error if attrs is invalid', () => {
+      let errorMessage = 'Attrs must be an object';
+      let numCalls = addon.channel.call.getCalls().length;
+
+      [1, true, false, null, [], ''].forEach((invalid) => {
+        expect(addon.addInvestment(invalid)).to.eventually.be.rejectedWith(errorMessage);
+      });
+
+      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+    });
+  });
+
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       addon.destroy();

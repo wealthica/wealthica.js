@@ -203,7 +203,7 @@ addon.editTransaction('transaction-id').then(function (updatedTransaction) {
 
 #### addon.addInvestment(attrs)
 
-This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal. Pass an optional `attrs` object to pre-populate the form. The `newInvestment` parameter is provided when a new transaction has been created.
+This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal. Pass an optional `attrs` object to pre-populate the form. The `newInvestment` parameter is provided when a new investment has been created.
 
 ```
 addon.addInvestment({
