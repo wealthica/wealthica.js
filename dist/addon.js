@@ -282,6 +282,26 @@ var Addon = function (_EventEmitter) {
       });
     }
   }, {
+    key: 'addInvestment',
+    value: function addInvestment(attrs) {
+      var _this6 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isUndefined3.default)(attrs) && !(0, _isPlainObject3.default)(attrs)) throw new Error('Attrs must be an object');
+
+        _this6.channel.call({
+          method: 'addInvestment',
+          params: attrs,
+          success: function success(investment) {
+            resolve(investment);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
     key: 'destroy',
     value: function destroy() {
       this.channel.destroy();

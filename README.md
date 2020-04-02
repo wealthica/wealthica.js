@@ -201,6 +201,27 @@ addon.editTransaction('transaction-id').then(function (updatedTransaction) {
 });
 ```
 
+#### addon.addInvestment(attrs)
+
+This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal. Pass an optional `attrs` object to pre-populate the form. The `newInvestment` parameter is provided when a new investment has been created.
+
+```
+addon.addInvestment({
+  view: "institution",
+  institution: { type: 'demo', name: 'Demo' }
+}).then(function (newInvestment) {
+  // The form has been closed
+
+  if (newInvestment) {
+    // A new investment has been created
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
 #### addon.saveData(data)
 
 This method allows add-on to persist data to the Wealthica user preferences. You can use this method to persist user configuration options. The add-on will receive this data under the `data` options parameter [the next time it is initialized](#event-init). Each add-on can store up to 100 KB of data (plus 4 KB per widget). Please note data is stored unencrypted in our database and may not be suitable for storing sensitive information.
