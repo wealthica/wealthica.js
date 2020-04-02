@@ -338,18 +338,18 @@ addon.request({
 ### Install
 
 ```
-npm install
+yarn install
 ```
 
 ### Build
 
 ```
-npm run build
+yarn build
 ```
 
 ### Test
 
 ```
-npm run build
-npm run test
+yarn build
+yarn test
 ```
