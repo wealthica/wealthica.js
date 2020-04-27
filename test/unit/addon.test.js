@@ -188,14 +188,14 @@ describe('Addon', () => {
     });
   });
 
-  describe('.addInvestment(attrs)', () => {
-    it("should call channel's `addInvestment` method with the attrs", () => {
+  describe('.addInstitution(attrs)', () => {
+    it("should call channel's `addInstitution` method with the attrs", () => {
       let attrs = { test: 1 };
-      addon.addInvestment(attrs);
+      addon.addInstitution(attrs);
       let spyCall = addon.channel.call.lastCall;
       let calledArgs = spyCall.args[0];
 
-      expect(calledArgs.method).to.equal('addInvestment');
+      expect(calledArgs.method).to.equal('addInstitution');
       expect(calledArgs.params).to.equal(attrs);
     });
 
@@ -204,7 +204,30 @@ describe('Addon', () => {
       let numCalls = addon.channel.call.getCalls().length;
 
       [1, true, false, null, [], ''].forEach((invalid) => {
-        expect(addon.addInvestment(invalid)).to.eventually.be.rejectedWith(errorMessage);
+        expect(addon.addInstitution(invalid)).to.eventually.be.rejectedWith(errorMessage);
+      });
+
+      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+    });
+  });
+
+  describe('.downloadDocument(id)', () => {
+    it("should call channel's `downloadDocument` method with the id", () => {
+      let id = 'test';
+      addon.downloadDocument(id);
+      let spyCall = addon.channel.call.lastCall;
+      let calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('downloadDocument');
+      expect(calledArgs.params).to.deep.equal(id);
+    });
+
+    it('should raise an error if id is missing or invalid', () => {
+      let errorMessage = 'Invalid id';
+      let numCalls = addon.channel.call.getCalls().length;
+
+      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
+        expect(addon.downloadDocument(invalid)).to.eventually.be.rejectedWith(errorMessage);
       });
 
       expect(addon.channel.call.getCalls().length).to.equal(numCalls);

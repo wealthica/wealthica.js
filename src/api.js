@@ -53,7 +53,12 @@ class API {
     });
   }
 
+  /**
+   * @deprecated Since version 0.0.12. Will be removed in version 0.1.x. Use `addon.addInstitution` instead
+   */
   addInstitution (data) {
+    console.warn('DEPRECATED: `addon.api.addInstitution`. Use `addon.addInstitution instead.`');
+
     return this.addon.request({
       method: 'POST',
       endpoint: `institutions`,

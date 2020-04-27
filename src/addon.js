@@ -108,15 +108,28 @@ class Addon extends EventEmitter {
     });
   }
 
-  addInvestment (attrs) {
+  addInstitution (attrs) {
     return new Promise((resolve, reject) => {
       if (!_.isUndefined(attrs) && !_.isPlainObject(attrs))
         throw new Error('Attrs must be an object');
 
       this.channel.call({
-        method: 'addInvestment',
+        method: 'addInstitution',
         params: attrs,
-        success (investment) { resolve(investment) },
+        success (institution) { resolve(institution) },
+        error (err) { reject(err) }
+      });
+    });
+  }
+
+  downloadDocument (id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'downloadDocument',
+        params: id,
+        success (doc) { resolve(doc) },
         error (err) { reject(err) }
       });
     });
