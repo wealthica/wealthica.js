@@ -207,7 +207,7 @@ This method opens the Add Institution form on the Dashboard and waits for user t
 
 Pass an optional institution object (`{ type, name }`) to go straight to the institution's credentials form. Otherwise the modal will open at the Select Institution step.
 
-The `newInvestment` parameter is provided when a new institution has been created.
+The `newInstitution` parameter is provided when a new institution has been created.
 
 ```
 addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstitution) {
@@ -218,6 +218,18 @@ addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstituti
   } else {
     // Nothing changed
   }
+}).catch(function (err) {
+
+});
+```
+
+#### addon.downloadDocument(id)
+
+This method triggers download of a Wealthica document
+
+```
+addon.downloadDocument('document-id').then(function (doc) {
+  // The action has been successfully carried out. The document object is returned.
 }).catch(function (err) {
 
 });

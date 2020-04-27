@@ -122,6 +122,19 @@ class Addon extends EventEmitter {
     });
   }
 
+  downloadDocument (id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'downloadDocument',
+        params: id,
+        success (doc) { resolve(doc) },
+        error (err) { reject(err) }
+      });
+    });
+  }
+
   destroy () {
     this.channel.destroy();
   }
