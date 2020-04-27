@@ -228,8 +228,8 @@ addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstituti
 This method triggers download of a Wealthica document
 
 ```
-addon.downloadDocument('document-id').then(function (doc) {
-  // The action has been successfully carried out. The document object is returned.
+addon.downloadDocument('document-id').then(function () {
+  // The action has been successfully carried out.
 }).catch(function (err) {
 
 });

@@ -129,7 +129,7 @@ class Addon extends EventEmitter {
       this.channel.call({
         method: 'downloadDocument',
         params: id,
-        success (doc) { resolve(doc) },
+        success () { resolve() },
         error (err) { reject(err) }
       });
     });
