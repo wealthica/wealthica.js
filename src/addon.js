@@ -108,15 +108,15 @@ class Addon extends EventEmitter {
     });
   }
 
-  addInvestment (attrs) {
+  addInstitution (attrs) {
     return new Promise((resolve, reject) => {
       if (!_.isUndefined(attrs) && !_.isPlainObject(attrs))
         throw new Error('Attrs must be an object');
 
       this.channel.call({
-        method: 'addInvestment',
+        method: 'addInstitution',
         params: attrs,
-        success (investment) { resolve(investment) },
+        success (institution) { resolve(institution) },
         error (err) { reject(err) }
       });
     });

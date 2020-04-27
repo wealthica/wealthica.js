@@ -201,19 +201,20 @@ addon.editTransaction('transaction-id').then(function (updatedTransaction) {
 });
 ```
 
-#### addon.addInvestment(attrs)
+#### addon.addInstitution(attrs)
 
-This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal. Pass an optional `attrs` object to pre-populate the form. The `newInvestment` parameter is provided when a new investment has been created.
+This method opens the Add Institution form on the Dashboard and waits for user to finish the process or to close the modal.
+
+Pass an optional institution object (`{ type, name }`) to go straight to the institution's credentials form. Otherwise the modal will open at the Select Institution step.
+
+The `newInvestment` parameter is provided when a new institution has been created.
 
 ```
-addon.addInvestment({
-  view: "institution",
-  institution: { type: 'demo', name: 'Demo' }
-}).then(function (newInvestment) {
+addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstitution) {
   // The form has been closed
 
-  if (newInvestment) {
-    // A new investment has been created
+  if (newInstitution) {
+    // A new institution has been created
   } else {
     // Nothing changed
   }

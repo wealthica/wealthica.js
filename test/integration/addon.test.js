@@ -340,11 +340,11 @@ describe('Addon', () => {
     });
   });
 
-  describe('.addInvestment(attrs)', () => {
+  describe('.addInstitution(attrs)', () => {
     beforeEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.on('addInvestment', (attrs, callback) => {
+          container.on('addInstitution', (attrs, callback) => {
             if (attrs.id === 'shouldCreate') {
               callback(null, { created: true });
             } else if (attrs.id === 'shouldClose') {
@@ -362,47 +362,47 @@ describe('Addon', () => {
     afterEach(async () => {
       await page.evaluate(() => {
         return new Promise((resolve, reject) => {
-          container.off('addInvestment');
+          container.off('addInstitution');
 
           resolve();
         });
       });
     });
 
-    it('should receive success result with new investment from AddonContainer', async () => {
+    it('should receive success result with new institution from AddonContainer', async () => {
       let addonFrame = (await page.frames())[1];
       let attrs = { id: 'shouldCreate' };
 
       let result = await addonFrame.evaluate((attrs) => {
         return new Promise((resolve, reject) => {
-          addon.addInvestment(attrs).then((investment) => {
-            resolve(investment);
+          addon.addInstitution(attrs).then((institution) => {
+            resolve(institution);
           }).catch((err) => {
             resolve(err);
           });
         });
       }, attrs);
-      let call = await getSpyCall('addInvestment');
+      let call = await getSpyCall('addInstitution');
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(attrs);
       expect(result).to.deep.equal({ created: true });
     });
 
-    it('should receive success result without new investment from AddonContainer', async () => {
+    it('should receive success result without new institution from AddonContainer', async () => {
       let addonFrame = (await page.frames())[1];
       let attrs = { id: 'shouldClose' };
 
       let result = await addonFrame.evaluate((attrs) => {
         return new Promise((resolve, reject) => {
-          addon.addInvestment(attrs).then((investment) => {
-            resolve(investment);
+          addon.addInstitution(attrs).then((institution) => {
+            resolve(institution);
           }).catch((err) => {
             resolve(err);
           });
         });
       }, attrs);
-      let call = await getSpyCall('addInvestment');
+      let call = await getSpyCall('addInstitution');
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(attrs);
@@ -415,14 +415,14 @@ describe('Addon', () => {
 
       let result = await addonFrame.evaluate((attrs) => {
         return new Promise((resolve, reject) => {
-          addon.addInvestment(attrs).then((investment) => {
-            resolve(investment);
+          addon.addInstitution(attrs).then((institution) => {
+            resolve(institution);
           }).catch((err) => {
             resolve(err);
           });
         });
       }, attrs);
-      let call = await getSpyCall('addInvestment');
+      let call = await getSpyCall('addInstitution');
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(attrs);
