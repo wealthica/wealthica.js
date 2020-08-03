@@ -326,6 +326,13 @@ addon.api.getTransactions({ groups: 'id1,id2', institutions: 'id1,id2' })
   .then(function (response) { }).catch(function (err) { });
 ```
 
+#### addon.api.updateTransaction(id, attrs)
+
+```
+addon.api.updateTransaction('id', { currency_amount: 123 })
+  .then(function (response) { }).catch(function (err) { });
+```
+
 #### addon.api.getUser()
 
 ```
@@ -386,4 +393,12 @@ yarn build
 ```
 yarn build
 yarn test
+```
+
+### Release
+```
+npm version patch # or minor/major
+npm push --tags
+# wait until merged then
+npm publish
 ```
