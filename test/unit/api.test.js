@@ -155,7 +155,7 @@ describe('API', () => {
     });
   });
 
-  describe('.updateTransaction(id, body)', () => {
+  describe('.updateTransaction(id, attrs)', () => {
     it('should execute request', () => {
       let attrs = { some: 'thing' };
       addon.api.updateTransaction('test', attrs);

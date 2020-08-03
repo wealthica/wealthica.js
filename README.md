@@ -394,3 +394,11 @@ yarn build
 yarn build
 yarn test
 ```
+
+### Release
+```
+npm version patch # or minor/major
+npm push --tags
+# wait until merged then
+npm publish
+```
