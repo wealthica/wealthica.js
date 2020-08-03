@@ -90,6 +90,14 @@ class API {
       method: 'GET',
       endpoint: 'transactions',
       query,
+    });
+  }
+
+  updateTransaction (id, body={}) {
+    return this.addon.request({
+      method: 'PUT',
+      endpoint: `transactions/${id}`,
+      body,
     })
   }
 

@@ -154,4 +154,17 @@ describe('API', () => {
       expect(calledArgs.params.query).to.equal(query);
     });
   });
+
+  describe('.updateTransaction(id, body)', () => {
+    it('should execute request', () => {
+      let attrs = { some: 'thing' };
+      addon.api.updateTransaction('test', attrs);
+      let spyCall = addon.channel.call.lastCall;
+      let calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('request');
+      expect(calledArgs.params.endpoint).to.equal('transactions/test');
+      expect(calledArgs.params.body).to.equal(attrs);
+    });
+  });
 })
