@@ -361,7 +361,7 @@ addon.on('gotMessage', function (origin, message) {
 
 #### addon.request(options)
 
-This is used to make a request to API endpoints that are not currently supported by `addon.api`. Currently only `GET` API requests are supported.
+This is used to make a request to API endpoints that are not currently supported by `addon.api`.
 
 ```
 addon.request({
