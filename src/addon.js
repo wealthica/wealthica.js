@@ -135,10 +135,10 @@ class Addon extends EventEmitter {
     });
   }
 
-  openPremiumModal() {
+  upgradePremium() {
     return new Promise((resolve, reject) => {
       self.channel.call({
-        method: 'openPremiumModal',
+        method: 'upgradePremium',
         success () { resolve() },
         error (err) { reject(err) }
       });
