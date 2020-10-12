@@ -135,6 +135,16 @@ class Addon extends EventEmitter {
     });
   }
 
+  openPremiumModal() {
+    return new Promise((resolve, reject) => {
+      self.channel.call({
+        method: 'openPremiumModal',
+        success () { resolve() },
+        error (err) { reject(err) }
+      });
+    });
+  }
+
   destroy () {
     this.channel.destroy();
   }

@@ -36,7 +36,7 @@ class AddonContainer extends EventEmitter {
       },
     });
 
-    for (let event of ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument']) {
+    for (let event of ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'openPremiumModal']) {
       this.channel.bind(event, (tx, data) => {
         const eventName = event, eventData = data;
 
