@@ -137,7 +137,7 @@ class Addon extends EventEmitter {
 
   upgradePremium() {
     return new Promise((resolve, reject) => {
-      self.channel.call({
+      this.channel.call({
         method: 'upgradePremium',
         success () { resolve() },
         error (err) { reject(err) }
