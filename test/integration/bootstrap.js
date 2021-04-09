@@ -15,7 +15,7 @@ const opts = {
 // expose variables
 before (async () => {
   global.expect = expect;
-  global.server = fork('node_modules/.bin/http-server', [ '.',  '-p9898' ], {
+  global.server = fork('node_modules/.bin/serve', [ '.', '-p', '9898'], {
     stdio: 'ignore'
   });
   global.server.unref();
