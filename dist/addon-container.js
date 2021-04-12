@@ -1,1107 +1,175 @@
-var AddonContainer =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */,
-/* 1 */,
-/* 2 */,
-/* 3 */,
-/* 4 */,
-/* 5 */,
-/* 6 */,
-/* 7 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
- * js_channel is a very lightweight abstraction on top of
- * postMessage which defines message formats and semantics
- * to support interactions more rich than just message passing
- * js_channel supports:
- *  + query/response - traditional rpc
- *  + query/update/response - incremental async return of results
- *    to a query
- *  + notifications - fire and forget
- *  + error handling
- *
- * js_channel is based heavily on json-rpc, but is focused at the
- * problem of inter-iframe RPC.
- *
- * Message types:
- *  There are 5 types of messages that can flow over this channel,
- *  and you may determine what type of message an object is by
- *  examining its parameters:
- *  1. Requests
- *    + integer id
- *    + string method
- *    + (optional) any params
- *  2. Callback Invocations (or just "Callbacks")
- *    + integer id
- *    + string callback
- *    + (optional) params
- *  3. Error Responses (or just "Errors)
- *    + integer id
- *    + string error
- *    + (optional) string message
- *  4. Responses
- *    + integer id
- *    + (optional) any result
- *  5. Notifications
- *    + string method
- *    + (optional) any params
- */
-
-;var Channel = (function() {
-    "use strict";
-
-    // current transaction id, start out at a random *odd* number between 1 and a million
-    // There is one current transaction counter id per page, and it's shared between
-    // channel instances.  That means of all messages posted from a single javascript
-    // evaluation context, we'll never have two with the same id.
-    var s_curTranId = Math.floor(Math.random()*1000001);
-
-    // no two bound channels in the same javascript evaluation context may have the same origin, scope, and window.
-    // futher if two bound channels have the same window and scope, they may not have *overlapping* origins
-    // (either one or both support '*').  This restriction allows a single onMessage handler to efficiently
-    // route messages based on origin and scope.  The s_boundChans maps origins to scopes, to message
-    // handlers.  Request and Notification messages are routed using this table.
-    // Finally, channels are inserted into this table when built, and removed when destroyed.
-    var s_boundChans = { };
-
-    // add a channel to s_boundChans, throwing if a dup exists
-    function s_addBoundChan(win, origin, scope, handler) {
-        function hasWin(arr) {
-            for (var i = 0; i < arr.length; i++) if (arr[i].win === win) return true;
-            return false;
-        }
-
-        // does she exist?
-        var exists = false;
-
-
-        if (origin === '*') {
-            // we must check all other origins, sadly.
-            for (var k in s_boundChans) {
-                if (!s_boundChans.hasOwnProperty(k)) continue;
-                if (k === '*') continue;
-                if (typeof s_boundChans[k][scope] === 'object') {
-                    exists = hasWin(s_boundChans[k][scope]);
-                    if (exists) break;
-                }
-            }
-        } else {
-            // we must check only '*'
-            if ((s_boundChans['*'] && s_boundChans['*'][scope])) {
-                exists = hasWin(s_boundChans['*'][scope]);
-            }
-            if (!exists && s_boundChans[origin] && s_boundChans[origin][scope])
-            {
-                exists = hasWin(s_boundChans[origin][scope]);
-            }
-        }
-        if (exists) throw "A channel is already bound to the same window which overlaps with origin '"+ origin +"' and has scope '"+scope+"'";
-
-        if (typeof s_boundChans[origin] != 'object') s_boundChans[origin] = { };
-        if (typeof s_boundChans[origin][scope] != 'object') s_boundChans[origin][scope] = [ ];
-        s_boundChans[origin][scope].push({win: win, handler: handler});
-    }
-
-    function s_removeBoundChan(win, origin, scope) {
-        var arr = s_boundChans[origin][scope];
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i].win === win) {
-                arr.splice(i,1);
-            }
-        }
-        if (s_boundChans[origin][scope].length === 0) {
-            delete s_boundChans[origin][scope];
-        }
-    }
-
-    function s_isArray(obj) {
-        if (Array.isArray) return Array.isArray(obj);
-        else {
-            return (obj.constructor.toString().indexOf("Array") != -1);
-        }
-    }
-
-    // No two outstanding outbound messages may have the same id, period.  Given that, a single table
-    // mapping "transaction ids" to message handlers, allows efficient routing of Callback, Error, and
-    // Response messages.  Entries are added to this table when requests are sent, and removed when
-    // responses are received.
-    var s_transIds = { };
-
-    // class singleton onMessage handler
-    // this function is registered once and all incoming messages route through here.  This
-    // arrangement allows certain efficiencies, message data is only parsed once and dispatch
-    // is more efficient, especially for large numbers of simultaneous channels.
-    var s_onMessage = function(e) {
-        try {
-          var m = JSON.parse(e.data);
-          if (typeof m !== 'object' || m === null) throw "malformed";
-        } catch(e) {
-          // just ignore any posted messages that do not consist of valid JSON
-          return;
-        }
-
-        var w = e.source;
-        var o = e.origin;
-        var s, i, meth;
-
-        if (typeof m.method === 'string') {
-            var ar = m.method.split('::');
-            if (ar.length == 2) {
-                s = ar[0];
-                meth = ar[1];
-            } else {
-                meth = m.method;
-            }
-        }
-
-        if (typeof m.id !== 'undefined') i = m.id;
-
-        // w is message source window
-        // o is message origin
-        // m is parsed message
-        // s is message scope
-        // i is message id (or undefined)
-        // meth is unscoped method name
-        // ^^ based on these factors we can route the message
-
-        // if it has a method it's either a notification or a request,
-        // route using s_boundChans
-        if (typeof meth === 'string') {
-            var delivered = false;
-            if (s_boundChans[o] && s_boundChans[o][s]) {
-                for (var j = 0; j < s_boundChans[o][s].length; j++) {
-                    if (s_boundChans[o][s][j].win === w) {
-                        s_boundChans[o][s][j].handler(o, meth, m);
-                        delivered = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!delivered && s_boundChans['*'] && s_boundChans['*'][s]) {
-                for (var j = 0; j < s_boundChans['*'][s].length; j++) {
-                    if (s_boundChans['*'][s][j].win === w) {
-                        s_boundChans['*'][s][j].handler(o, meth, m);
-                        break;
-                    }
-                }
-            }
-        }
-        // otherwise it must have an id (or be poorly formed
-        else if (typeof i != 'undefined') {
-            if (s_transIds[i]) s_transIds[i](o, meth, m);
-        }
-    };
-
-    // Setup postMessage event listeners
-    if (window.addEventListener) window.addEventListener('message', s_onMessage, false);
-    else if(window.attachEvent) window.attachEvent('onmessage', s_onMessage);
-
-    /* a messaging channel is constructed from a window and an origin.
-     * the channel will assert that all messages received over the
-     * channel match the origin
-     *
-     * Arguments to Channel.build(cfg):
-     *
-     *   cfg.window - the remote window with which we'll communicate
-     *   cfg.origin - the expected origin of the remote window, may be '*'
-     *                which matches any origin
-     *   cfg.scope  - the 'scope' of messages.  a scope string that is
-     *                prepended to message names.  local and remote endpoints
-     *                of a single channel must agree upon scope. Scope may
-     *                not contain double colons ('::').
-     *   cfg.debugOutput - A boolean value.  If true and window.console.log is
-     *                a function, then debug strings will be emitted to that
-     *                function.
-     *   cfg.debugOutput - A boolean value.  If true and window.console.log is
-     *                a function, then debug strings will be emitted to that
-     *                function.
-     *   cfg.postMessageObserver - A function that will be passed two arguments,
-     *                an origin and a message.  It will be passed these immediately
-     *                before messages are posted.
-     *   cfg.gotMessageObserver - A function that will be passed two arguments,
-     *                an origin and a message.  It will be passed these arguments
-     *                immediately after they pass scope and origin checks, but before
-     *                they are processed.
-     *   cfg.onReady - A function that will be invoked when a channel becomes "ready",
-     *                this occurs once both sides of the channel have been
-     *                instantiated and an application level handshake is exchanged.
-     *                the onReady function will be passed a single argument which is
-     *                the channel object that was returned from build().
-     */
-    return {
-        build: function(cfg) {
-            var debug = function(m) {
-                if (cfg.debugOutput && window.console && window.console.log) {
-                    // try to stringify, if it doesn't work we'll let javascript's built in toString do its magic
-                    try { if (typeof m !== 'string') m = JSON.stringify(m); } catch(e) { }
-                    console.log("["+chanId+"] " + m);
-                }
-            };
-
-            /* browser capabilities check */
-            if (!window.postMessage) throw("jschannel cannot run this browser, no postMessage");
-            if (!window.JSON || !window.JSON.stringify || ! window.JSON.parse) {
-                throw("jschannel cannot run this browser, no JSON parsing/serialization");
-            }
-
-            /* basic argument validation */
-            if (typeof cfg != 'object') throw("Channel build invoked without a proper object argument");
-
-            if (!cfg.window || !cfg.window.postMessage) throw("Channel.build() called without a valid window argument");
-
-            /* we'd have to do a little more work to be able to run multiple channels that intercommunicate the same
-             * window...  Not sure if we care to support that */
-            if (window === cfg.window) throw("target window is same as present window -- not allowed");
-
-            // let's require that the client specify an origin.  if we just assume '*' we'll be
-            // propagating unsafe practices.  that would be lame.
-            var validOrigin = false;
-            if (typeof cfg.origin === 'string') {
-                var oMatch;
-                if (cfg.origin === "*") validOrigin = true;
-                // allow valid domains under http and https.  Also, trim paths off otherwise valid origins.
-                else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9_\.])+(?::\d+)?/))) {
-                    cfg.origin = oMatch[0].toLowerCase();
-                    validOrigin = true;
-                }
-            }
-
-            if (!validOrigin) throw ("Channel.build() called with an invalid origin");
-
-            if (typeof cfg.scope !== 'undefined') {
-                if (typeof cfg.scope !== 'string') throw 'scope, when specified, must be a string';
-                if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'";
-            }
-
-            /* private variables */
-            // generate a random and psuedo unique id for this channel
-            var chanId = (function () {
-                var text = "";
-                var alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                for(var i=0; i < 5; i++) text += alpha.charAt(Math.floor(Math.random() * alpha.length));
-                return text;
-            })();
-
-            // registrations: mapping method names to call objects
-            var regTbl = { };
-            // current oustanding sent requests
-            var outTbl = { };
-            // current oustanding received requests
-            var inTbl = { };
-            // are we ready yet?  when false we will block outbound messages.
-            var ready = false;
-            var pendingQueue = [ ];
-
-            var createTransaction = function(id,origin,callbacks) {
-                var shouldDelayReturn = false;
-                var completed = false;
-
-                return {
-                    origin: origin,
-                    invoke: function(cbName, v) {
-                        // verify in table
-                        if (!inTbl[id]) throw "attempting to invoke a callback of a nonexistent transaction: " + id;
-                        // verify that the callback name is valid
-                        var valid = false;
-                        for (var i = 0; i < callbacks.length; i++) if (cbName === callbacks[i]) { valid = true; break; }
-                        if (!valid) throw "request supports no such callback '" + cbName + "'";
-
-                        // send callback invocation
-                        postMessage({ id: id, callback: cbName, params: v});
-                    },
-                    error: function(error, message) {
-                        completed = true;
-                        // verify in table
-                        if (!inTbl[id]) throw "error called for nonexistent message: " + id;
-
-                        // remove transaction from table
-                        delete inTbl[id];
-
-                        // send error
-                        postMessage({ id: id, error: error, message: message });
-                    },
-                    complete: function(v) {
-                        completed = true;
-                        // verify in table
-                        if (!inTbl[id]) throw "complete called for nonexistent message: " + id;
-                        // remove transaction from table
-                        delete inTbl[id];
-                        // send complete
-                        postMessage({ id: id, result: v });
-                    },
-                    delayReturn: function(delay) {
-                        if (typeof delay === 'boolean') {
-                            shouldDelayReturn = (delay === true);
-                        }
-                        return shouldDelayReturn;
-                    },
-                    completed: function() {
-                        return completed;
-                    }
-                };
-            };
-
-            var setTransactionTimeout = function(transId, timeout, method) {
-              return window.setTimeout(function() {
-                if (outTbl[transId]) {
-                  // XXX: what if client code raises an exception here?
-                  var msg = "timeout (" + timeout + "ms) exceeded on method '" + method + "'";
-                  (1,outTbl[transId].error)("timeout_error", msg);
-                  delete outTbl[transId];
-                  delete s_transIds[transId];
-                }
-              }, timeout);
-            };
-
-            var onMessage = function(origin, method, m) {
-                // if an observer was specified at allocation time, invoke it
-                if (typeof cfg.gotMessageObserver === 'function') {
-                    // pass observer a clone of the object so that our
-                    // manipulations are not visible (i.e. method unscoping).
-                    // This is not particularly efficient, but then we expect
-                    // that message observers are primarily for debugging anyway.
-                    try {
-                        cfg.gotMessageObserver(origin, m);
-                    } catch (e) {
-                        debug("gotMessageObserver() raised an exception: " + e.toString());
-                    }
-                }
-
-                // now, what type of message is this?
-                if (m.id && method) {
-                    // a request!  do we have a registered handler for this request?
-                    if (regTbl[method]) {
-                        var trans = createTransaction(m.id, origin, m.callbacks ? m.callbacks : [ ]);
-                        inTbl[m.id] = { };
-                        try {
-                            // callback handling.  we'll magically create functions inside the parameter list for each
-                            // callback
-                            if (m.callbacks && s_isArray(m.callbacks) && m.callbacks.length > 0) {
-                                for (var i = 0; i < m.callbacks.length; i++) {
-                                    var path = m.callbacks[i];
-                                    var obj = m.params;
-                                    var pathItems = path.split('/');
-                                    for (var j = 0; j < pathItems.length - 1; j++) {
-                                        var cp = pathItems[j];
-                                        if (typeof obj[cp] !== 'object') obj[cp] = { };
-                                        obj = obj[cp];
-                                    }
-                                    obj[pathItems[pathItems.length - 1]] = (function() {
-                                        var cbName = path;
-                                        return function(params) {
-                                            return trans.invoke(cbName, params);
-                                        };
-                                    })();
-                                }
-                            }
-                            var resp = regTbl[method](trans, m.params);
-                            if (!trans.delayReturn() && !trans.completed()) trans.complete(resp);
-                        } catch(e) {
-                            // automagic handling of exceptions:
-                            var error = "runtime_error";
-                            var message = null;
-                            // * if it's a string then it gets an error code of 'runtime_error' and string is the message
-                            if (typeof e === 'string') {
-                                message = e;
-                            } else if (typeof e === 'object') {
-                                // either an array or an object
-                                // * if it's an array of length two, then  array[0] is the code, array[1] is the error message
-                                if (e && s_isArray(e) && e.length == 2) {
-                                    error = e[0];
-                                    message = e[1];
-                                }
-                                // * if it's an object then we'll look form error and message parameters
-                                else if (typeof e.error === 'string') {
-                                    error = e.error;
-                                    if (!e.message) message = "";
-                                    else if (typeof e.message === 'string') message = e.message;
-                                    else e = e.message; // let the stringify/toString message give us a reasonable verbose error string
-                                }
-                            }
-
-                            // message is *still* null, let's try harder
-                            if (message === null) {
-                                try {
-                                    message = JSON.stringify(e);
-                                    /* On MSIE8, this can result in 'out of memory', which
-                                     * leaves message undefined. */
-                                    if (typeof(message) == 'undefined')
-                                      message = e.toString();
-                                } catch (e2) {
-                                    message = e.toString();
-                                }
-                            }
-
-                            trans.error(error,message);
-                        }
-                    }
-                } else if (m.id && m.callback) {
-                    if (!outTbl[m.id] ||!outTbl[m.id].callbacks || !outTbl[m.id].callbacks[m.callback])
-                    {
-                        debug("ignoring invalid callback, id:"+m.id+ " (" + m.callback +")");
-                    } else {
-                        // XXX: what if client code raises an exception here?
-                        outTbl[m.id].callbacks[m.callback](m.params);
-                    }
-                } else if (m.id) {
-                    if (!outTbl[m.id]) {
-                        debug("ignoring invalid response: " + m.id);
-                    } else {
-                        // XXX: what if client code raises an exception here?
-                        if (m.error) {
-                            (1,outTbl[m.id].error)(m.error, m.message);
-                        } else {
-                            if (m.result !== undefined) (1,outTbl[m.id].success)(m.result);
-                            else (1,outTbl[m.id].success)();
-                        }
-                        delete outTbl[m.id];
-                        delete s_transIds[m.id];
-                    }
-                } else if (method) {
-                    // tis a notification.
-                    if (regTbl[method]) {
-                        // yep, there's a handler for that.
-                        // transaction has only origin for notifications.
-                        regTbl[method]({ origin: origin }, m.params);
-                        // if the client throws, we'll just let it bubble out
-                        // what can we do?  Also, here we'll ignore return values
-                    }
-                }
-            };
-
-            // now register our bound channel for msg routing
-            s_addBoundChan(cfg.window, cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''), onMessage);
-
-            // scope method names based on cfg.scope specified when the Channel was instantiated
-            var scopeMethod = function(m) {
-                if (typeof cfg.scope === 'string' && cfg.scope.length) m = [cfg.scope, m].join("::");
-                return m;
-            };
-
-            // a small wrapper around postmessage whose primary function is to handle the
-            // case that clients start sending messages before the other end is "ready"
-            var postMessage = function(msg, force) {
-                if (!msg) throw "postMessage called with null message";
-
-                // delay posting if we're not ready yet.
-                var verb = (ready ? "post  " : "queue ");
-                debug(verb + " message: " + JSON.stringify(msg));
-                if (!force && !ready) {
-                    pendingQueue.push(msg);
-                } else {
-                    if (typeof cfg.postMessageObserver === 'function') {
-                        try {
-                            cfg.postMessageObserver(cfg.origin, msg);
-                        } catch (e) {
-                            debug("postMessageObserver() raised an exception: " + e.toString());
-                        }
-                    }
-
-                    cfg.window.postMessage(JSON.stringify(msg), cfg.origin);
-                }
-            };
-
-            var onReady = function(trans, type) {
-                debug('ready msg received');
-                if (ready) throw "received ready message while in ready state.  help!";
-
-                if (type === 'ping') {
-                    chanId += '-R';
-                } else {
-                    chanId += '-L';
-                }
-
-                obj.unbind('__ready'); // now this handler isn't needed any more.
-                ready = true;
-                debug('ready msg accepted.');
-
-                if (type === 'ping') {
-                    obj.notify({ method: '__ready', params: 'pong' });
-                }
-
-                // flush queue
-                while (pendingQueue.length) {
-                    postMessage(pendingQueue.pop());
-                }
-
-                // invoke onReady observer if provided
-                if (typeof cfg.onReady === 'function') cfg.onReady(obj);
-            };
-
-            var obj = {
-                // tries to unbind a bound message handler.  returns false if not possible
-                unbind: function (method) {
-                    if (regTbl[method]) {
-                        if (!(delete regTbl[method])) throw ("can't delete method: " + method);
-                        return true;
-                    }
-                    return false;
-                },
-                bind: function (method, cb) {
-                    if (!method || typeof method !== 'string') throw "'method' argument to bind must be string";
-                    if (!cb || typeof cb !== 'function') throw "callback missing from bind params";
-
-                    if (regTbl[method]) throw "method '"+method+"' is already bound!";
-                    regTbl[method] = cb;
-                    return this;
-                },
-                call: function(m) {
-                    if (!m) throw 'missing arguments to call function';
-                    if (!m.method || typeof m.method !== 'string') throw "'method' argument to call must be string";
-                    if (!m.success || typeof m.success !== 'function') throw "'success' callback missing from call";
-
-                    // now it's time to support the 'callback' feature of jschannel.  We'll traverse the argument
-                    // object and pick out all of the functions that were passed as arguments.
-                    var callbacks = { };
-                    var callbackNames = [ ];
-                    var seen = [ ];
-
-                    var pruneFunctions = function (path, obj) {
-                        if (seen.indexOf(obj) >= 0) {
-                            throw "params cannot be a recursive data structure"
-                        }
-                        seen.push(obj);
-                       
-                        if (typeof obj === 'object') {
-                            for (var k in obj) {
-                                if (!obj.hasOwnProperty(k)) continue;
-                                var np = path + (path.length ? '/' : '') + k;
-                                if (typeof obj[k] === 'function') {
-                                    callbacks[np] = obj[k];
-                                    callbackNames.push(np);
-                                    delete obj[k];
-                                } else if (typeof obj[k] === 'object' && obj[k] !== null) {
-                                    pruneFunctions(np, obj[k]);
-                                }
-                            }
-                        }
-                    };
-                    pruneFunctions("", m.params);
-
-                    // build a 'request' message and send it
-                    var msg = { id: s_curTranId, method: scopeMethod(m.method), params: m.params };
-                    if (callbackNames.length) msg.callbacks = callbackNames;
-
-                    if (m.timeout)
-                      // XXX: This function returns a timeout ID, but we don't do anything with it.
-                      // We might want to keep track of it so we can cancel it using clearTimeout()
-                      // when the transaction completes.
-                      setTransactionTimeout(s_curTranId, m.timeout, scopeMethod(m.method));
-
-                    // insert into the transaction table
-                    outTbl[s_curTranId] = { callbacks: callbacks, error: m.error, success: m.success };
-                    s_transIds[s_curTranId] = onMessage;
-
-                    // increment current id
-                    s_curTranId++;
-
-                    postMessage(msg);
-                },
-                notify: function(m) {
-                    if (!m) throw 'missing arguments to notify function';
-                    if (!m.method || typeof m.method !== 'string') throw "'method' argument to notify must be string";
-
-                    // no need to go into any transaction table
-                    postMessage({ method: scopeMethod(m.method), params: m.params });
-                },
-                destroy: function () {
-                    s_removeBoundChan(cfg.window, cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''));
-                    if (window.removeEventListener) window.removeEventListener('message', onMessage, false);
-                    else if(window.detachEvent) window.detachEvent('onmessage', onMessage);
-                    ready = false;
-                    regTbl = { };
-                    inTbl = { };
-                    outTbl = { };
-                    cfg.origin = null;
-                    pendingQueue = [ ];
-                    debug("channel destroyed");
-                    chanId = "";
-                }
-            };
-
-            obj.bind('__ready', onReady);
-            setTimeout(function() {
-                postMessage({ method: scopeMethod('__ready'), params: "ping" }, true);
-            }, 0);
-
-            return obj;
-        }
-    };
-})();
-if (true) {
-    module.exports = Channel;
-}
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
+var AddonContainer;
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 669:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var has = Object.prototype.hasOwnProperty
-  , prefix = '~';
+var _isObject2 = __webpack_require__(218);
 
-/**
- * Constructor to create a storage for our `EE` objects.
- * An `Events` instance is a plain object whose properties are event names.
- *
- * @constructor
- * @private
- */
-function Events() {}
+var _isObject3 = _interopRequireDefault(_isObject2);
 
-//
-// We try to not inherit from `Object.prototype`. In some engines creating an
-// instance in this way is faster than calling `Object.create(null)` directly.
-// If `Object.create(null)` is not supported we prefix the event names with a
-// character to make sure that the built-in object properties are not
-// overridden or used as an attack vector.
-//
-if (Object.create) {
-  Events.prototype = Object.create(null);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-  //
-  // This hack is needed because the `__proto__` property is still inherited in
-  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
-  //
-  if (!new Events().__proto__) prefix = false;
-}
+var _jsChannel = __webpack_require__(457);
 
-/**
- * Representation of a single event listener.
- *
- * @param {Function} fn The listener function.
- * @param {*} context The context to invoke the listener with.
- * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
- * @constructor
- * @private
- */
-function EE(fn, context, once) {
-  this.fn = fn;
-  this.context = context;
-  this.once = once || false;
-}
+var _jsChannel2 = _interopRequireDefault(_jsChannel);
 
-/**
- * Add a listener for a given event.
- *
- * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} context The context to invoke the listener with.
- * @param {Boolean} once Specify if the listener is a one-time listener.
- * @returns {EventEmitter}
- * @private
- */
-function addListener(emitter, event, fn, context, once) {
-  if (typeof fn !== 'function') {
-    throw new TypeError('The listener must be a function');
-  }
+var _eventemitter = __webpack_require__(729);
 
-  var listener = new EE(fn, context || emitter, once)
-    , evt = prefix ? prefix + event : event;
+var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
-  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
-  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
-  else emitter._events[evt] = [emitter._events[evt], listener];
+var _es6Promise = __webpack_require__(702);
 
-  return emitter;
-}
+var _iframeResizer = __webpack_require__(303);
 
-/**
- * Clear event by name.
- *
- * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
- * @param {(String|Symbol)} evt The Event name.
- * @private
- */
-function clearEvent(emitter, evt) {
-  if (--emitter._eventsCount === 0) emitter._events = new Events();
-  else delete emitter._events[evt];
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Minimal `EventEmitter` interface that is molded against the Node.js
- * `EventEmitter` interface.
- *
- * @constructor
- * @public
- */
-function EventEmitter() {
-  this._events = new Events();
-  this._eventsCount = 0;
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Return an array listing the events for which the emitter has registered
- * listeners.
- *
- * @returns {Array}
- * @public
- */
-EventEmitter.prototype.eventNames = function eventNames() {
-  var names = []
-    , events
-    , name;
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-  if (this._eventsCount === 0) return names;
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  for (name in (events = this._events)) {
-    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
-  }
+var AddonContainer = function (_EventEmitter) {
+  _inherits(AddonContainer, _EventEmitter);
 
-  if (Object.getOwnPropertySymbols) {
-    return names.concat(Object.getOwnPropertySymbols(events));
-  }
+  function AddonContainer() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  return names;
-};
+    _classCallCheck(this, AddonContainer);
 
-/**
- * Return the listeners registered for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Array} The registered listeners.
- * @public
- */
-EventEmitter.prototype.listeners = function listeners(event) {
-  var evt = prefix ? prefix + event : event
-    , handlers = this._events[evt];
+    var _this = _possibleConstructorReturn(this, (AddonContainer.__proto__ || Object.getPrototypeOf(AddonContainer)).call(this));
 
-  if (!handlers) return [];
-  if (handlers.fn) return [handlers.fn];
+    _this.options = options;
 
-  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
-    ee[i] = handlers[i].fn;
-  }
+    if (!options.iframe) throw new Error('Iframe not defined');
 
-  return ee;
-};
-
-/**
- * Return the number of listeners listening to a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Number} The number of listeners.
- * @public
- */
-EventEmitter.prototype.listenerCount = function listenerCount(event) {
-  var evt = prefix ? prefix + event : event
-    , listeners = this._events[evt];
-
-  if (!listeners) return 0;
-  if (listeners.fn) return 1;
-  return listeners.length;
-};
-
-/**
- * Calls each of the listeners registered for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @returns {Boolean} `true` if the event had listeners, else `false`.
- * @public
- */
-EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) return false;
-
-  var listeners = this._events[evt]
-    , len = arguments.length
-    , args
-    , i;
-
-  if (listeners.fn) {
-    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
-
-    switch (len) {
-      case 1: return listeners.fn.call(listeners.context), true;
-      case 2: return listeners.fn.call(listeners.context, a1), true;
-      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
-      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
-      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-    }
-
-    for (i = 1, args = new Array(len -1); i < len; i++) {
-      args[i - 1] = arguments[i];
-    }
-
-    listeners.fn.apply(listeners.context, args);
-  } else {
-    var length = listeners.length
-      , j;
-
-    for (i = 0; i < length; i++) {
-      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
-
-      switch (len) {
-        case 1: listeners[i].fn.call(listeners[i].context); break;
-        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
-        default:
-          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-            args[j - 1] = arguments[j];
-          }
-
-          listeners[i].fn.apply(listeners[i].context, args);
+    // Init iframe resizer. This will receive size changes from the addons
+    // and resize the iframe accordingly
+    (0, _iframeResizer.iframeResizer)({
+      checkOrigin: true,
+      heightCalculationMethod: window.ieVersion <= 10 ? 'max' : 'lowestElement',
+      resizeFrom: 'child',
+      resizedCallback: function resizedCallback(data) {
+        _this.emit('iframeResized', data);
       }
-    }
-  }
+    }, options.iframe);
 
-  return true;
-};
-
-/**
- * Add a listener for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} [context=this] The context to invoke the listener with.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.on = function on(event, fn, context) {
-  return addListener(this, event, fn, context, false);
-};
-
-/**
- * Add a one-time listener for a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn The listener function.
- * @param {*} [context=this] The context to invoke the listener with.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.once = function once(event, fn, context) {
-  return addListener(this, event, fn, context, true);
-};
-
-/**
- * Remove the listeners of a given event.
- *
- * @param {(String|Symbol)} event The event name.
- * @param {Function} fn Only remove the listeners that match this function.
- * @param {*} context Only remove the listeners that have this context.
- * @param {Boolean} once Only remove one-time listeners.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-  var evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) return this;
-  if (!fn) {
-    clearEvent(this, evt);
-    return this;
-  }
-
-  var listeners = this._events[evt];
-
-  if (listeners.fn) {
-    if (
-      listeners.fn === fn &&
-      (!once || listeners.once) &&
-      (!context || listeners.context === context)
-    ) {
-      clearEvent(this, evt);
-    }
-  } else {
-    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
-      if (
-        listeners[i].fn !== fn ||
-        (once && !listeners[i].once) ||
-        (context && listeners[i].context !== context)
-      ) {
-        events.push(listeners[i]);
+    // Create js channel
+    _this.channel = _jsChannel2.default.build({
+      window: options.iframe.contentWindow,
+      origin: options.origin || '*',
+      scope: options.id || options.iframe.contentWindow.location.origin,
+      postMessageObserver: function postMessageObserver(origin, message) {
+        _this.emit('postMessage', origin, message);
+      },
+      gotMessageObserver: function gotMessageObserver(origin, message) {
+        _this.emit('gotMessage', origin, message);
       }
+    });
+
+    var _arr = ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium'];
+
+    var _loop = function _loop() {
+      var event = _arr[_i];
+      _this.channel.bind(event, function (tx, data) {
+        var eventName = event,
+            eventData = data;
+
+        tx.delayReturn(true);
+
+        var callback = function callback(err, result) {
+          if (err) return tx.error(err);
+
+          tx.complete(result);
+        };
+
+        _this.emit(eventName, eventData, callback);
+      });
+    };
+
+    for (var _i = 0; _i < _arr.length; _i++) {
+      _loop();
     }
 
-    //
-    // Reset the array, or remove it completely if we have no more listeners.
-    //
-    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
-    else clearEvent(this, evt);
+    _this.channel.call({
+      method: 'init',
+      params: options.options,
+      success: function success(result) {
+        _this.emit('init', result);
+      }
+    });
+    return _this;
   }
 
-  return this;
-};
+  _createClass(AddonContainer, [{
+    key: 'trigger',
+    value: function trigger(eventName, eventData) {
+      var _this2 = this;
 
-/**
- * Remove all listeners, or those of the specified event.
- *
- * @param {(String|Symbol)} [event] The event name.
- * @returns {EventEmitter} `this`.
- * @public
- */
-EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-  var evt;
+      var params = { eventName: eventName };
+      if (eventData) params.eventData = eventData;
 
-  if (event) {
-    evt = prefix ? prefix + event : event;
-    if (this._events[evt]) clearEvent(this, evt);
-  } else {
-    this._events = new Events();
-    this._eventsCount = 0;
-  }
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this2.channel.call({
+          method: '_event',
+          params: params,
+          success: resolve,
+          error: reject
+        });
+      });
+    }
+  }, {
+    key: 'update',
+    value: function update(data) {
+      var _this3 = this;
 
-  return this;
-};
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isObject3.default)(data)) throw new Error('Data must be an object');
 
-//
-// Alias methods names because people roll like that.
-//
-EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+        _this3.channel.call({
+          method: 'update',
+          params: data,
+          success: resolve,
+          error: reject
+        });
+      });
+    }
+  }, {
+    key: 'reload',
+    value: function reload() {
+      var _this4 = this;
 
-//
-// Expose the prefix.
-//
-EventEmitter.prefixed = prefix;
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this4.channel.call({
+          method: 'reload',
+          success: resolve,
+          error: reject
+        });
+      });
+    }
+  }, {
+    key: 'destroy',
+    value: function destroy() {
+      this.channel.destroy();
+    }
+  }]);
 
-//
-// Allow `EventEmitter` to be imported as module namespace.
-//
-EventEmitter.EventEmitter = EventEmitter;
+  return AddonContainer;
+}(_eventemitter2.default);
 
-//
-// Expose the module.
-//
-if (true) {
-  module.exports = EventEmitter;
-}
-
+module.exports = AddonContainer;
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(process, global) {var require;/*!
+/***/ 702:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
@@ -1111,7 +179,7 @@ if (true) {
 
 (function (global, factory) {
 	 true ? module.exports = factory() :
-	undefined;
+	0;
 }(this, (function () { 'use strict';
 
 function objectOrFunction(x) {
@@ -1238,8 +306,8 @@ function flush() {
 
 function attemptVertx() {
   try {
-    var r = require;
-    var vertx = __webpack_require__(19);
+    var r = undefined;
+    var vertx = __webpack_require__(327);
     vertxNext = vertx.runOnLoop || vertx.runOnContext;
     return useVertxTimer();
   } catch (e) {
@@ -2249,8 +1317,8 @@ Promise$1._asap = asap;
 function polyfill() {
     var local = void 0;
 
-    if (typeof global !== 'undefined') {
-        local = global;
+    if (typeof __webpack_require__.g !== 'undefined') {
+        local = __webpack_require__.g;
     } else if (typeof self !== 'undefined') {
         local = self;
     } else {
@@ -2291,1283 +1359,367 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(18), __webpack_require__(7)))
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports) {
 
-// shim for using process in browser
-var process = module.exports = {};
+/***/ 729:
+/***/ ((module) => {
 
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
+"use strict";
 
 
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
+var has = Object.prototype.hasOwnProperty
+  , prefix = '~';
 
+/**
+ * Constructor to create a storage for our `EE` objects.
+ * An `Events` instance is a plain object whose properties are event names.
+ *
+ * @constructor
+ * @private
+ */
+function Events() {}
 
+//
+// We try to not inherit from `Object.prototype`. In some engines creating an
+// instance in this way is faster than calling `Object.create(null)` directly.
+// If `Object.create(null)` is not supported we prefix the event names with a
+// character to make sure that the built-in object properties are not
+// overridden or used as an attack vector.
+//
+if (Object.create) {
+  Events.prototype = Object.create(null);
 
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
+  //
+  // This hack is needed because the `__proto__` property is still inherited in
+  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+  //
+  if (!new Events().__proto__) prefix = false;
 }
 
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
+/**
+ * Representation of a single event listener.
+ *
+ * @param {Function} fn The listener function.
+ * @param {*} context The context to invoke the listener with.
+ * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+ * @constructor
+ * @private
+ */
+function EE(fn, context, once) {
+  this.fn = fn;
+  this.context = context;
+  this.once = once || false;
 }
 
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
+/**
+ * Add a listener for a given event.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} context The context to invoke the listener with.
+ * @param {Boolean} once Specify if the listener is a one-time listener.
+ * @returns {EventEmitter}
+ * @private
+ */
+function addListener(emitter, event, fn, context, once) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('The listener must be a function');
+  }
+
+  var listener = new EE(fn, context || emitter, once)
+    , evt = prefix ? prefix + event : event;
+
+  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
+  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
+  else emitter._events[evt] = [emitter._events[evt], listener];
+
+  return emitter;
+}
+
+/**
+ * Clear event by name.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} evt The Event name.
+ * @private
+ */
+function clearEvent(emitter, evt) {
+  if (--emitter._eventsCount === 0) emitter._events = new Events();
+  else delete emitter._events[evt];
+}
+
+/**
+ * Minimal `EventEmitter` interface that is molded against the Node.js
+ * `EventEmitter` interface.
+ *
+ * @constructor
+ * @public
+ */
+function EventEmitter() {
+  this._events = new Events();
+  this._eventsCount = 0;
+}
+
+/**
+ * Return an array listing the events for which the emitter has registered
+ * listeners.
+ *
+ * @returns {Array}
+ * @public
+ */
+EventEmitter.prototype.eventNames = function eventNames() {
+  var names = []
+    , events
+    , name;
+
+  if (this._eventsCount === 0) return names;
+
+  for (name in (events = this._events)) {
+    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  }
+
+  if (Object.getOwnPropertySymbols) {
+    return names.concat(Object.getOwnPropertySymbols(events));
+  }
+
+  return names;
 };
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
+/**
+ * Return the listeners registered for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Array} The registered listeners.
+ * @public
+ */
+EventEmitter.prototype.listeners = function listeners(event) {
+  var evt = prefix ? prefix + event : event
+    , handlers = this._events[evt];
+
+  if (!handlers) return [];
+  if (handlers.fn) return [handlers.fn];
+
+  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+    ee[i] = handlers[i].fn;
+  }
+
+  return ee;
+};
+
+/**
+ * Return the number of listeners listening to a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Number} The number of listeners.
+ * @public
+ */
+EventEmitter.prototype.listenerCount = function listenerCount(event) {
+  var evt = prefix ? prefix + event : event
+    , listeners = this._events[evt];
+
+  if (!listeners) return 0;
+  if (listeners.fn) return 1;
+  return listeners.length;
+};
+
+/**
+ * Calls each of the listeners registered for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Boolean} `true` if the event had listeners, else `false`.
+ * @public
+ */
+EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return false;
+
+  var listeners = this._events[evt]
+    , len = arguments.length
+    , args
+    , i;
+
+  if (listeners.fn) {
+    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+    switch (len) {
+      case 1: return listeners.fn.call(listeners.context), true;
+      case 2: return listeners.fn.call(listeners.context, a1), true;
+      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+    }
+
+    for (i = 1, args = new Array(len -1); i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    listeners.fn.apply(listeners.context, args);
+  } else {
+    var length = listeners.length
+      , j;
+
+    for (i = 0; i < length; i++) {
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+      switch (len) {
+        case 1: listeners[i].fn.call(listeners[i].context); break;
+        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+        default:
+          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+            args[j - 1] = arguments[j];
+          }
+
+          listeners[i].fn.apply(listeners[i].context, args);
+      }
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Add a listener for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.on = function on(event, fn, context) {
+  return addListener(this, event, fn, context, false);
+};
+
+/**
+ * Add a one-time listener for a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.once = function once(event, fn, context) {
+  return addListener(this, event, fn, context, true);
+};
+
+/**
+ * Remove the listeners of a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn Only remove the listeners that match this function.
+ * @param {*} context Only remove the listeners that have this context.
+ * @param {Boolean} once Only remove one-time listeners.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return this;
+  if (!fn) {
+    clearEvent(this, evt);
+    return this;
+  }
+
+  var listeners = this._events[evt];
+
+  if (listeners.fn) {
+    if (
+      listeners.fn === fn &&
+      (!once || listeners.once) &&
+      (!context || listeners.context === context)
+    ) {
+      clearEvent(this, evt);
+    }
+  } else {
+    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+      if (
+        listeners[i].fn !== fn ||
+        (once && !listeners[i].once) ||
+        (context && listeners[i].context !== context)
+      ) {
+        events.push(listeners[i]);
+      }
+    }
+
+    //
+    // Reset the array, or remove it completely if we have no more listeners.
+    //
+    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+    else clearEvent(this, evt);
+  }
+
+  return this;
+};
+
+/**
+ * Remove all listeners, or those of the specified event.
+ *
+ * @param {(String|Symbol)} [event] The event name.
+ * @returns {EventEmitter} `this`.
+ * @public
+ */
+EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+  var evt;
+
+  if (event) {
+    evt = prefix ? prefix + event : event;
+    if (this._events[evt]) clearEvent(this, evt);
+  } else {
+    this._events = new Events();
+    this._eventsCount = 0;
+  }
+
+  return this;
+};
+
+//
+// Alias methods names because people roll like that.
+//
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+//
+// Expose the prefix.
+//
+EventEmitter.prefixed = prefix;
+
+//
+// Allow `EventEmitter` to be imported as module namespace.
+//
+EventEmitter.EventEmitter = EventEmitter;
+
+//
+// Expose the module.
+//
+if (true) {
+  module.exports = EventEmitter;
 }
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 19 */
-/***/ (function(module, exports) {
 
-/* (ignored) */
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 303:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
 
-module.exports = __webpack_require__(21);
+module.exports = __webpack_require__(683);
 
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
 
-exports.iframeResizer = __webpack_require__(22);
-exports.iframeResizerContentWindow = __webpack_require__(23);
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
- * File: iframeResizer.js
- * Desc: Force iframes to size to content.
- * Requires: iframeResizer.contentWindow.js to be loaded into the target frame.
- * Doc: https://github.com/davidjbradshaw/iframe-resizer
- * Author: David J. Bradshaw - dave@bradshaw.net
- * Contributor: Jure Mav - jure.mav@gmail.com
- * Contributor: Reed Dadoune - reed@dadoune.com
- */
-
-
-;(function(undefined) {
-	'use strict';
-
-	if(typeof window === 'undefined') return; // don't run for server side render
-
-	var
-		count                 = 0,
-		logEnabled            = false,
-		hiddenCheckEnabled    = false,
-		msgHeader             = 'message',
-		msgHeaderLen          = msgHeader.length,
-		msgId                 = '[iFrameSizer]', //Must match iframe msg ID
-		msgIdLen              = msgId.length,
-		pagePosition          = null,
-		requestAnimationFrame = window.requestAnimationFrame,
-		resetRequiredMethods  = {max:1,scroll:1,bodyScroll:1,documentElementScroll:1},
-		settings              = {},
-		timer                 = null,
-		logId                 = 'Host Page',
-
-		defaults              = {
-			autoResize                : true,
-			bodyBackground            : null,
-			bodyMargin                : null,
-			bodyMarginV1              : 8,
-			bodyPadding               : null,
-			checkOrigin               : true,
-			inPageLinks               : false,
-			enablePublicMethods       : true,
-			heightCalculationMethod   : 'bodyOffset',
-			id                        : 'iFrameResizer',
-			interval                  : 32,
-			log                       : false,
-			maxHeight                 : Infinity,
-			maxWidth                  : Infinity,
-			minHeight                 : 0,
-			minWidth                  : 0,
-			resizeFrom                : 'parent',
-			scrolling                 : false,
-			sizeHeight                : true,
-			sizeWidth                 : false,
-			warningTimeout            : 5000,
-			tolerance                 : 0,
-			widthCalculationMethod    : 'scroll',
-			closedCallback            : function(){},
-			initCallback              : function(){},
-			messageCallback           : function(){warn('MessageCallback function not defined');},
-			resizedCallback           : function(){},
-			scrollCallback            : function(){return true;}
-		};
-
-	function addEventListener(obj,evt,func){
-		/* istanbul ignore else */ // Not testable in PhantonJS
-		if ('addEventListener' in window){
-			obj.addEventListener(evt,func, false);
-		} else if ('attachEvent' in window){//IE
-			obj.attachEvent('on'+evt,func);
-		}
-	}
-
-	function removeEventListener(el,evt,func){
-		/* istanbul ignore else */ // Not testable in phantonJS
-		if ('removeEventListener' in window){
-			el.removeEventListener(evt,func, false);
-		} else if ('detachEvent' in window){ //IE
-			el.detachEvent('on'+evt,func);
-		}
-	}
-
-	function setupRequestAnimationFrame(){
-		var
-			vendors = ['moz', 'webkit', 'o', 'ms'],
-			x;
-
-		// Remove vendor prefixing if prefixed and break early if not
-		for (x = 0; x < vendors.length && !requestAnimationFrame; x += 1) {
-			requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-		}
-
-		if (!(requestAnimationFrame)){
-			log('setup','RequestAnimationFrame not supported');
-		}
-	}
-
-	function getMyID(iframeId){
-		var retStr = 'Host page: '+iframeId;
-
-		if (window.top !== window.self){
-			if (window.parentIFrame && window.parentIFrame.getId){
-				retStr = window.parentIFrame.getId()+': '+iframeId;
-			} else {
-				retStr = 'Nested host page: '+iframeId;
-			}
-		}
-
-		return retStr;
-	}
-
-	function formatLogHeader(iframeId){
-		return msgId + '[' + getMyID(iframeId) + ']';
-	}
-
-	function isLogEnabled(iframeId){
-		return settings[iframeId] ? settings[iframeId].log : logEnabled;
-	}
-
-	function log(iframeId,msg){
-		output('log',iframeId,msg,isLogEnabled(iframeId));
-	}
-
-	function info(iframeId,msg){
-		output('info',iframeId,msg,isLogEnabled(iframeId));
-	}
-
-	function warn(iframeId,msg){
-		output('warn',iframeId,msg,true);
-	}
-
-	function output(type,iframeId,msg,enabled){
-		if (true === enabled && 'object' === typeof window.console){
-			console[type](formatLogHeader(iframeId),msg);
-		}
-	}
-
-	function iFrameListener(event){
-		function resizeIFrame(){
-			function resize(){
-				setSize(messageData);
-				setPagePosition(iframeId);
-				callback('resizedCallback',messageData);
-			}
-
-			ensureInRange('Height');
-			ensureInRange('Width');
-
-			syncResize(resize,messageData,'init');
-		}
-
-		function processMsg(){
-			var data = msg.substr(msgIdLen).split(':');
-
-			return {
-				iframe: settings[data[0]] && settings[data[0]].iframe,
-				id:     data[0],
-				height: data[1],
-				width:  data[2],
-				type:   data[3]
-			};
-		}
-
-		function ensureInRange(Dimension){
-			var
-				max  = Number(settings[iframeId]['max' + Dimension]),
-				min  = Number(settings[iframeId]['min' + Dimension]),
-				dimension = Dimension.toLowerCase(),
-				size = Number(messageData[dimension]);
-
-			log(iframeId,'Checking ' + dimension + ' is in range ' + min + '-' + max);
-
-			if (size<min) {
-				size=min;
-				log(iframeId,'Set ' + dimension + ' to min value');
-			}
-
-			if (size>max) {
-				size=max;
-				log(iframeId,'Set ' + dimension + ' to max value');
-			}
-
-			messageData[dimension] = '' + size;
-		}
-
-
-		function isMessageFromIFrame(){
-			function checkAllowedOrigin(){
-				function checkList(){
-					var
-						i = 0,
-						retCode = false;
-
-					log(iframeId,'Checking connection is from allowed list of origins: ' + checkOrigin);
-
-					for (; i < checkOrigin.length; i++) {
-						if (checkOrigin[i] === origin) {
-							retCode = true;
-							break;
-						}
-					}
-					return retCode;
-				}
-
-				function checkSingle(){
-					var remoteHost  = settings[iframeId] && settings[iframeId].remoteHost;
-					log(iframeId,'Checking connection is from: '+remoteHost);
-					return origin === remoteHost;
-				}
-
-				return checkOrigin.constructor === Array ? checkList() : checkSingle();
-			}
-
-			var
-				origin      = event.origin,
-				checkOrigin = settings[iframeId] && settings[iframeId].checkOrigin;
-
-			if (checkOrigin && (''+origin !== 'null') && !checkAllowedOrigin()) {
-				throw new Error(
-					'Unexpected message received from: ' + origin +
-					' for ' + messageData.iframe.id +
-					'. Message was: ' + event.data +
-					'. This error can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.'
-				);
-			}
-
-			return true;
-		}
-
-		function isMessageForUs(){
-			return msgId === (('' + msg).substr(0,msgIdLen)) && (msg.substr(msgIdLen).split(':')[0] in settings); //''+Protects against non-string msg
-		}
-
-		function isMessageFromMetaParent(){
-			//Test if this message is from a parent above us. This is an ugly test, however, updating
-			//the message format would break backwards compatibity.
-			var retCode = messageData.type in {'true':1,'false':1,'undefined':1};
-
-			if (retCode){
-				log(iframeId,'Ignoring init message from meta parent page');
-			}
-
-			return retCode;
-		}
-
-		function getMsgBody(offset){
-			return msg.substr(msg.indexOf(':')+msgHeaderLen+offset);
-		}
-
-		function forwardMsgFromIFrame(msgBody){
-			log(iframeId,'MessageCallback passed: {iframe: '+ messageData.iframe.id + ', message: ' + msgBody + '}');
-			callback('messageCallback',{
-				iframe: messageData.iframe,
-				message: JSON.parse(msgBody)
-			});
-			log(iframeId,'--');
-		}
-
-		function getPageInfo(){
-			var
-				bodyPosition   = document.body.getBoundingClientRect(),
-				iFramePosition = messageData.iframe.getBoundingClientRect();
-
-			return JSON.stringify({
-				iframeHeight: iFramePosition.height,
-				iframeWidth:  iFramePosition.width,
-				clientHeight: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
-				clientWidth:  Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0),
-				offsetTop:    parseInt(iFramePosition.top  - bodyPosition.top,  10),
-				offsetLeft:   parseInt(iFramePosition.left - bodyPosition.left, 10),
-				scrollTop:    window.pageYOffset,
-				scrollLeft:   window.pageXOffset
-			});
-		}
-
-		function sendPageInfoToIframe(iframe,iframeId){
-			function debouncedTrigger(){
-				trigger(
-					'Send Page Info',
-					'pageInfo:' + getPageInfo(),
-					iframe,
-					iframeId
-				);
-			}
-
-			debouce(debouncedTrigger,32);
-		}
-
-
-		function startPageInfoMonitor(){
-			function setListener(type,func){
-				function sendPageInfo(){
-					if (settings[id]){
-						sendPageInfoToIframe(settings[id].iframe,id);
-					} else {
-						stop();
-					}
-				}
-
-				['scroll','resize'].forEach(function(evt){
-					log(id, type +  evt + ' listener for sendPageInfo');
-					func(window,evt,sendPageInfo);
-				});
-			}
-
-			function stop(){
-				setListener('Remove ', removeEventListener);
-			}
-
-			function start(){
-				setListener('Add ', addEventListener);
-			}
-
-			var id = iframeId; //Create locally scoped copy of iFrame ID
-
-			start();
-
-			if (settings[id]) {
-				settings[id].stopPageInfo = stop;
-			}
-		}
-
-		function stopPageInfoMonitor(){
-			if (settings[iframeId] && settings[iframeId].stopPageInfo){
-				settings[iframeId].stopPageInfo();
-				delete settings[iframeId].stopPageInfo;
-			}
-		}
-
-		function checkIFrameExists(){
-			var retBool = true;
-
-			if (null === messageData.iframe) {
-				warn(iframeId,'IFrame ('+messageData.id+') not found');
-				retBool = false;
-			}
-			return retBool;
-		}
-
-		function getElementPosition(target){
-			var iFramePosition = target.getBoundingClientRect();
-
-			getPagePosition(iframeId);
-
-			return {
-				x: Math.floor( Number(iFramePosition.left) + Number(pagePosition.x) ),
-				y: Math.floor( Number(iFramePosition.top)  + Number(pagePosition.y) )
-			};
-		}
-
-		function scrollRequestFromChild(addOffset){
-			/* istanbul ignore next */  //Not testable in Karma
-			function reposition(){
-				pagePosition = newPosition;
-				scrollTo();
-				log(iframeId,'--');
-			}
-
-			function calcOffset(){
-				return {
-					x: Number(messageData.width) + offset.x,
-					y: Number(messageData.height) + offset.y
-				};
-			}
-
-			function scrollParent(){
-				if (window.parentIFrame){
-					window.parentIFrame['scrollTo'+(addOffset?'Offset':'')](newPosition.x,newPosition.y);
-				} else {
-					warn(iframeId,'Unable to scroll to requested position, window.parentIFrame not found');
-				}
-			}
-
-			var
-				offset = addOffset ? getElementPosition(messageData.iframe) : {x:0,y:0},
-				newPosition = calcOffset();
-
-			log(iframeId,'Reposition requested from iFrame (offset x:'+offset.x+' y:'+offset.y+')');
-
-			if(window.top !== window.self){
-				scrollParent();
-			} else {
-				reposition();
-			}
-		}
-
-		function scrollTo(){
-			if (false !== callback('scrollCallback',pagePosition)){
-				setPagePosition(iframeId);
-			} else {
-				unsetPagePosition();
-			}
-		}
-
-		function findTarget(location){
-			function jumpToTarget(){
-				var jumpPosition = getElementPosition(target);
-
-				log(iframeId,'Moving to in page link (#'+hash+') at x: '+jumpPosition.x+' y: '+jumpPosition.y);
-				pagePosition = {
-					x: jumpPosition.x,
-					y: jumpPosition.y
-				};
-
-				scrollTo();
-				log(iframeId,'--');
-			}
-
-			function jumpToParent(){
-				if (window.parentIFrame){
-					window.parentIFrame.moveToAnchor(hash);
-				} else {
-					log(iframeId,'In page link #'+hash+' not found and window.parentIFrame not found');
-				}
-			}
-
-			var
-				hash     = location.split('#')[1] || '',
-				hashData = decodeURIComponent(hash),
-				target   = document.getElementById(hashData) || document.getElementsByName(hashData)[0];
-
-			if (target){
-				jumpToTarget();
-			} else if(window.top!==window.self){
-				jumpToParent();
-			} else {
-				log(iframeId,'In page link #'+hash+' not found');
-			}
-		}
-
-		function callback(funcName,val){
-			return chkCallback(iframeId,funcName,val);
-		}
-
-		function actionMsg(){
-
-			if(settings[iframeId] && settings[iframeId].firstRun) firstRun();
-
-			switch(messageData.type){
-			case 'close':
-				if(settings[iframeId].closeRequestCallback) chkCallback(iframeId, 'closeRequestCallback', settings[iframeId].iframe);
-				else closeIFrame(messageData.iframe);
-				break;
-			case 'message':
-				forwardMsgFromIFrame(getMsgBody(6));
-				break;
-			case 'scrollTo':
-				scrollRequestFromChild(false);
-				break;
-			case 'scrollToOffset':
-				scrollRequestFromChild(true);
-				break;
-			case 'pageInfo':
-				sendPageInfoToIframe(settings[iframeId] && settings[iframeId].iframe,iframeId);
-				startPageInfoMonitor();
-				break;
-			case 'pageInfoStop':
-				stopPageInfoMonitor();
-				break;
-			case 'inPageLink':
-				findTarget(getMsgBody(9));
-				break;
-			case 'reset':
-				resetIFrame(messageData);
-				break;
-			case 'init':
-				resizeIFrame();
-				callback('initCallback',messageData.iframe);
-				break;
-			default:
-				resizeIFrame();
-			}
-		}
-
-		function hasSettings(iframeId){
-			var retBool = true;
-
-			if (!settings[iframeId]){
-				retBool = false;
-				warn(messageData.type + ' No settings for ' + iframeId + '. Message was: ' + msg);
-			}
-
-			return retBool;
-		}
-
-		function iFrameReadyMsgReceived(){
-			for (var iframeId in settings){
-				trigger('iFrame requested init',createOutgoingMsg(iframeId),document.getElementById(iframeId),iframeId);
-			}
-		}
-
-		function firstRun() {
-			if (settings[iframeId]) {
-				settings[iframeId].firstRun = false;
-			}
-		}
-
-		function clearWarningTimeout() {
-			if (settings[iframeId]) {
-				clearTimeout(settings[iframeId].msgTimeout);
-				settings[iframeId].warningTimeout = 0;
-			}
-		}
-
-		var
-			msg = event.data,
-			messageData = {},
-			iframeId = null;
-
-		if('[iFrameResizerChild]Ready' === msg){
-			iFrameReadyMsgReceived();
-		} else if (isMessageForUs()){
-			messageData = processMsg();
-			iframeId    = logId = messageData.id;
-			if (settings[iframeId]) {
-				settings[iframeId].loaded = true;
-			}
-
-			if (!isMessageFromMetaParent() && hasSettings(iframeId)){
-				log(iframeId,'Received: '+msg);
-
-				if ( checkIFrameExists() && isMessageFromIFrame() ){
-					actionMsg();
-				}
-			}
-		} else {
-			info(iframeId,'Ignored: '+msg);
-		}
-
-	}
-
-
-	function chkCallback(iframeId,funcName,val){
-		var
-			func = null,
-			retVal = null;
-
-		if(settings[iframeId]){
-			func = settings[iframeId][funcName];
-
-			if( 'function' === typeof func){
-				retVal = func(val);
-			} else {
-				throw new TypeError(funcName+' on iFrame['+iframeId+'] is not a function');
-			}
-		}
-
-		return retVal;
-	}
-
-	function closeIFrame(iframe){
-		var iframeId = iframe.id;
-
-		log(iframeId,'Removing iFrame: '+iframeId);
-		if (iframe.parentNode) { iframe.parentNode.removeChild(iframe); }
-		chkCallback(iframeId,'closedCallback',iframeId);
-		log(iframeId,'--');
-		delete settings[iframeId];
-	}
-
-	function getPagePosition(iframeId){
-		if(null === pagePosition){
-			pagePosition = {
-				x: (window.pageXOffset !== undefined) ? window.pageXOffset : document.documentElement.scrollLeft,
-				y: (window.pageYOffset !== undefined) ? window.pageYOffset : document.documentElement.scrollTop
-			};
-			log(iframeId,'Get page position: '+pagePosition.x+','+pagePosition.y);
-		}
-	}
-
-	function setPagePosition(iframeId){
-		if(null !== pagePosition){
-			window.scrollTo(pagePosition.x,pagePosition.y);
-			log(iframeId,'Set page position: '+pagePosition.x+','+pagePosition.y);
-			unsetPagePosition();
-		}
-	}
-
-	function unsetPagePosition(){
-		pagePosition = null;
-	}
-
-	function resetIFrame(messageData){
-		function reset(){
-			setSize(messageData);
-			trigger('reset','reset',messageData.iframe,messageData.id);
-		}
-
-		log(messageData.id,'Size reset requested by '+('init'===messageData.type?'host page':'iFrame'));
-		getPagePosition(messageData.id);
-		syncResize(reset,messageData,'reset');
-	}
-
-	function setSize(messageData){
-		function setDimension(dimension){
-			messageData.iframe.style[dimension] = messageData[dimension] + 'px';
-			log(
-				messageData.id,
-				'IFrame (' + iframeId +
-				') ' + dimension +
-				' set to ' + messageData[dimension] + 'px'
-			);
-		}
-
-		function chkZero(dimension){
-			//FireFox sets dimension of hidden iFrames to zero.
-			//So if we detect that set up an event to check for
-			//when iFrame becomes visible.
-
-			/* istanbul ignore next */  //Not testable in PhantomJS
-			if (!hiddenCheckEnabled && '0' === messageData[dimension]){
-				hiddenCheckEnabled = true;
-				log(iframeId,'Hidden iFrame detected, creating visibility listener');
-				fixHiddenIFrames();
-			}
-		}
-
-		function processDimension(dimension){
-			setDimension(dimension);
-			chkZero(dimension);
-		}
-
-		var iframeId = messageData.iframe.id;
-
-		if(settings[iframeId]){
-			if( settings[iframeId].sizeHeight) { processDimension('height'); }
-			if( settings[iframeId].sizeWidth ) { processDimension('width'); }
-		}
-	}
-
-	function syncResize(func,messageData,doNotSync){
-		/* istanbul ignore if */  //Not testable in PhantomJS
-		if(doNotSync!==messageData.type && requestAnimationFrame){
-			log(messageData.id,'Requesting animation frame');
-			requestAnimationFrame(func);
-		} else {
-			func();
-		}
-	}
-
-	function trigger(calleeMsg, msg, iframe, id, noResponseWarning) {
-		function postMessageToIFrame(){
-			var target = settings[id] && settings[id].targetOrigin;
-			log(id,'[' + calleeMsg + '] Sending msg to iframe['+id+'] ('+msg+') targetOrigin: '+target);
-			iframe.contentWindow.postMessage( msgId + msg, target );
-		}
-
-		function iFrameNotFound(){
-			warn(id,'[' + calleeMsg + '] IFrame('+id+') not found');
-		}
-
-		function chkAndSend(){
-			if(iframe && 'contentWindow' in iframe && (null !== iframe.contentWindow)){ //Null test for PhantomJS
-				postMessageToIFrame();
-			} else {
-				iFrameNotFound();
-			}
-		}
-
-		function warnOnNoResponse() {
-			function warning() {
-				if (settings[id] && !settings[id].loaded && !errorShown) {
-					errorShown = true;
-					warn(id, 'IFrame has not responded within '+ settings[id].warningTimeout/1000 +' seconds. Check iFrameResizer.contentWindow.js has been loaded in iFrame. This message can be ingored if everything is working, or you can set the warningTimeout option to a higher value or zero to suppress this warning.');
-				}
-			}
-
-			if (!!noResponseWarning && settings[id] && !!settings[id].warningTimeout) {
-				settings[id].msgTimeout = setTimeout(warning, settings[id].warningTimeout);
-			}
-		}
-
-		var errorShown = false;
-
-		id = id || iframe.id;
-
-		if(settings[id]) {
-			chkAndSend();
-			warnOnNoResponse();
-		}
-
-	}
-
-	function createOutgoingMsg(iframeId){
-		return iframeId +
-			':' + settings[iframeId].bodyMarginV1 +
-			':' + settings[iframeId].sizeWidth +
-			':' + settings[iframeId].log +
-			':' + settings[iframeId].interval +
-			':' + settings[iframeId].enablePublicMethods +
-			':' + settings[iframeId].autoResize +
-			':' + settings[iframeId].bodyMargin +
-			':' + settings[iframeId].heightCalculationMethod +
-			':' + settings[iframeId].bodyBackground +
-			':' + settings[iframeId].bodyPadding +
-			':' + settings[iframeId].tolerance +
-			':' + settings[iframeId].inPageLinks +
-			':' + settings[iframeId].resizeFrom +
-			':' + settings[iframeId].widthCalculationMethod;
-	}
-
-	function setupIFrame(iframe,options){
-		function setLimits(){
-			function addStyle(style){
-				if ((Infinity !== settings[iframeId][style]) && (0 !== settings[iframeId][style])){
-					iframe.style[style] = settings[iframeId][style] + 'px';
-					log(iframeId,'Set '+style+' = '+settings[iframeId][style]+'px');
-				}
-			}
-
-			function chkMinMax(dimension){
-				if (settings[iframeId]['min'+dimension]>settings[iframeId]['max'+dimension]){
-					throw new Error('Value for min'+dimension+' can not be greater than max'+dimension);
-				}
-			}
-
-			chkMinMax('Height');
-			chkMinMax('Width');
-
-			addStyle('maxHeight');
-			addStyle('minHeight');
-			addStyle('maxWidth');
-			addStyle('minWidth');
-		}
-
-		function newId(){
-			var id = ((options && options.id) || defaults.id + count++);
-			if  (null !== document.getElementById(id)){
-				id = id + count++;
-			}
-			return id;
-		}
-
-		function ensureHasId(iframeId){
-			logId=iframeId;
-			if (''===iframeId){
-				iframe.id = iframeId =  newId();
-				logEnabled = (options || {}).log;
-				logId=iframeId;
-				log(iframeId,'Added missing iframe ID: '+ iframeId +' (' + iframe.src + ')');
-			}
-
-
-			return iframeId;
-		}
-
-		function setScrolling(){
-			log(iframeId,'IFrame scrolling ' + (settings[iframeId] && settings[iframeId].scrolling ? 'enabled' : 'disabled') + ' for ' + iframeId);
-			iframe.style.overflow = false === (settings[iframeId] && settings[iframeId].scrolling) ? 'hidden' : 'auto';
-			switch(settings[iframeId] && settings[iframeId].scrolling) {
-				case true:
-					iframe.scrolling = 'yes';
-					break;
-				case false:
-					iframe.scrolling = 'no';
-					break;
-				default:
-					iframe.scrolling = settings[iframeId] ? settings[iframeId].scrolling : 'no';
-			}
-		}
-
-		//The V1 iFrame script expects an int, where as in V2 expects a CSS
-		//string value such as '1px 3em', so if we have an int for V2, set V1=V2
-		//and then convert V2 to a string PX value.
-		function setupBodyMarginValues(){
-			if (('number'===typeof(settings[iframeId] && settings[iframeId].bodyMargin)) || ('0'===(settings[iframeId] && settings[iframeId].bodyMargin))){
-				settings[iframeId].bodyMarginV1 = settings[iframeId].bodyMargin;
-				settings[iframeId].bodyMargin   = '' + settings[iframeId].bodyMargin + 'px';
-			}
-		}
-
-		function checkReset(){
-			// Reduce scope of firstRun to function, because IE8's JS execution
-			// context stack is borked and this value gets externally
-			// changed midway through running this function!!!
-			var
-				firstRun           = settings[iframeId] && settings[iframeId].firstRun,
-				resetRequertMethod = settings[iframeId] && settings[iframeId].heightCalculationMethod in resetRequiredMethods;
-
-			if (!firstRun && resetRequertMethod){
-				resetIFrame({iframe:iframe, height:0, width:0, type:'init'});
-			}
-		}
-
-		function setupIFrameObject(){
-			if(Function.prototype.bind && settings[iframeId]){ //Ignore unpolyfilled IE8.
-				settings[iframeId].iframe.iFrameResizer = {
-
-					close        : closeIFrame.bind(null,settings[iframeId].iframe),
-
-					resize       : trigger.bind(null,'Window resize', 'resize', settings[iframeId].iframe),
-
-					moveToAnchor : function(anchor){
-						trigger('Move to anchor','moveToAnchor:'+anchor, settings[iframeId].iframe,iframeId);
-					},
-
-					sendMessage  : function(message){
-						message = JSON.stringify(message);
-						trigger('Send Message','message:'+message, settings[iframeId].iframe, iframeId);
-					}
-				};
-			}
-		}
-
-		//We have to call trigger twice, as we can not be sure if all
-		//iframes have completed loading when this code runs. The
-		//event listener also catches the page changing in the iFrame.
-		function init(msg){
-			function iFrameLoaded(){
-				trigger('iFrame.onload', msg, iframe, undefined , true);
-				checkReset();
-			}
-
-			addEventListener(iframe,'load',iFrameLoaded);
-			trigger('init', msg, iframe, undefined, true);
-		}
-
-		function checkOptions(options){
-			if ('object' !== typeof options){
-				throw new TypeError('Options is not an object');
-			}
-		}
-
-		function copyOptions(options){
-			for (var option in defaults) {
-				if (defaults.hasOwnProperty(option)){
-					settings[iframeId][option] = options.hasOwnProperty(option) ? options[option] : defaults[option];
-				}
-			}
-		}
-
-		function getTargetOrigin (remoteHost){
-			return ('' === remoteHost || 'file://' === remoteHost) ? '*' : remoteHost;
-		}
-
-		function processOptions(options){
-			options = options || {};
-			settings[iframeId] = {
-				firstRun	: true,
-				iframe		: iframe,
-				remoteHost	: iframe.src.split('/').slice(0,3).join('/')
-			};
-
-			checkOptions(options);
-			copyOptions(options);
-
-			if (settings[iframeId]) {
-				settings[iframeId].targetOrigin = true === settings[iframeId].checkOrigin ? getTargetOrigin(settings[iframeId].remoteHost) : '*';
-			}
-		}
-
-		function beenHere(){
-			return (iframeId in settings && 'iFrameResizer' in iframe);
-		}
-
-		var iframeId = ensureHasId(iframe.id);
-
-		if (!beenHere()){
-			processOptions(options);
-			setScrolling();
-			setLimits();
-			setupBodyMarginValues();
-			init(createOutgoingMsg(iframeId));
-			setupIFrameObject();
-		} else {
-			warn(iframeId,'Ignored iFrame, already setup.');
-		}
-	}
-
-	function debouce(fn,time){
-		if (null === timer){
-			timer = setTimeout(function(){
-				timer = null;
-				fn();
-			}, time);
-		}
-	}
-
-	/* istanbul ignore next */  //Not testable in PhantomJS
-	function fixHiddenIFrames(){
-		function checkIFrames(){
-			function checkIFrame(settingId){
-				function chkDimension(dimension){
-					return '0px' === (settings[settingId] && settings[settingId].iframe.style[dimension]);
-				}
-
-				function isVisible(el) {
-					return (null !== el.offsetParent);
-				}
-
-				if (settings[settingId] && isVisible(settings[settingId].iframe) && (chkDimension('height') || chkDimension('width'))){
-					trigger('Visibility change', 'resize', settings[settingId].iframe, settingId);
-				}
-			}
-
-			for (var settingId in settings){
-				checkIFrame(settingId);
-			}
-		}
-
-		function mutationObserved(mutations){
-			log('window','Mutation observed: ' + mutations[0].target + ' ' + mutations[0].type);
-			debouce(checkIFrames,16);
-		}
-
-		function createMutationObserver(){
-			var
-				target = document.querySelector('body'),
-
-				config = {
-					attributes            : true,
-					attributeOldValue     : false,
-					characterData         : true,
-					characterDataOldValue : false,
-					childList             : true,
-					subtree               : true
-				},
-
-				observer = new MutationObserver(mutationObserved);
-
-			observer.observe(target, config);
-		}
-
-		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
-		if (MutationObserver) createMutationObserver();
-	}
-
-
-	function resizeIFrames(event){
-		function resize(){
-			sendTriggerMsg('Window '+event,'resize');
-		}
-
-		log('window','Trigger event: '+event);
-		debouce(resize,16);
-	}
-
-	/* istanbul ignore next */  //Not testable in PhantomJS
-	function tabVisible() {
-		function resize(){
-			sendTriggerMsg('Tab Visable','resize');
-		}
-
-		if('hidden' !== document.visibilityState) {
-			log('document','Trigger event: Visiblity change');
-			debouce(resize,16);
-		}
-	}
-
-	function sendTriggerMsg(eventName,event){
-		function isIFrameResizeEnabled(iframeId) {
-			return	settings[iframeId] &&
-					'parent' === settings[iframeId].resizeFrom &&
-					settings[iframeId].autoResize &&
-					!settings[iframeId].firstRun;
-		}
-
-		for (var iframeId in settings){
-			if(isIFrameResizeEnabled(iframeId)){
-				trigger(eventName, event, document.getElementById(iframeId), iframeId);
-			}
-		}
-	}
-
-	function setupEventListeners(){
-		addEventListener(window,'message',iFrameListener);
-
-		addEventListener(window,'resize', function(){resizeIFrames('resize');});
-
-		addEventListener(document,'visibilitychange',tabVisible);
-		addEventListener(document,'-webkit-visibilitychange',tabVisible); //Andriod 4.4
-		addEventListener(window,'focusin',function(){resizeIFrames('focus');}); //IE8-9
-		addEventListener(window,'focus',function(){resizeIFrames('focus');});
-	}
-
-
-	function factory(){
-		function init(options,element){
-			function chkType(){
-				if(!element.tagName) {
-					throw new TypeError('Object is not a valid DOM element');
-				} else if ('IFRAME' !== element.tagName.toUpperCase()) {
-					throw new TypeError('Expected <IFRAME> tag, found <'+element.tagName+'>');
-				}
-			}
-
-			if(element) {
-				chkType();
-				setupIFrame(element, options);
-				iFrames.push(element);
-			}
-		}
-
-		function warnDeprecatedOptions(options) {
-			if (options && options.enablePublicMethods) {
-				warn('enablePublicMethods option has been removed, public methods are now always available in the iFrame');
-			}
-		}
-
-		var iFrames;
-
-		setupRequestAnimationFrame();
-		setupEventListeners();
-
-		return function iFrameResizeF(options,target){
-			iFrames = []; //Only return iFrames past in on this call
-
-			warnDeprecatedOptions(options);
-
-			switch (typeof(target)){
-			case 'undefined':
-			case 'string':
-				Array.prototype.forEach.call(
-					document.querySelectorAll( target || 'iframe' ),
-					init.bind(undefined, options)
-				);
-				break;
-			case 'object':
-				init(options,target);
-				break;
-			default:
-				throw new TypeError('Unexpected data type ('+typeof(target)+')');
-			}
-
-			return iFrames;
-		};
-	}
-
-	function createJQueryPublicMethod($){
-		if (!$.fn) {
-			info('','Unable to bind to jQuery, it is not fully loaded.');
-		} else if (!$.fn.iFrameResize){
-			$.fn.iFrameResize = function $iFrameResizeF(options) {
-				function init(index, element) {
-					setupIFrame(element, options);
-				}
-
-				return this.filter('iframe').each(init).end();
-			};
-		}
-	}
-
-	if (window.jQuery) { createJQueryPublicMethod(window.jQuery); }
-
-	if (true) {
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else {}
-
-})();
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 402:
+/***/ ((module) => {
 
 /*
  * File: iframeResizer.contentWindow.js
@@ -4678,173 +2830,1706 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 24 */,
-/* 25 */,
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 28:
+/***/ ((module, exports) => {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * File: iframeResizer.js
+ * Desc: Force iframes to size to content.
+ * Requires: iframeResizer.contentWindow.js to be loaded into the target frame.
+ * Doc: https://github.com/davidjbradshaw/iframe-resizer
+ * Author: David J. Bradshaw - dave@bradshaw.net
+ * Contributor: Jure Mav - jure.mav@gmail.com
+ * Contributor: Reed Dadoune - reed@dadoune.com
+ */
 
 
-var _isObject2 = __webpack_require__(27);
+;(function(undefined) {
+	'use strict';
 
-var _isObject3 = _interopRequireDefault(_isObject2);
+	if(typeof window === 'undefined') return; // don't run for server side render
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var
+		count                 = 0,
+		logEnabled            = false,
+		hiddenCheckEnabled    = false,
+		msgHeader             = 'message',
+		msgHeaderLen          = msgHeader.length,
+		msgId                 = '[iFrameSizer]', //Must match iframe msg ID
+		msgIdLen              = msgId.length,
+		pagePosition          = null,
+		requestAnimationFrame = window.requestAnimationFrame,
+		resetRequiredMethods  = {max:1,scroll:1,bodyScroll:1,documentElementScroll:1},
+		settings              = {},
+		timer                 = null,
+		logId                 = 'Host Page',
 
-var _jsChannel = __webpack_require__(15);
+		defaults              = {
+			autoResize                : true,
+			bodyBackground            : null,
+			bodyMargin                : null,
+			bodyMarginV1              : 8,
+			bodyPadding               : null,
+			checkOrigin               : true,
+			inPageLinks               : false,
+			enablePublicMethods       : true,
+			heightCalculationMethod   : 'bodyOffset',
+			id                        : 'iFrameResizer',
+			interval                  : 32,
+			log                       : false,
+			maxHeight                 : Infinity,
+			maxWidth                  : Infinity,
+			minHeight                 : 0,
+			minWidth                  : 0,
+			resizeFrom                : 'parent',
+			scrolling                 : false,
+			sizeHeight                : true,
+			sizeWidth                 : false,
+			warningTimeout            : 5000,
+			tolerance                 : 0,
+			widthCalculationMethod    : 'scroll',
+			closedCallback            : function(){},
+			initCallback              : function(){},
+			messageCallback           : function(){warn('MessageCallback function not defined');},
+			resizedCallback           : function(){},
+			scrollCallback            : function(){return true;}
+		};
 
-var _jsChannel2 = _interopRequireDefault(_jsChannel);
+	function addEventListener(obj,evt,func){
+		/* istanbul ignore else */ // Not testable in PhantonJS
+		if ('addEventListener' in window){
+			obj.addEventListener(evt,func, false);
+		} else if ('attachEvent' in window){//IE
+			obj.attachEvent('on'+evt,func);
+		}
+	}
 
-var _eventemitter = __webpack_require__(16);
+	function removeEventListener(el,evt,func){
+		/* istanbul ignore else */ // Not testable in phantonJS
+		if ('removeEventListener' in window){
+			el.removeEventListener(evt,func, false);
+		} else if ('detachEvent' in window){ //IE
+			el.detachEvent('on'+evt,func);
+		}
+	}
 
-var _eventemitter2 = _interopRequireDefault(_eventemitter);
+	function setupRequestAnimationFrame(){
+		var
+			vendors = ['moz', 'webkit', 'o', 'ms'],
+			x;
 
-var _es6Promise = __webpack_require__(17);
+		// Remove vendor prefixing if prefixed and break early if not
+		for (x = 0; x < vendors.length && !requestAnimationFrame; x += 1) {
+			requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+		}
 
-var _iframeResizer = __webpack_require__(20);
+		if (!(requestAnimationFrame)){
+			log('setup','RequestAnimationFrame not supported');
+		}
+	}
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function getMyID(iframeId){
+		var retStr = 'Host page: '+iframeId;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+		if (window.top !== window.self){
+			if (window.parentIFrame && window.parentIFrame.getId){
+				retStr = window.parentIFrame.getId()+': '+iframeId;
+			} else {
+				retStr = 'Nested host page: '+iframeId;
+			}
+		}
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+		return retStr;
+	}
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function formatLogHeader(iframeId){
+		return msgId + '[' + getMyID(iframeId) + ']';
+	}
 
-var AddonContainer = function (_EventEmitter) {
-  _inherits(AddonContainer, _EventEmitter);
+	function isLogEnabled(iframeId){
+		return settings[iframeId] ? settings[iframeId].log : logEnabled;
+	}
 
-  function AddonContainer() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	function log(iframeId,msg){
+		output('log',iframeId,msg,isLogEnabled(iframeId));
+	}
 
-    _classCallCheck(this, AddonContainer);
+	function info(iframeId,msg){
+		output('info',iframeId,msg,isLogEnabled(iframeId));
+	}
 
-    var _this = _possibleConstructorReturn(this, (AddonContainer.__proto__ || Object.getPrototypeOf(AddonContainer)).call(this));
+	function warn(iframeId,msg){
+		output('warn',iframeId,msg,true);
+	}
 
-    _this.options = options;
+	function output(type,iframeId,msg,enabled){
+		if (true === enabled && 'object' === typeof window.console){
+			console[type](formatLogHeader(iframeId),msg);
+		}
+	}
 
-    if (!options.iframe) throw new Error('Iframe not defined');
+	function iFrameListener(event){
+		function resizeIFrame(){
+			function resize(){
+				setSize(messageData);
+				setPagePosition(iframeId);
+				callback('resizedCallback',messageData);
+			}
 
-    // Init iframe resizer. This will receive size changes from the addons
-    // and resize the iframe accordingly
-    (0, _iframeResizer.iframeResizer)({
-      checkOrigin: true,
-      heightCalculationMethod: window.ieVersion <= 10 ? 'max' : 'lowestElement',
-      resizeFrom: 'child',
-      resizedCallback: function resizedCallback(data) {
-        _this.emit('iframeResized', data);
-      }
-    }, options.iframe);
+			ensureInRange('Height');
+			ensureInRange('Width');
 
-    // Create js channel
-    _this.channel = _jsChannel2.default.build({
-      window: options.iframe.contentWindow,
-      origin: options.origin || '*',
-      scope: options.id || options.iframe.contentWindow.location.origin,
-      postMessageObserver: function postMessageObserver(origin, message) {
-        _this.emit('postMessage', origin, message);
-      },
-      gotMessageObserver: function gotMessageObserver(origin, message) {
-        _this.emit('gotMessage', origin, message);
-      }
-    });
+			syncResize(resize,messageData,'init');
+		}
 
-    var _arr = ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium'];
+		function processMsg(){
+			var data = msg.substr(msgIdLen).split(':');
 
-    var _loop = function _loop() {
-      var event = _arr[_i];
-      _this.channel.bind(event, function (tx, data) {
-        var eventName = event,
-            eventData = data;
+			return {
+				iframe: settings[data[0]] && settings[data[0]].iframe,
+				id:     data[0],
+				height: data[1],
+				width:  data[2],
+				type:   data[3]
+			};
+		}
 
-        tx.delayReturn(true);
+		function ensureInRange(Dimension){
+			var
+				max  = Number(settings[iframeId]['max' + Dimension]),
+				min  = Number(settings[iframeId]['min' + Dimension]),
+				dimension = Dimension.toLowerCase(),
+				size = Number(messageData[dimension]);
 
-        var callback = function callback(err, result) {
-          if (err) return tx.error(err);
+			log(iframeId,'Checking ' + dimension + ' is in range ' + min + '-' + max);
 
-          tx.complete(result);
-        };
+			if (size<min) {
+				size=min;
+				log(iframeId,'Set ' + dimension + ' to min value');
+			}
 
-        _this.emit(eventName, eventData, callback);
-      });
-    };
+			if (size>max) {
+				size=max;
+				log(iframeId,'Set ' + dimension + ' to max value');
+			}
 
-    for (var _i = 0; _i < _arr.length; _i++) {
-      _loop();
-    }
+			messageData[dimension] = '' + size;
+		}
 
-    _this.channel.call({
-      method: 'init',
-      params: options.options,
-      success: function success(result) {
-        _this.emit('init', result);
-      }
-    });
-    return _this;
-  }
 
-  _createClass(AddonContainer, [{
-    key: 'trigger',
-    value: function trigger(eventName, eventData) {
-      var _this2 = this;
+		function isMessageFromIFrame(){
+			function checkAllowedOrigin(){
+				function checkList(){
+					var
+						i = 0,
+						retCode = false;
 
-      var params = { eventName: eventName };
-      if (eventData) params.eventData = eventData;
+					log(iframeId,'Checking connection is from allowed list of origins: ' + checkOrigin);
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        _this2.channel.call({
-          method: '_event',
-          params: params,
-          success: resolve,
-          error: reject
-        });
-      });
-    }
-  }, {
-    key: 'update',
-    value: function update(data) {
-      var _this3 = this;
+					for (; i < checkOrigin.length; i++) {
+						if (checkOrigin[i] === origin) {
+							retCode = true;
+							break;
+						}
+					}
+					return retCode;
+				}
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        if (!(0, _isObject3.default)(data)) throw new Error('Data must be an object');
+				function checkSingle(){
+					var remoteHost  = settings[iframeId] && settings[iframeId].remoteHost;
+					log(iframeId,'Checking connection is from: '+remoteHost);
+					return origin === remoteHost;
+				}
 
-        _this3.channel.call({
-          method: 'update',
-          params: data,
-          success: resolve,
-          error: reject
-        });
-      });
-    }
-  }, {
-    key: 'reload',
-    value: function reload() {
-      var _this4 = this;
+				return checkOrigin.constructor === Array ? checkList() : checkSingle();
+			}
 
-      return new _es6Promise.Promise(function (resolve, reject) {
-        _this4.channel.call({
-          method: 'reload',
-          success: resolve,
-          error: reject
-        });
-      });
-    }
-  }, {
-    key: 'destroy',
-    value: function destroy() {
-      this.channel.destroy();
-    }
-  }]);
+			var
+				origin      = event.origin,
+				checkOrigin = settings[iframeId] && settings[iframeId].checkOrigin;
 
-  return AddonContainer;
-}(_eventemitter2.default);
+			if (checkOrigin && (''+origin !== 'null') && !checkAllowedOrigin()) {
+				throw new Error(
+					'Unexpected message received from: ' + origin +
+					' for ' + messageData.iframe.id +
+					'. Message was: ' + event.data +
+					'. This error can be disabled by setting the checkOrigin: false option or by providing of array of trusted domains.'
+				);
+			}
 
-module.exports = AddonContainer;
+			return true;
+		}
+
+		function isMessageForUs(){
+			return msgId === (('' + msg).substr(0,msgIdLen)) && (msg.substr(msgIdLen).split(':')[0] in settings); //''+Protects against non-string msg
+		}
+
+		function isMessageFromMetaParent(){
+			//Test if this message is from a parent above us. This is an ugly test, however, updating
+			//the message format would break backwards compatibity.
+			var retCode = messageData.type in {'true':1,'false':1,'undefined':1};
+
+			if (retCode){
+				log(iframeId,'Ignoring init message from meta parent page');
+			}
+
+			return retCode;
+		}
+
+		function getMsgBody(offset){
+			return msg.substr(msg.indexOf(':')+msgHeaderLen+offset);
+		}
+
+		function forwardMsgFromIFrame(msgBody){
+			log(iframeId,'MessageCallback passed: {iframe: '+ messageData.iframe.id + ', message: ' + msgBody + '}');
+			callback('messageCallback',{
+				iframe: messageData.iframe,
+				message: JSON.parse(msgBody)
+			});
+			log(iframeId,'--');
+		}
+
+		function getPageInfo(){
+			var
+				bodyPosition   = document.body.getBoundingClientRect(),
+				iFramePosition = messageData.iframe.getBoundingClientRect();
+
+			return JSON.stringify({
+				iframeHeight: iFramePosition.height,
+				iframeWidth:  iFramePosition.width,
+				clientHeight: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+				clientWidth:  Math.max(document.documentElement.clientWidth,  window.innerWidth  || 0),
+				offsetTop:    parseInt(iFramePosition.top  - bodyPosition.top,  10),
+				offsetLeft:   parseInt(iFramePosition.left - bodyPosition.left, 10),
+				scrollTop:    window.pageYOffset,
+				scrollLeft:   window.pageXOffset
+			});
+		}
+
+		function sendPageInfoToIframe(iframe,iframeId){
+			function debouncedTrigger(){
+				trigger(
+					'Send Page Info',
+					'pageInfo:' + getPageInfo(),
+					iframe,
+					iframeId
+				);
+			}
+
+			debouce(debouncedTrigger,32);
+		}
+
+
+		function startPageInfoMonitor(){
+			function setListener(type,func){
+				function sendPageInfo(){
+					if (settings[id]){
+						sendPageInfoToIframe(settings[id].iframe,id);
+					} else {
+						stop();
+					}
+				}
+
+				['scroll','resize'].forEach(function(evt){
+					log(id, type +  evt + ' listener for sendPageInfo');
+					func(window,evt,sendPageInfo);
+				});
+			}
+
+			function stop(){
+				setListener('Remove ', removeEventListener);
+			}
+
+			function start(){
+				setListener('Add ', addEventListener);
+			}
+
+			var id = iframeId; //Create locally scoped copy of iFrame ID
+
+			start();
+
+			if (settings[id]) {
+				settings[id].stopPageInfo = stop;
+			}
+		}
+
+		function stopPageInfoMonitor(){
+			if (settings[iframeId] && settings[iframeId].stopPageInfo){
+				settings[iframeId].stopPageInfo();
+				delete settings[iframeId].stopPageInfo;
+			}
+		}
+
+		function checkIFrameExists(){
+			var retBool = true;
+
+			if (null === messageData.iframe) {
+				warn(iframeId,'IFrame ('+messageData.id+') not found');
+				retBool = false;
+			}
+			return retBool;
+		}
+
+		function getElementPosition(target){
+			var iFramePosition = target.getBoundingClientRect();
+
+			getPagePosition(iframeId);
+
+			return {
+				x: Math.floor( Number(iFramePosition.left) + Number(pagePosition.x) ),
+				y: Math.floor( Number(iFramePosition.top)  + Number(pagePosition.y) )
+			};
+		}
+
+		function scrollRequestFromChild(addOffset){
+			/* istanbul ignore next */  //Not testable in Karma
+			function reposition(){
+				pagePosition = newPosition;
+				scrollTo();
+				log(iframeId,'--');
+			}
+
+			function calcOffset(){
+				return {
+					x: Number(messageData.width) + offset.x,
+					y: Number(messageData.height) + offset.y
+				};
+			}
+
+			function scrollParent(){
+				if (window.parentIFrame){
+					window.parentIFrame['scrollTo'+(addOffset?'Offset':'')](newPosition.x,newPosition.y);
+				} else {
+					warn(iframeId,'Unable to scroll to requested position, window.parentIFrame not found');
+				}
+			}
+
+			var
+				offset = addOffset ? getElementPosition(messageData.iframe) : {x:0,y:0},
+				newPosition = calcOffset();
+
+			log(iframeId,'Reposition requested from iFrame (offset x:'+offset.x+' y:'+offset.y+')');
+
+			if(window.top !== window.self){
+				scrollParent();
+			} else {
+				reposition();
+			}
+		}
+
+		function scrollTo(){
+			if (false !== callback('scrollCallback',pagePosition)){
+				setPagePosition(iframeId);
+			} else {
+				unsetPagePosition();
+			}
+		}
+
+		function findTarget(location){
+			function jumpToTarget(){
+				var jumpPosition = getElementPosition(target);
+
+				log(iframeId,'Moving to in page link (#'+hash+') at x: '+jumpPosition.x+' y: '+jumpPosition.y);
+				pagePosition = {
+					x: jumpPosition.x,
+					y: jumpPosition.y
+				};
+
+				scrollTo();
+				log(iframeId,'--');
+			}
+
+			function jumpToParent(){
+				if (window.parentIFrame){
+					window.parentIFrame.moveToAnchor(hash);
+				} else {
+					log(iframeId,'In page link #'+hash+' not found and window.parentIFrame not found');
+				}
+			}
+
+			var
+				hash     = location.split('#')[1] || '',
+				hashData = decodeURIComponent(hash),
+				target   = document.getElementById(hashData) || document.getElementsByName(hashData)[0];
+
+			if (target){
+				jumpToTarget();
+			} else if(window.top!==window.self){
+				jumpToParent();
+			} else {
+				log(iframeId,'In page link #'+hash+' not found');
+			}
+		}
+
+		function callback(funcName,val){
+			return chkCallback(iframeId,funcName,val);
+		}
+
+		function actionMsg(){
+
+			if(settings[iframeId] && settings[iframeId].firstRun) firstRun();
+
+			switch(messageData.type){
+			case 'close':
+				if(settings[iframeId].closeRequestCallback) chkCallback(iframeId, 'closeRequestCallback', settings[iframeId].iframe);
+				else closeIFrame(messageData.iframe);
+				break;
+			case 'message':
+				forwardMsgFromIFrame(getMsgBody(6));
+				break;
+			case 'scrollTo':
+				scrollRequestFromChild(false);
+				break;
+			case 'scrollToOffset':
+				scrollRequestFromChild(true);
+				break;
+			case 'pageInfo':
+				sendPageInfoToIframe(settings[iframeId] && settings[iframeId].iframe,iframeId);
+				startPageInfoMonitor();
+				break;
+			case 'pageInfoStop':
+				stopPageInfoMonitor();
+				break;
+			case 'inPageLink':
+				findTarget(getMsgBody(9));
+				break;
+			case 'reset':
+				resetIFrame(messageData);
+				break;
+			case 'init':
+				resizeIFrame();
+				callback('initCallback',messageData.iframe);
+				break;
+			default:
+				resizeIFrame();
+			}
+		}
+
+		function hasSettings(iframeId){
+			var retBool = true;
+
+			if (!settings[iframeId]){
+				retBool = false;
+				warn(messageData.type + ' No settings for ' + iframeId + '. Message was: ' + msg);
+			}
+
+			return retBool;
+		}
+
+		function iFrameReadyMsgReceived(){
+			for (var iframeId in settings){
+				trigger('iFrame requested init',createOutgoingMsg(iframeId),document.getElementById(iframeId),iframeId);
+			}
+		}
+
+		function firstRun() {
+			if (settings[iframeId]) {
+				settings[iframeId].firstRun = false;
+			}
+		}
+
+		function clearWarningTimeout() {
+			if (settings[iframeId]) {
+				clearTimeout(settings[iframeId].msgTimeout);
+				settings[iframeId].warningTimeout = 0;
+			}
+		}
+
+		var
+			msg = event.data,
+			messageData = {},
+			iframeId = null;
+
+		if('[iFrameResizerChild]Ready' === msg){
+			iFrameReadyMsgReceived();
+		} else if (isMessageForUs()){
+			messageData = processMsg();
+			iframeId    = logId = messageData.id;
+			if (settings[iframeId]) {
+				settings[iframeId].loaded = true;
+			}
+
+			if (!isMessageFromMetaParent() && hasSettings(iframeId)){
+				log(iframeId,'Received: '+msg);
+
+				if ( checkIFrameExists() && isMessageFromIFrame() ){
+					actionMsg();
+				}
+			}
+		} else {
+			info(iframeId,'Ignored: '+msg);
+		}
+
+	}
+
+
+	function chkCallback(iframeId,funcName,val){
+		var
+			func = null,
+			retVal = null;
+
+		if(settings[iframeId]){
+			func = settings[iframeId][funcName];
+
+			if( 'function' === typeof func){
+				retVal = func(val);
+			} else {
+				throw new TypeError(funcName+' on iFrame['+iframeId+'] is not a function');
+			}
+		}
+
+		return retVal;
+	}
+
+	function closeIFrame(iframe){
+		var iframeId = iframe.id;
+
+		log(iframeId,'Removing iFrame: '+iframeId);
+		if (iframe.parentNode) { iframe.parentNode.removeChild(iframe); }
+		chkCallback(iframeId,'closedCallback',iframeId);
+		log(iframeId,'--');
+		delete settings[iframeId];
+	}
+
+	function getPagePosition(iframeId){
+		if(null === pagePosition){
+			pagePosition = {
+				x: (window.pageXOffset !== undefined) ? window.pageXOffset : document.documentElement.scrollLeft,
+				y: (window.pageYOffset !== undefined) ? window.pageYOffset : document.documentElement.scrollTop
+			};
+			log(iframeId,'Get page position: '+pagePosition.x+','+pagePosition.y);
+		}
+	}
+
+	function setPagePosition(iframeId){
+		if(null !== pagePosition){
+			window.scrollTo(pagePosition.x,pagePosition.y);
+			log(iframeId,'Set page position: '+pagePosition.x+','+pagePosition.y);
+			unsetPagePosition();
+		}
+	}
+
+	function unsetPagePosition(){
+		pagePosition = null;
+	}
+
+	function resetIFrame(messageData){
+		function reset(){
+			setSize(messageData);
+			trigger('reset','reset',messageData.iframe,messageData.id);
+		}
+
+		log(messageData.id,'Size reset requested by '+('init'===messageData.type?'host page':'iFrame'));
+		getPagePosition(messageData.id);
+		syncResize(reset,messageData,'reset');
+	}
+
+	function setSize(messageData){
+		function setDimension(dimension){
+			messageData.iframe.style[dimension] = messageData[dimension] + 'px';
+			log(
+				messageData.id,
+				'IFrame (' + iframeId +
+				') ' + dimension +
+				' set to ' + messageData[dimension] + 'px'
+			);
+		}
+
+		function chkZero(dimension){
+			//FireFox sets dimension of hidden iFrames to zero.
+			//So if we detect that set up an event to check for
+			//when iFrame becomes visible.
+
+			/* istanbul ignore next */  //Not testable in PhantomJS
+			if (!hiddenCheckEnabled && '0' === messageData[dimension]){
+				hiddenCheckEnabled = true;
+				log(iframeId,'Hidden iFrame detected, creating visibility listener');
+				fixHiddenIFrames();
+			}
+		}
+
+		function processDimension(dimension){
+			setDimension(dimension);
+			chkZero(dimension);
+		}
+
+		var iframeId = messageData.iframe.id;
+
+		if(settings[iframeId]){
+			if( settings[iframeId].sizeHeight) { processDimension('height'); }
+			if( settings[iframeId].sizeWidth ) { processDimension('width'); }
+		}
+	}
+
+	function syncResize(func,messageData,doNotSync){
+		/* istanbul ignore if */  //Not testable in PhantomJS
+		if(doNotSync!==messageData.type && requestAnimationFrame){
+			log(messageData.id,'Requesting animation frame');
+			requestAnimationFrame(func);
+		} else {
+			func();
+		}
+	}
+
+	function trigger(calleeMsg, msg, iframe, id, noResponseWarning) {
+		function postMessageToIFrame(){
+			var target = settings[id] && settings[id].targetOrigin;
+			log(id,'[' + calleeMsg + '] Sending msg to iframe['+id+'] ('+msg+') targetOrigin: '+target);
+			iframe.contentWindow.postMessage( msgId + msg, target );
+		}
+
+		function iFrameNotFound(){
+			warn(id,'[' + calleeMsg + '] IFrame('+id+') not found');
+		}
+
+		function chkAndSend(){
+			if(iframe && 'contentWindow' in iframe && (null !== iframe.contentWindow)){ //Null test for PhantomJS
+				postMessageToIFrame();
+			} else {
+				iFrameNotFound();
+			}
+		}
+
+		function warnOnNoResponse() {
+			function warning() {
+				if (settings[id] && !settings[id].loaded && !errorShown) {
+					errorShown = true;
+					warn(id, 'IFrame has not responded within '+ settings[id].warningTimeout/1000 +' seconds. Check iFrameResizer.contentWindow.js has been loaded in iFrame. This message can be ingored if everything is working, or you can set the warningTimeout option to a higher value or zero to suppress this warning.');
+				}
+			}
+
+			if (!!noResponseWarning && settings[id] && !!settings[id].warningTimeout) {
+				settings[id].msgTimeout = setTimeout(warning, settings[id].warningTimeout);
+			}
+		}
+
+		var errorShown = false;
+
+		id = id || iframe.id;
+
+		if(settings[id]) {
+			chkAndSend();
+			warnOnNoResponse();
+		}
+
+	}
+
+	function createOutgoingMsg(iframeId){
+		return iframeId +
+			':' + settings[iframeId].bodyMarginV1 +
+			':' + settings[iframeId].sizeWidth +
+			':' + settings[iframeId].log +
+			':' + settings[iframeId].interval +
+			':' + settings[iframeId].enablePublicMethods +
+			':' + settings[iframeId].autoResize +
+			':' + settings[iframeId].bodyMargin +
+			':' + settings[iframeId].heightCalculationMethod +
+			':' + settings[iframeId].bodyBackground +
+			':' + settings[iframeId].bodyPadding +
+			':' + settings[iframeId].tolerance +
+			':' + settings[iframeId].inPageLinks +
+			':' + settings[iframeId].resizeFrom +
+			':' + settings[iframeId].widthCalculationMethod;
+	}
+
+	function setupIFrame(iframe,options){
+		function setLimits(){
+			function addStyle(style){
+				if ((Infinity !== settings[iframeId][style]) && (0 !== settings[iframeId][style])){
+					iframe.style[style] = settings[iframeId][style] + 'px';
+					log(iframeId,'Set '+style+' = '+settings[iframeId][style]+'px');
+				}
+			}
+
+			function chkMinMax(dimension){
+				if (settings[iframeId]['min'+dimension]>settings[iframeId]['max'+dimension]){
+					throw new Error('Value for min'+dimension+' can not be greater than max'+dimension);
+				}
+			}
+
+			chkMinMax('Height');
+			chkMinMax('Width');
+
+			addStyle('maxHeight');
+			addStyle('minHeight');
+			addStyle('maxWidth');
+			addStyle('minWidth');
+		}
+
+		function newId(){
+			var id = ((options && options.id) || defaults.id + count++);
+			if  (null !== document.getElementById(id)){
+				id = id + count++;
+			}
+			return id;
+		}
+
+		function ensureHasId(iframeId){
+			logId=iframeId;
+			if (''===iframeId){
+				iframe.id = iframeId =  newId();
+				logEnabled = (options || {}).log;
+				logId=iframeId;
+				log(iframeId,'Added missing iframe ID: '+ iframeId +' (' + iframe.src + ')');
+			}
+
+
+			return iframeId;
+		}
+
+		function setScrolling(){
+			log(iframeId,'IFrame scrolling ' + (settings[iframeId] && settings[iframeId].scrolling ? 'enabled' : 'disabled') + ' for ' + iframeId);
+			iframe.style.overflow = false === (settings[iframeId] && settings[iframeId].scrolling) ? 'hidden' : 'auto';
+			switch(settings[iframeId] && settings[iframeId].scrolling) {
+				case true:
+					iframe.scrolling = 'yes';
+					break;
+				case false:
+					iframe.scrolling = 'no';
+					break;
+				default:
+					iframe.scrolling = settings[iframeId] ? settings[iframeId].scrolling : 'no';
+			}
+		}
+
+		//The V1 iFrame script expects an int, where as in V2 expects a CSS
+		//string value such as '1px 3em', so if we have an int for V2, set V1=V2
+		//and then convert V2 to a string PX value.
+		function setupBodyMarginValues(){
+			if (('number'===typeof(settings[iframeId] && settings[iframeId].bodyMargin)) || ('0'===(settings[iframeId] && settings[iframeId].bodyMargin))){
+				settings[iframeId].bodyMarginV1 = settings[iframeId].bodyMargin;
+				settings[iframeId].bodyMargin   = '' + settings[iframeId].bodyMargin + 'px';
+			}
+		}
+
+		function checkReset(){
+			// Reduce scope of firstRun to function, because IE8's JS execution
+			// context stack is borked and this value gets externally
+			// changed midway through running this function!!!
+			var
+				firstRun           = settings[iframeId] && settings[iframeId].firstRun,
+				resetRequertMethod = settings[iframeId] && settings[iframeId].heightCalculationMethod in resetRequiredMethods;
+
+			if (!firstRun && resetRequertMethod){
+				resetIFrame({iframe:iframe, height:0, width:0, type:'init'});
+			}
+		}
+
+		function setupIFrameObject(){
+			if(Function.prototype.bind && settings[iframeId]){ //Ignore unpolyfilled IE8.
+				settings[iframeId].iframe.iFrameResizer = {
+
+					close        : closeIFrame.bind(null,settings[iframeId].iframe),
+
+					resize       : trigger.bind(null,'Window resize', 'resize', settings[iframeId].iframe),
+
+					moveToAnchor : function(anchor){
+						trigger('Move to anchor','moveToAnchor:'+anchor, settings[iframeId].iframe,iframeId);
+					},
+
+					sendMessage  : function(message){
+						message = JSON.stringify(message);
+						trigger('Send Message','message:'+message, settings[iframeId].iframe, iframeId);
+					}
+				};
+			}
+		}
+
+		//We have to call trigger twice, as we can not be sure if all
+		//iframes have completed loading when this code runs. The
+		//event listener also catches the page changing in the iFrame.
+		function init(msg){
+			function iFrameLoaded(){
+				trigger('iFrame.onload', msg, iframe, undefined , true);
+				checkReset();
+			}
+
+			addEventListener(iframe,'load',iFrameLoaded);
+			trigger('init', msg, iframe, undefined, true);
+		}
+
+		function checkOptions(options){
+			if ('object' !== typeof options){
+				throw new TypeError('Options is not an object');
+			}
+		}
+
+		function copyOptions(options){
+			for (var option in defaults) {
+				if (defaults.hasOwnProperty(option)){
+					settings[iframeId][option] = options.hasOwnProperty(option) ? options[option] : defaults[option];
+				}
+			}
+		}
+
+		function getTargetOrigin (remoteHost){
+			return ('' === remoteHost || 'file://' === remoteHost) ? '*' : remoteHost;
+		}
+
+		function processOptions(options){
+			options = options || {};
+			settings[iframeId] = {
+				firstRun	: true,
+				iframe		: iframe,
+				remoteHost	: iframe.src.split('/').slice(0,3).join('/')
+			};
+
+			checkOptions(options);
+			copyOptions(options);
+
+			if (settings[iframeId]) {
+				settings[iframeId].targetOrigin = true === settings[iframeId].checkOrigin ? getTargetOrigin(settings[iframeId].remoteHost) : '*';
+			}
+		}
+
+		function beenHere(){
+			return (iframeId in settings && 'iFrameResizer' in iframe);
+		}
+
+		var iframeId = ensureHasId(iframe.id);
+
+		if (!beenHere()){
+			processOptions(options);
+			setScrolling();
+			setLimits();
+			setupBodyMarginValues();
+			init(createOutgoingMsg(iframeId));
+			setupIFrameObject();
+		} else {
+			warn(iframeId,'Ignored iFrame, already setup.');
+		}
+	}
+
+	function debouce(fn,time){
+		if (null === timer){
+			timer = setTimeout(function(){
+				timer = null;
+				fn();
+			}, time);
+		}
+	}
+
+	/* istanbul ignore next */  //Not testable in PhantomJS
+	function fixHiddenIFrames(){
+		function checkIFrames(){
+			function checkIFrame(settingId){
+				function chkDimension(dimension){
+					return '0px' === (settings[settingId] && settings[settingId].iframe.style[dimension]);
+				}
+
+				function isVisible(el) {
+					return (null !== el.offsetParent);
+				}
+
+				if (settings[settingId] && isVisible(settings[settingId].iframe) && (chkDimension('height') || chkDimension('width'))){
+					trigger('Visibility change', 'resize', settings[settingId].iframe, settingId);
+				}
+			}
+
+			for (var settingId in settings){
+				checkIFrame(settingId);
+			}
+		}
+
+		function mutationObserved(mutations){
+			log('window','Mutation observed: ' + mutations[0].target + ' ' + mutations[0].type);
+			debouce(checkIFrames,16);
+		}
+
+		function createMutationObserver(){
+			var
+				target = document.querySelector('body'),
+
+				config = {
+					attributes            : true,
+					attributeOldValue     : false,
+					characterData         : true,
+					characterDataOldValue : false,
+					childList             : true,
+					subtree               : true
+				},
+
+				observer = new MutationObserver(mutationObserved);
+
+			observer.observe(target, config);
+		}
+
+		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+		if (MutationObserver) createMutationObserver();
+	}
+
+
+	function resizeIFrames(event){
+		function resize(){
+			sendTriggerMsg('Window '+event,'resize');
+		}
+
+		log('window','Trigger event: '+event);
+		debouce(resize,16);
+	}
+
+	/* istanbul ignore next */  //Not testable in PhantomJS
+	function tabVisible() {
+		function resize(){
+			sendTriggerMsg('Tab Visable','resize');
+		}
+
+		if('hidden' !== document.visibilityState) {
+			log('document','Trigger event: Visiblity change');
+			debouce(resize,16);
+		}
+	}
+
+	function sendTriggerMsg(eventName,event){
+		function isIFrameResizeEnabled(iframeId) {
+			return	settings[iframeId] &&
+					'parent' === settings[iframeId].resizeFrom &&
+					settings[iframeId].autoResize &&
+					!settings[iframeId].firstRun;
+		}
+
+		for (var iframeId in settings){
+			if(isIFrameResizeEnabled(iframeId)){
+				trigger(eventName, event, document.getElementById(iframeId), iframeId);
+			}
+		}
+	}
+
+	function setupEventListeners(){
+		addEventListener(window,'message',iFrameListener);
+
+		addEventListener(window,'resize', function(){resizeIFrames('resize');});
+
+		addEventListener(document,'visibilitychange',tabVisible);
+		addEventListener(document,'-webkit-visibilitychange',tabVisible); //Andriod 4.4
+		addEventListener(window,'focusin',function(){resizeIFrames('focus');}); //IE8-9
+		addEventListener(window,'focus',function(){resizeIFrames('focus');});
+	}
+
+
+	function factory(){
+		function init(options,element){
+			function chkType(){
+				if(!element.tagName) {
+					throw new TypeError('Object is not a valid DOM element');
+				} else if ('IFRAME' !== element.tagName.toUpperCase()) {
+					throw new TypeError('Expected <IFRAME> tag, found <'+element.tagName+'>');
+				}
+			}
+
+			if(element) {
+				chkType();
+				setupIFrame(element, options);
+				iFrames.push(element);
+			}
+		}
+
+		function warnDeprecatedOptions(options) {
+			if (options && options.enablePublicMethods) {
+				warn('enablePublicMethods option has been removed, public methods are now always available in the iFrame');
+			}
+		}
+
+		var iFrames;
+
+		setupRequestAnimationFrame();
+		setupEventListeners();
+
+		return function iFrameResizeF(options,target){
+			iFrames = []; //Only return iFrames past in on this call
+
+			warnDeprecatedOptions(options);
+
+			switch (typeof(target)){
+			case 'undefined':
+			case 'string':
+				Array.prototype.forEach.call(
+					document.querySelectorAll( target || 'iframe' ),
+					init.bind(undefined, options)
+				);
+				break;
+			case 'object':
+				init(options,target);
+				break;
+			default:
+				throw new TypeError('Unexpected data type ('+typeof(target)+')');
+			}
+
+			return iFrames;
+		};
+	}
+
+	function createJQueryPublicMethod($){
+		if (!$.fn) {
+			info('','Unable to bind to jQuery, it is not fully loaded.');
+		} else if (!$.fn.iFrameResize){
+			$.fn.iFrameResize = function $iFrameResizeF(options) {
+				function init(index, element) {
+					setupIFrame(element, options);
+				}
+
+				return this.filter('iframe').each(init).end();
+			};
+		}
+	}
+
+	if (window.jQuery) { createJQueryPublicMethod(window.jQuery); }
+
+	if (true) {
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+
+})();
+
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports) {
+
+/***/ 683:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+exports.iframeResizer = __webpack_require__(28);
+exports.iframeResizerContentWindow = __webpack_require__(402);
+
+
+/***/ }),
+
+/***/ 457:
+/***/ ((module) => {
+
+/*
+ * js_channel is a very lightweight abstraction on top of
+ * postMessage which defines message formats and semantics
+ * to support interactions more rich than just message passing
+ * js_channel supports:
+ *  + query/response - traditional rpc
+ *  + query/update/response - incremental async return of results
+ *    to a query
+ *  + notifications - fire and forget
+ *  + error handling
+ *
+ * js_channel is based heavily on json-rpc, but is focused at the
+ * problem of inter-iframe RPC.
+ *
+ * Message types:
+ *  There are 5 types of messages that can flow over this channel,
+ *  and you may determine what type of message an object is by
+ *  examining its parameters:
+ *  1. Requests
+ *    + integer id
+ *    + string method
+ *    + (optional) any params
+ *  2. Callback Invocations (or just "Callbacks")
+ *    + integer id
+ *    + string callback
+ *    + (optional) params
+ *  3. Error Responses (or just "Errors)
+ *    + integer id
+ *    + string error
+ *    + (optional) string message
+ *  4. Responses
+ *    + integer id
+ *    + (optional) any result
+ *  5. Notifications
+ *    + string method
+ *    + (optional) any params
+ */
+
+;var Channel = (function() {
+    "use strict";
+
+    // current transaction id, start out at a random *odd* number between 1 and a million
+    // There is one current transaction counter id per page, and it's shared between
+    // channel instances.  That means of all messages posted from a single javascript
+    // evaluation context, we'll never have two with the same id.
+    var s_curTranId = Math.floor(Math.random()*1000001);
+
+    // no two bound channels in the same javascript evaluation context may have the same origin, scope, and window.
+    // futher if two bound channels have the same window and scope, they may not have *overlapping* origins
+    // (either one or both support '*').  This restriction allows a single onMessage handler to efficiently
+    // route messages based on origin and scope.  The s_boundChans maps origins to scopes, to message
+    // handlers.  Request and Notification messages are routed using this table.
+    // Finally, channels are inserted into this table when built, and removed when destroyed.
+    var s_boundChans = { };
+
+    // add a channel to s_boundChans, throwing if a dup exists
+    function s_addBoundChan(win, origin, scope, handler) {
+        function hasWin(arr) {
+            for (var i = 0; i < arr.length; i++) if (arr[i].win === win) return true;
+            return false;
+        }
+
+        // does she exist?
+        var exists = false;
+
+
+        if (origin === '*') {
+            // we must check all other origins, sadly.
+            for (var k in s_boundChans) {
+                if (!s_boundChans.hasOwnProperty(k)) continue;
+                if (k === '*') continue;
+                if (typeof s_boundChans[k][scope] === 'object') {
+                    exists = hasWin(s_boundChans[k][scope]);
+                    if (exists) break;
+                }
+            }
+        } else {
+            // we must check only '*'
+            if ((s_boundChans['*'] && s_boundChans['*'][scope])) {
+                exists = hasWin(s_boundChans['*'][scope]);
+            }
+            if (!exists && s_boundChans[origin] && s_boundChans[origin][scope])
+            {
+                exists = hasWin(s_boundChans[origin][scope]);
+            }
+        }
+        if (exists) throw "A channel is already bound to the same window which overlaps with origin '"+ origin +"' and has scope '"+scope+"'";
+
+        if (typeof s_boundChans[origin] != 'object') s_boundChans[origin] = { };
+        if (typeof s_boundChans[origin][scope] != 'object') s_boundChans[origin][scope] = [ ];
+        s_boundChans[origin][scope].push({win: win, handler: handler});
+    }
+
+    function s_removeBoundChan(win, origin, scope) {
+        var arr = s_boundChans[origin][scope];
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].win === win) {
+                arr.splice(i,1);
+            }
+        }
+        if (s_boundChans[origin][scope].length === 0) {
+            delete s_boundChans[origin][scope];
+        }
+    }
+
+    function s_isArray(obj) {
+        if (Array.isArray) return Array.isArray(obj);
+        else {
+            return (obj.constructor.toString().indexOf("Array") != -1);
+        }
+    }
+
+    // No two outstanding outbound messages may have the same id, period.  Given that, a single table
+    // mapping "transaction ids" to message handlers, allows efficient routing of Callback, Error, and
+    // Response messages.  Entries are added to this table when requests are sent, and removed when
+    // responses are received.
+    var s_transIds = { };
+
+    // class singleton onMessage handler
+    // this function is registered once and all incoming messages route through here.  This
+    // arrangement allows certain efficiencies, message data is only parsed once and dispatch
+    // is more efficient, especially for large numbers of simultaneous channels.
+    var s_onMessage = function(e) {
+        try {
+          var m = JSON.parse(e.data);
+          if (typeof m !== 'object' || m === null) throw "malformed";
+        } catch(e) {
+          // just ignore any posted messages that do not consist of valid JSON
+          return;
+        }
+
+        var w = e.source;
+        var o = e.origin;
+        var s, i, meth;
+
+        if (typeof m.method === 'string') {
+            var ar = m.method.split('::');
+            if (ar.length == 2) {
+                s = ar[0];
+                meth = ar[1];
+            } else {
+                meth = m.method;
+            }
+        }
+
+        if (typeof m.id !== 'undefined') i = m.id;
+
+        // w is message source window
+        // o is message origin
+        // m is parsed message
+        // s is message scope
+        // i is message id (or undefined)
+        // meth is unscoped method name
+        // ^^ based on these factors we can route the message
+
+        // if it has a method it's either a notification or a request,
+        // route using s_boundChans
+        if (typeof meth === 'string') {
+            var delivered = false;
+            if (s_boundChans[o] && s_boundChans[o][s]) {
+                for (var j = 0; j < s_boundChans[o][s].length; j++) {
+                    if (s_boundChans[o][s][j].win === w) {
+                        s_boundChans[o][s][j].handler(o, meth, m);
+                        delivered = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!delivered && s_boundChans['*'] && s_boundChans['*'][s]) {
+                for (var j = 0; j < s_boundChans['*'][s].length; j++) {
+                    if (s_boundChans['*'][s][j].win === w) {
+                        s_boundChans['*'][s][j].handler(o, meth, m);
+                        break;
+                    }
+                }
+            }
+        }
+        // otherwise it must have an id (or be poorly formed
+        else if (typeof i != 'undefined') {
+            if (s_transIds[i]) s_transIds[i](o, meth, m);
+        }
+    };
+
+    // Setup postMessage event listeners
+    if (window.addEventListener) window.addEventListener('message', s_onMessage, false);
+    else if(window.attachEvent) window.attachEvent('onmessage', s_onMessage);
+
+    /* a messaging channel is constructed from a window and an origin.
+     * the channel will assert that all messages received over the
+     * channel match the origin
+     *
+     * Arguments to Channel.build(cfg):
+     *
+     *   cfg.window - the remote window with which we'll communicate
+     *   cfg.origin - the expected origin of the remote window, may be '*'
+     *                which matches any origin
+     *   cfg.scope  - the 'scope' of messages.  a scope string that is
+     *                prepended to message names.  local and remote endpoints
+     *                of a single channel must agree upon scope. Scope may
+     *                not contain double colons ('::').
+     *   cfg.debugOutput - A boolean value.  If true and window.console.log is
+     *                a function, then debug strings will be emitted to that
+     *                function.
+     *   cfg.debugOutput - A boolean value.  If true and window.console.log is
+     *                a function, then debug strings will be emitted to that
+     *                function.
+     *   cfg.postMessageObserver - A function that will be passed two arguments,
+     *                an origin and a message.  It will be passed these immediately
+     *                before messages are posted.
+     *   cfg.gotMessageObserver - A function that will be passed two arguments,
+     *                an origin and a message.  It will be passed these arguments
+     *                immediately after they pass scope and origin checks, but before
+     *                they are processed.
+     *   cfg.onReady - A function that will be invoked when a channel becomes "ready",
+     *                this occurs once both sides of the channel have been
+     *                instantiated and an application level handshake is exchanged.
+     *                the onReady function will be passed a single argument which is
+     *                the channel object that was returned from build().
+     */
+    return {
+        build: function(cfg) {
+            var debug = function(m) {
+                if (cfg.debugOutput && window.console && window.console.log) {
+                    // try to stringify, if it doesn't work we'll let javascript's built in toString do its magic
+                    try { if (typeof m !== 'string') m = JSON.stringify(m); } catch(e) { }
+                    console.log("["+chanId+"] " + m);
+                }
+            };
+
+            /* browser capabilities check */
+            if (!window.postMessage) throw("jschannel cannot run this browser, no postMessage");
+            if (!window.JSON || !window.JSON.stringify || ! window.JSON.parse) {
+                throw("jschannel cannot run this browser, no JSON parsing/serialization");
+            }
+
+            /* basic argument validation */
+            if (typeof cfg != 'object') throw("Channel build invoked without a proper object argument");
+
+            if (!cfg.window || !cfg.window.postMessage) throw("Channel.build() called without a valid window argument");
+
+            /* we'd have to do a little more work to be able to run multiple channels that intercommunicate the same
+             * window...  Not sure if we care to support that */
+            if (window === cfg.window) throw("target window is same as present window -- not allowed");
+
+            // let's require that the client specify an origin.  if we just assume '*' we'll be
+            // propagating unsafe practices.  that would be lame.
+            var validOrigin = false;
+            if (typeof cfg.origin === 'string') {
+                var oMatch;
+                if (cfg.origin === "*") validOrigin = true;
+                // allow valid domains under http and https.  Also, trim paths off otherwise valid origins.
+                else if (null !== (oMatch = cfg.origin.match(/^https?:\/\/(?:[-a-zA-Z0-9_\.])+(?::\d+)?/))) {
+                    cfg.origin = oMatch[0].toLowerCase();
+                    validOrigin = true;
+                }
+            }
+
+            if (!validOrigin) throw ("Channel.build() called with an invalid origin");
+
+            if (typeof cfg.scope !== 'undefined') {
+                if (typeof cfg.scope !== 'string') throw 'scope, when specified, must be a string';
+                if (cfg.scope.split('::').length > 1) throw "scope may not contain double colons: '::'";
+            }
+
+            /* private variables */
+            // generate a random and psuedo unique id for this channel
+            var chanId = (function () {
+                var text = "";
+                var alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                for(var i=0; i < 5; i++) text += alpha.charAt(Math.floor(Math.random() * alpha.length));
+                return text;
+            })();
+
+            // registrations: mapping method names to call objects
+            var regTbl = { };
+            // current oustanding sent requests
+            var outTbl = { };
+            // current oustanding received requests
+            var inTbl = { };
+            // are we ready yet?  when false we will block outbound messages.
+            var ready = false;
+            var pendingQueue = [ ];
+
+            var createTransaction = function(id,origin,callbacks) {
+                var shouldDelayReturn = false;
+                var completed = false;
+
+                return {
+                    origin: origin,
+                    invoke: function(cbName, v) {
+                        // verify in table
+                        if (!inTbl[id]) throw "attempting to invoke a callback of a nonexistent transaction: " + id;
+                        // verify that the callback name is valid
+                        var valid = false;
+                        for (var i = 0; i < callbacks.length; i++) if (cbName === callbacks[i]) { valid = true; break; }
+                        if (!valid) throw "request supports no such callback '" + cbName + "'";
+
+                        // send callback invocation
+                        postMessage({ id: id, callback: cbName, params: v});
+                    },
+                    error: function(error, message) {
+                        completed = true;
+                        // verify in table
+                        if (!inTbl[id]) throw "error called for nonexistent message: " + id;
+
+                        // remove transaction from table
+                        delete inTbl[id];
+
+                        // send error
+                        postMessage({ id: id, error: error, message: message });
+                    },
+                    complete: function(v) {
+                        completed = true;
+                        // verify in table
+                        if (!inTbl[id]) throw "complete called for nonexistent message: " + id;
+                        // remove transaction from table
+                        delete inTbl[id];
+                        // send complete
+                        postMessage({ id: id, result: v });
+                    },
+                    delayReturn: function(delay) {
+                        if (typeof delay === 'boolean') {
+                            shouldDelayReturn = (delay === true);
+                        }
+                        return shouldDelayReturn;
+                    },
+                    completed: function() {
+                        return completed;
+                    }
+                };
+            };
+
+            var setTransactionTimeout = function(transId, timeout, method) {
+              return window.setTimeout(function() {
+                if (outTbl[transId]) {
+                  // XXX: what if client code raises an exception here?
+                  var msg = "timeout (" + timeout + "ms) exceeded on method '" + method + "'";
+                  (1,outTbl[transId].error)("timeout_error", msg);
+                  delete outTbl[transId];
+                  delete s_transIds[transId];
+                }
+              }, timeout);
+            };
+
+            var onMessage = function(origin, method, m) {
+                // if an observer was specified at allocation time, invoke it
+                if (typeof cfg.gotMessageObserver === 'function') {
+                    // pass observer a clone of the object so that our
+                    // manipulations are not visible (i.e. method unscoping).
+                    // This is not particularly efficient, but then we expect
+                    // that message observers are primarily for debugging anyway.
+                    try {
+                        cfg.gotMessageObserver(origin, m);
+                    } catch (e) {
+                        debug("gotMessageObserver() raised an exception: " + e.toString());
+                    }
+                }
+
+                // now, what type of message is this?
+                if (m.id && method) {
+                    // a request!  do we have a registered handler for this request?
+                    if (regTbl[method]) {
+                        var trans = createTransaction(m.id, origin, m.callbacks ? m.callbacks : [ ]);
+                        inTbl[m.id] = { };
+                        try {
+                            // callback handling.  we'll magically create functions inside the parameter list for each
+                            // callback
+                            if (m.callbacks && s_isArray(m.callbacks) && m.callbacks.length > 0) {
+                                for (var i = 0; i < m.callbacks.length; i++) {
+                                    var path = m.callbacks[i];
+                                    var obj = m.params;
+                                    var pathItems = path.split('/');
+                                    for (var j = 0; j < pathItems.length - 1; j++) {
+                                        var cp = pathItems[j];
+                                        if (typeof obj[cp] !== 'object') obj[cp] = { };
+                                        obj = obj[cp];
+                                    }
+                                    obj[pathItems[pathItems.length - 1]] = (function() {
+                                        var cbName = path;
+                                        return function(params) {
+                                            return trans.invoke(cbName, params);
+                                        };
+                                    })();
+                                }
+                            }
+                            var resp = regTbl[method](trans, m.params);
+                            if (!trans.delayReturn() && !trans.completed()) trans.complete(resp);
+                        } catch(e) {
+                            // automagic handling of exceptions:
+                            var error = "runtime_error";
+                            var message = null;
+                            // * if it's a string then it gets an error code of 'runtime_error' and string is the message
+                            if (typeof e === 'string') {
+                                message = e;
+                            } else if (typeof e === 'object') {
+                                // either an array or an object
+                                // * if it's an array of length two, then  array[0] is the code, array[1] is the error message
+                                if (e && s_isArray(e) && e.length == 2) {
+                                    error = e[0];
+                                    message = e[1];
+                                }
+                                // * if it's an object then we'll look form error and message parameters
+                                else if (typeof e.error === 'string') {
+                                    error = e.error;
+                                    if (!e.message) message = "";
+                                    else if (typeof e.message === 'string') message = e.message;
+                                    else e = e.message; // let the stringify/toString message give us a reasonable verbose error string
+                                }
+                            }
+
+                            // message is *still* null, let's try harder
+                            if (message === null) {
+                                try {
+                                    message = JSON.stringify(e);
+                                    /* On MSIE8, this can result in 'out of memory', which
+                                     * leaves message undefined. */
+                                    if (typeof(message) == 'undefined')
+                                      message = e.toString();
+                                } catch (e2) {
+                                    message = e.toString();
+                                }
+                            }
+
+                            trans.error(error,message);
+                        }
+                    }
+                } else if (m.id && m.callback) {
+                    if (!outTbl[m.id] ||!outTbl[m.id].callbacks || !outTbl[m.id].callbacks[m.callback])
+                    {
+                        debug("ignoring invalid callback, id:"+m.id+ " (" + m.callback +")");
+                    } else {
+                        // XXX: what if client code raises an exception here?
+                        outTbl[m.id].callbacks[m.callback](m.params);
+                    }
+                } else if (m.id) {
+                    if (!outTbl[m.id]) {
+                        debug("ignoring invalid response: " + m.id);
+                    } else {
+                        // XXX: what if client code raises an exception here?
+                        if (m.error) {
+                            (1,outTbl[m.id].error)(m.error, m.message);
+                        } else {
+                            if (m.result !== undefined) (1,outTbl[m.id].success)(m.result);
+                            else (1,outTbl[m.id].success)();
+                        }
+                        delete outTbl[m.id];
+                        delete s_transIds[m.id];
+                    }
+                } else if (method) {
+                    // tis a notification.
+                    if (regTbl[method]) {
+                        // yep, there's a handler for that.
+                        // transaction has only origin for notifications.
+                        regTbl[method]({ origin: origin }, m.params);
+                        // if the client throws, we'll just let it bubble out
+                        // what can we do?  Also, here we'll ignore return values
+                    }
+                }
+            };
+
+            // now register our bound channel for msg routing
+            s_addBoundChan(cfg.window, cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''), onMessage);
+
+            // scope method names based on cfg.scope specified when the Channel was instantiated
+            var scopeMethod = function(m) {
+                if (typeof cfg.scope === 'string' && cfg.scope.length) m = [cfg.scope, m].join("::");
+                return m;
+            };
+
+            // a small wrapper around postmessage whose primary function is to handle the
+            // case that clients start sending messages before the other end is "ready"
+            var postMessage = function(msg, force) {
+                if (!msg) throw "postMessage called with null message";
+
+                // delay posting if we're not ready yet.
+                var verb = (ready ? "post  " : "queue ");
+                debug(verb + " message: " + JSON.stringify(msg));
+                if (!force && !ready) {
+                    pendingQueue.push(msg);
+                } else {
+                    if (typeof cfg.postMessageObserver === 'function') {
+                        try {
+                            cfg.postMessageObserver(cfg.origin, msg);
+                        } catch (e) {
+                            debug("postMessageObserver() raised an exception: " + e.toString());
+                        }
+                    }
+
+                    cfg.window.postMessage(JSON.stringify(msg), cfg.origin);
+                }
+            };
+
+            var onReady = function(trans, type) {
+                debug('ready msg received');
+                if (ready) throw "received ready message while in ready state.  help!";
+
+                if (type === 'ping') {
+                    chanId += '-R';
+                } else {
+                    chanId += '-L';
+                }
+
+                obj.unbind('__ready'); // now this handler isn't needed any more.
+                ready = true;
+                debug('ready msg accepted.');
+
+                if (type === 'ping') {
+                    obj.notify({ method: '__ready', params: 'pong' });
+                }
+
+                // flush queue
+                while (pendingQueue.length) {
+                    postMessage(pendingQueue.pop());
+                }
+
+                // invoke onReady observer if provided
+                if (typeof cfg.onReady === 'function') cfg.onReady(obj);
+            };
+
+            var obj = {
+                // tries to unbind a bound message handler.  returns false if not possible
+                unbind: function (method) {
+                    if (regTbl[method]) {
+                        if (!(delete regTbl[method])) throw ("can't delete method: " + method);
+                        return true;
+                    }
+                    return false;
+                },
+                bind: function (method, cb) {
+                    if (!method || typeof method !== 'string') throw "'method' argument to bind must be string";
+                    if (!cb || typeof cb !== 'function') throw "callback missing from bind params";
+
+                    if (regTbl[method]) throw "method '"+method+"' is already bound!";
+                    regTbl[method] = cb;
+                    return this;
+                },
+                call: function(m) {
+                    if (!m) throw 'missing arguments to call function';
+                    if (!m.method || typeof m.method !== 'string') throw "'method' argument to call must be string";
+                    if (!m.success || typeof m.success !== 'function') throw "'success' callback missing from call";
+
+                    // now it's time to support the 'callback' feature of jschannel.  We'll traverse the argument
+                    // object and pick out all of the functions that were passed as arguments.
+                    var callbacks = { };
+                    var callbackNames = [ ];
+                    var seen = [ ];
+
+                    var pruneFunctions = function (path, obj) {
+                        if (seen.indexOf(obj) >= 0) {
+                            throw "params cannot be a recursive data structure"
+                        }
+                        seen.push(obj);
+                       
+                        if (typeof obj === 'object') {
+                            for (var k in obj) {
+                                if (!obj.hasOwnProperty(k)) continue;
+                                var np = path + (path.length ? '/' : '') + k;
+                                if (typeof obj[k] === 'function') {
+                                    callbacks[np] = obj[k];
+                                    callbackNames.push(np);
+                                    delete obj[k];
+                                } else if (typeof obj[k] === 'object' && obj[k] !== null) {
+                                    pruneFunctions(np, obj[k]);
+                                }
+                            }
+                        }
+                    };
+                    pruneFunctions("", m.params);
+
+                    // build a 'request' message and send it
+                    var msg = { id: s_curTranId, method: scopeMethod(m.method), params: m.params };
+                    if (callbackNames.length) msg.callbacks = callbackNames;
+
+                    if (m.timeout)
+                      // XXX: This function returns a timeout ID, but we don't do anything with it.
+                      // We might want to keep track of it so we can cancel it using clearTimeout()
+                      // when the transaction completes.
+                      setTransactionTimeout(s_curTranId, m.timeout, scopeMethod(m.method));
+
+                    // insert into the transaction table
+                    outTbl[s_curTranId] = { callbacks: callbacks, error: m.error, success: m.success };
+                    s_transIds[s_curTranId] = onMessage;
+
+                    // increment current id
+                    s_curTranId++;
+
+                    postMessage(msg);
+                },
+                notify: function(m) {
+                    if (!m) throw 'missing arguments to notify function';
+                    if (!m.method || typeof m.method !== 'string') throw "'method' argument to notify must be string";
+
+                    // no need to go into any transaction table
+                    postMessage({ method: scopeMethod(m.method), params: m.params });
+                },
+                destroy: function () {
+                    s_removeBoundChan(cfg.window, cfg.origin, ((typeof cfg.scope === 'string') ? cfg.scope : ''));
+                    if (window.removeEventListener) window.removeEventListener('message', onMessage, false);
+                    else if(window.detachEvent) window.detachEvent('onmessage', onMessage);
+                    ready = false;
+                    regTbl = { };
+                    inTbl = { };
+                    outTbl = { };
+                    cfg.origin = null;
+                    pendingQueue = [ ];
+                    debug("channel destroyed");
+                    chanId = "";
+                }
+            };
+
+            obj.bind('__ready', onReady);
+            setTimeout(function() {
+                postMessage({ method: scopeMethod('__ready'), params: "ping" }, true);
+            }, 0);
+
+            return obj;
+        }
+    };
+})();
+if (true) {
+    module.exports = Channel;
+}
+
+
+/***/ }),
+
+/***/ 218:
+/***/ ((module) => {
 
 /**
  * Checks if `value` is the
@@ -4879,5 +4564,61 @@ function isObject(value) {
 module.exports = isObject;
 
 
+/***/ }),
+
+/***/ 327:
+/***/ (() => {
+
+/* (ignored) */
+
 /***/ })
-/******/ ]);
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(669);
+/******/ 	AddonContainer = __webpack_exports__;
+/******/ 	
+/******/ })()
+;

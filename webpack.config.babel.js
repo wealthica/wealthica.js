@@ -1,20 +1,40 @@
 import { join } from 'path';
 import merge from 'webpack-merge';
-import ChunkRenamePlugin from 'chunk-rename-webpack-plugin';
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const include = join(__dirname, 'src');
-const baseConfig = {
+
+const browserConfig = {
   entry: {
-    Addon: './src/addon',
-    AddonContainer: './src/addon-container'
+    Addon: {
+      import: './src/addon',
+      filename: 'addon.js',
+      library: {
+        name: '[name]',
+        type: 'var',
+      },
+    },
+    AddonContainer: {
+      import: './src/addon-container',
+      filename: 'addon-container.js',
+      library: {
+        name: '[name]',
+        type: 'var',
+      },
+    },
   },
   output: {
     path: join(__dirname, 'dist'),
-    filename: '[name].js',
-    library: '[name]'
   },
-  mode: 'none',
+  optimization: {
+    minimize: false,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+      }),
+    ],
+  },
+  mode: 'production',
   module: {
     rules: [
       { test: /\.js$/, loader: 'babel-loader', include },
@@ -22,39 +42,37 @@ const baseConfig = {
   }
 };
 
-const browserConfig = merge(baseConfig, {
-  plugins: [
-    new ChunkRenamePlugin({
-      Addon: 'addon.js',
-      AddonContainer: 'addon-container.js',
-    }),
-  ]
-});
-
-const browserMinifiedConfig = merge(baseConfig, {
+const browserMinifiedConfig = merge(browserConfig, {
   devtool: 'source-map',
-  plugins: [
-    new ChunkRenamePlugin({
-      Addon: 'addon.min.js',
-      AddonContainer: 'addon-container.min.js',
-    }),
-    new UglifyJsPlugin({
-      sourceMap: true
-    })
-  ]
+  entry: {
+    Addon: {
+      filename: 'addon.min.js',
+    },
+    AddonContainer: {
+      filename: 'addon-container.min.js',
+    },
+  },
+  optimization: {
+    minimize: true,
+  }
 });
 
-const commonJsConfig = merge(baseConfig, {
+const commonJsConfig = merge(browserConfig, {
+  entry: {
+    Addon: {
+      library: {
+        type: 'commonjs',
+      },
+    },
+    AddonContainer: {
+      library: {
+        type: 'commonjs',
+      },
+    },
+  },
   output: {
     path: join(__dirname, 'lib'),
-    libraryTarget: 'commonjs'
   },
-  plugins: [
-    new ChunkRenamePlugin({
-      Addon: 'addon.js',
-      AddonContainer: 'addon-container.js',
-    }),
-  ]
 });
 
 module.exports = [ browserConfig, browserMinifiedConfig, commonJsConfig ];
