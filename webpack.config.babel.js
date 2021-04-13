@@ -1,5 +1,6 @@
 import { join } from 'path';
 import merge from 'webpack-merge';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import TerserPlugin from 'terser-webpack-plugin';
 import ESLintPlugin from 'eslint-webpack-plugin';
 
@@ -35,17 +36,12 @@ const browserConfig = {
       }),
     ],
   },
-  plugins: [
-    new ESLintPlugin({
-      exclude: ['node_modules', 'dist', 'lib'],
-    }),
-  ],
   mode: 'production',
   module: {
     rules: [
       { test: /\.js$/, loader: 'babel-loader', include },
-    ]
-  }
+    ],
+  },
 };
 
 const browserMinifiedConfig = merge(browserConfig, {
@@ -60,7 +56,7 @@ const browserMinifiedConfig = merge(browserConfig, {
   },
   optimization: {
     minimize: true,
-  }
+  },
 });
 
 const commonJsConfig = merge(browserConfig, {
@@ -76,9 +72,13 @@ const commonJsConfig = merge(browserConfig, {
       },
     },
   },
+  plugins: [
+    // Have eslint here so it only run once instead of once for each build config
+    new ESLintPlugin(),
+  ],
   output: {
     path: join(__dirname, 'lib'),
   },
 });
 
-module.exports = [ browserConfig, browserMinifiedConfig, commonJsConfig ];
+module.exports = [browserConfig, browserMinifiedConfig, commonJsConfig];

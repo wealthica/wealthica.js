@@ -32,7 +32,7 @@ var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
 var _es6Promise = __webpack_require__(702);
 
-var _iframeResizer = __webpack_require__(303);
+__webpack_require__(303);
 
 var _api = __webpack_require__(248);
 
@@ -48,7 +48,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global window, location */
+
+// eslint-disable-next-line no-unused-vars
+
 
 window.iFrameResizer = _iframeResizerOptions2.default;
 
@@ -68,7 +71,7 @@ var Addon = function (_EventEmitter) {
     _this.channel = _jsChannel2.default.build({
       window: options.window || window.parent,
       origin: '*',
-      scope: options.id || location.origin,
+      scope: options.id || location.origin, // eslint-disable-line no-restricted-globals
       postMessageObserver: function postMessageObserver(origin, message) {
         _this.emit('postMessage', origin, message);
       },
@@ -77,13 +80,10 @@ var Addon = function (_EventEmitter) {
       }
     });
 
-    var _arr = ['init', 'update', 'reload', '_event'];
-
-    var _loop = function _loop() {
-      var event = _arr[_i];
+    ['init', 'update', 'reload', '_event'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
-        var eventName = event,
-            eventData = data;
+        var eventName = event;
+        var eventData = data;
 
         if (event === '_event') {
           eventName = data.eventName;
@@ -93,11 +93,7 @@ var Addon = function (_EventEmitter) {
 
         return 'success';
       });
-    };
-
-    for (var _i = 0; _i < _arr.length; _i++) {
-      _loop();
-    }
+    });
     return _this;
   }
 
@@ -109,14 +105,10 @@ var Addon = function (_EventEmitter) {
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!(0, _isPlainObject3.default)(params)) throw new Error('Params must be an object');
 
-        var method = void 0,
-            endpoint = void 0,
-            query = void 0,
-            body = void 0;
-        method = params.method;
-        endpoint = params.endpoint;
-        query = params.query;
-        body = params.body;
+        var method = params.method,
+            endpoint = params.endpoint,
+            query = params.query,
+            body = params.body;
 
 
         if (!method || !endpoint || !(0, _isString3.default)(method) || !(0, _isString3.default)(endpoint)) throw new Error('Invalid method or endpoint');
@@ -269,14 +261,12 @@ module.exports = Addon;
 /***/ }),
 
 /***/ 248:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ ((module) => {
 
 "use strict";
 
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _es6Promise = __webpack_require__(702);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -349,12 +339,14 @@ var API = function () {
     }
 
     /**
-     * @deprecated Since version 0.0.12. Will be removed in version 0.1.x. Use `addon.addInstitution` instead
+     * @deprecated Since version 0.0.12. Will be removed in version 0.1.x.
+     * Use `addon.addInstitution` instead.
      */
 
   }, {
     key: 'addInstitution',
     value: function addInstitution(data) {
+      // eslint-disable-next-line no-console
       console.warn('DEPRECATED: `addon.api.addInstitution`. Use `addon.addInstitution instead.`');
 
       return this.addon.request({
@@ -439,10 +431,13 @@ module.exports = API;
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+/* global document */
 exports.default = {
   heightCalculationMethod: function heightCalculationMethod() {
-    var body = document.body;
-    var html = document.documentElement;
+    var _document = document,
+        body = _document.body,
+        html = _document.documentElement;
+
 
     return Math.max.apply(null, [body.scrollHeight, body.offsetHeight, html.offsetHeight]);
   }
