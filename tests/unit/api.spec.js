@@ -10,7 +10,7 @@ describe('API', () => {
     // JsChannel requires JSON implementation while JSDOM does not provide one.
     window.JSON = {
       stringify: () => {},
-      parse: () => {}
+      parse: () => {},
     };
 
     addon = new Addon({ window: new JSDOM().window });
@@ -26,10 +26,10 @@ describe('API', () => {
 
   describe('.getAssets(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getAssets(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('assets');
@@ -40,10 +40,10 @@ describe('API', () => {
 
   describe('.getCurrencies(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getCurrencies(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('currencies');
@@ -54,10 +54,10 @@ describe('API', () => {
 
   describe('.getInstitutions(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getInstitutions(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('institutions');
@@ -69,8 +69,8 @@ describe('API', () => {
   describe('.getInstitution(id)', () => {
     it('should execute request', () => {
       addon.api.getInstitution('test');
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('institutions/test');
@@ -81,8 +81,8 @@ describe('API', () => {
   describe('.pollInstitution(id, v)', () => {
     it('should execute request', () => {
       addon.api.pollInstitution('test', 1);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('institutions/test/poll?v=1');
@@ -93,8 +93,8 @@ describe('API', () => {
   describe('.syncInstitution(id)', () => {
     it('should execute request', () => {
       addon.api.syncInstitution('test');
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('institutions/test/sync');
@@ -104,10 +104,10 @@ describe('API', () => {
 
   describe('.addInstitution(data)', () => {
     it('should execute request', () => {
-      let data = { some: 'thing' };
+      const data = { some: 'thing' };
       addon.api.addInstitution(data);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('institutions');
@@ -118,10 +118,10 @@ describe('API', () => {
 
   describe('.getLiabilities(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getLiabilities(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('liabilities');
@@ -131,10 +131,10 @@ describe('API', () => {
 
   describe('.getPositions(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getPositions(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('positions');
@@ -144,10 +144,10 @@ describe('API', () => {
 
   describe('.getTransactions(query)', () => {
     it('should execute request', () => {
-      let query = { some: 'thing' };
+      const query = { some: 'thing' };
       addon.api.getTransactions(query);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('transactions');
@@ -157,14 +157,14 @@ describe('API', () => {
 
   describe('.updateTransaction(id, attrs)', () => {
     it('should execute request', () => {
-      let attrs = { some: 'thing' };
+      const attrs = { some: 'thing' };
       addon.api.updateTransaction('test', attrs);
-      let spyCall = addon.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params.endpoint).to.equal('transactions/test');
       expect(calledArgs.params.body).to.equal(attrs);
     });
   });
-})
+});
