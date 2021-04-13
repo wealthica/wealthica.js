@@ -1,0 +1,6 @@
+services:
+  app:
+    image: buildkite/puppeteer
+    working_dir: /home/node/app
+    volumes:
+      - .:/home/node/app
