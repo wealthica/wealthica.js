@@ -1,6 +1,7 @@
 import { join } from 'path';
 import merge from 'webpack-merge';
 import TerserPlugin from 'terser-webpack-plugin';
+import ESLintPlugin from 'eslint-webpack-plugin';
 
 const include = join(__dirname, 'src');
 
@@ -34,6 +35,11 @@ const browserConfig = {
       }),
     ],
   },
+  plugins: [
+    new ESLintPlugin({
+      exclude: ['node_modules', 'dist', 'lib'],
+    }),
+  ],
   mode: 'production',
   module: {
     rules: [
