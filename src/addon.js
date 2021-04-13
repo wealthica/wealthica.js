@@ -2,7 +2,6 @@
 import Channel from 'js-channel';
 import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
-// eslint-disable-next-line no-unused-vars
 import 'iframe-resizer';
 import * as _ from 'lodash';
 import API from './api';
