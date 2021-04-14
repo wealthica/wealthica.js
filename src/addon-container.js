@@ -1,3 +1,4 @@
+/* global window */
 import Channel from 'js-channel';
 import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
@@ -5,7 +6,7 @@ import { iframeResizer } from 'iframe-resizer';
 import * as _ from 'lodash';
 
 class AddonContainer extends EventEmitter {
-  constructor (options={}) {
+  constructor(options = {}) {
     super();
 
     this.options = options;
@@ -36,46 +37,55 @@ class AddonContainer extends EventEmitter {
       },
     });
 
-    for (let event of ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium']) {
+    [
+      'saveData',
+      'request',
+      'addTransaction',
+      'editTransaction',
+      'addInstitution',
+      'downloadDocument',
+      'upgradePremium',
+    ].forEach((event) => {
       this.channel.bind(event, (tx, data) => {
-        const eventName = event, eventData = data;
+        const eventName = event;
+        const eventData = data;
 
         tx.delayReturn(true);
 
         const callback = (err, result) => {
           if (err) return tx.error(err);
 
-          tx.complete(result);
-        }
+          return tx.complete(result);
+        };
 
         this.emit(eventName, eventData, callback);
       });
-    }
+    });
 
     this.channel.call({
       method: 'init',
       params: options.options,
       success: (result) => {
         this.emit('init', result);
-      }
+      },
     });
   }
 
-  trigger (eventName, eventData) {
-    const params = { eventName: eventName };
+  trigger(eventName, eventData) {
+    const params = { eventName };
     if (eventData) params.eventData = eventData;
 
     return new Promise((resolve, reject) => {
       this.channel.call({
         method: '_event',
-        params: params,
+        params,
         success: resolve,
-        error: reject
+        error: reject,
       });
     });
   }
 
-  update (data) {
+  update(data) {
     return new Promise((resolve, reject) => {
       if (!_.isObject(data)) throw new Error('Data must be an object');
 
@@ -83,22 +93,22 @@ class AddonContainer extends EventEmitter {
         method: 'update',
         params: data,
         success: resolve,
-        error: reject
+        error: reject,
       });
     });
   }
 
-  reload () {
+  reload() {
     return new Promise((resolve, reject) => {
       this.channel.call({
         method: 'reload',
         success: resolve,
-        error: reject
+        error: reject,
       });
     });
   }
 
-  destroy () {
+  destroy() {
     this.channel.destroy();
   }
 }

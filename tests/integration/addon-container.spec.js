@@ -1,25 +1,24 @@
 import _ from 'lodash';
 
 describe('AddonContainer', () => {
-  let page, addonFrame;
+  let page;
+  let addonFrame;
 
   const getSpyCall = async (eventName) => {
-    let spyCallsHandle = await addonFrame.evaluateHandle(() => {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(addon.emit.getCalls().map((c) => c.args));
-        });
+    const spyCallsHandle = await addonFrame.evaluateHandle(() => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(addon.emit.getCalls().map((c) => c.args));
       });
-    });
+    }));
 
-    let spyCalls = await spyCallsHandle.jsonValue();
+    const spyCalls = await spyCallsHandle.jsonValue();
     return _.find(spyCalls, (c) => c[0] === eventName);
-  }
+  };
 
   before(async () => {
     page = await browser.newPage();
     await page.goto(url);
-    addonFrame = (await page.frames())[1];
+    [, addonFrame] = await page.frames();
   });
 
   after(async () => {
@@ -27,29 +26,24 @@ describe('AddonContainer', () => {
   });
 
   beforeEach(async () => {
-    await addonFrame.evaluate(() => {
-      return new Promise((resolve, reject) => {
-        sinon.spy(addon, 'emit');
-        resolve();
-      });
-    });
+    await addonFrame.evaluate(() => new Promise((resolve) => {
+      sinon.spy(addon, 'emit');
+      resolve();
+    }));
   });
 
   afterEach(async () => {
-    await addonFrame.evaluate(() => {
-      return new Promise((resolve, reject) => {
-        addon.emit.restore();
-        resolve();
-      });
-    });
+    await addonFrame.evaluate(() => new Promise((resolve) => {
+      addon.emit.restore();
+      resolve();
+    }));
   });
 
   describe('init', () => {
     it('should pass options to Addon', async () => {
-      let optionsHandle = await addonFrame.evaluateHandle(() => {
-        return Promise.resolve(window.addonOptions);
-      });
-      let options = await optionsHandle.jsonValue();
+      const optionsHandle = await addonFrame
+        .evaluateHandle(() => Promise.resolve(window.addonOptions));
+      const options = await optionsHandle.jsonValue();
 
       expect(options).to.deep.equal({ test: 'test' });
     });
@@ -57,12 +51,12 @@ describe('AddonContainer', () => {
 
   describe('.trigger(eventName, eventData)', () => {
     it('should pass the event to Addon', async () => {
-      let eventName = 'test event';
-      let eventData = { test: 'data' };
+      const eventName = 'test event';
+      const eventData = { test: 'data' };
       page.evaluate((eventName, eventData) => {
         container.trigger(eventName, eventData);
       }, eventName, eventData);
-      let call = await getSpyCall(eventName);
+      const call = await getSpyCall(eventName);
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(eventData);
@@ -71,11 +65,11 @@ describe('AddonContainer', () => {
 
   describe('.update(data)', () => {
     it('should trigger `update` event in Addon', async () => {
-      let data = { test: 'test' };
+      const data = { test: 'test' };
       page.evaluate((data) => {
         container.update(data);
       }, data);
-      let call = await getSpyCall('update');
+      const call = await getSpyCall('update');
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(data);
     });
@@ -86,7 +80,7 @@ describe('AddonContainer', () => {
       page.evaluate(() => {
         container.reload();
       });
-      let call = await getSpyCall('reload');
+      const call = await getSpyCall('reload');
 
       expect(call).to.exist;
     });

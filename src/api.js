@@ -1,12 +1,10 @@
-import { Promise } from 'es6-promise';
-
 class API {
-  constructor (addon) {
+  constructor(addon) {
     this.addon = addon;
   }
 
   // Assets
-  getAssets (query) {
+  getAssets(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'assets',
@@ -15,7 +13,7 @@ class API {
   }
 
   // Currencies
-  getCurrencies (query) {
+  getCurrencies(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'currencies',
@@ -24,7 +22,7 @@ class API {
   }
 
   // Institutions
-  getInstitutions (query) {
+  getInstitutions(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'institutions',
@@ -32,21 +30,21 @@ class API {
     });
   }
 
-  getInstitution (id) {
+  getInstitution(id) {
     return this.addon.request({
       method: 'GET',
       endpoint: `institutions/${id}`,
     });
   }
 
-  pollInstitution (id, v) {
+  pollInstitution(id, v) {
     return this.addon.request({
       method: 'GET',
       endpoint: `institutions/${id}/poll?v=${v}`,
     });
   }
 
-  syncInstitution (id) {
+  syncInstitution(id) {
     return this.addon.request({
       method: 'POST',
       endpoint: `institutions/${id}/sync`,
@@ -54,20 +52,22 @@ class API {
   }
 
   /**
-   * @deprecated Since version 0.0.12. Will be removed in version 0.1.x. Use `addon.addInstitution` instead
+   * @deprecated Since version 0.0.12. Will be removed in version 0.1.x.
+   * Use `addon.addInstitution` instead.
    */
-  addInstitution (data) {
+  addInstitution(data) {
+    // eslint-disable-next-line no-console
     console.warn('DEPRECATED: `addon.api.addInstitution`. Use `addon.addInstitution instead.`');
 
     return this.addon.request({
       method: 'POST',
-      endpoint: `institutions`,
+      endpoint: 'institutions',
       body: data,
     });
   }
 
   // liabilities
-  getLiabilities (query) {
+  getLiabilities(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'liabilities',
@@ -76,7 +76,7 @@ class API {
   }
 
   // Positions
-  getPositions (query) {
+  getPositions(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'positions',
@@ -85,7 +85,7 @@ class API {
   }
 
   // Transactions
-  getTransactions (query) {
+  getTransactions(query) {
     return this.addon.request({
       method: 'GET',
       endpoint: 'transactions',
@@ -93,20 +93,20 @@ class API {
     });
   }
 
-  updateTransaction (id, body={}) {
+  updateTransaction(id, body = {}) {
     return this.addon.request({
       method: 'PUT',
       endpoint: `transactions/${id}`,
       body,
-    })
+    });
   }
 
   // User
-  getUser () {
+  getUser() {
     return this.addon.request({
       method: 'GET',
       endpoint: 'users/me',
-    })
+    });
   }
 }
 

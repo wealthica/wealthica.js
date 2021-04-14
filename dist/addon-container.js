@@ -32,7 +32,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global window */
+
 
 var AddonContainer = function (_EventEmitter) {
   _inherits(AddonContainer, _EventEmitter);
@@ -72,29 +73,22 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    var _arr = ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium'];
-
-    var _loop = function _loop() {
-      var event = _arr[_i];
+    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
-        var eventName = event,
-            eventData = data;
+        var eventName = event;
+        var eventData = data;
 
         tx.delayReturn(true);
 
         var callback = function callback(err, result) {
           if (err) return tx.error(err);
 
-          tx.complete(result);
+          return tx.complete(result);
         };
 
         _this.emit(eventName, eventData, callback);
       });
-    };
-
-    for (var _i = 0; _i < _arr.length; _i++) {
-      _loop();
-    }
+    });
 
     _this.channel.call({
       method: 'init',

@@ -1,10 +1,11 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-const { expect } = chai;
 
 import sinon from 'sinon';
 import AddonContainer from '../../src/addon-container';
+
+chai.use(chaiAsPromised);
+const { expect } = chai;
 
 describe('AddonContainer', () => {
   let container;
@@ -13,13 +14,13 @@ describe('AddonContainer', () => {
     // JsChannel requires JSON implementation.
     window.JSON = {
       stringify: () => {},
-      parse: () => {}
+      parse: () => {},
     };
 
-    let iframe = document.createElement('iframe');
+    const iframe = document.createElement('iframe');
     document.body.appendChild(iframe);
     iframe.src = 'about:blank';
-    container = new AddonContainer({ iframe: iframe });
+    container = new AddonContainer({ iframe });
     sinon.spy(container.channel, 'call');
     sinon.spy(container.channel, 'destroy');
   });
@@ -38,24 +39,24 @@ describe('AddonContainer', () => {
 
   describe('.trigger(eventName, eventData)', () => {
     it('should pass the event via _event through the channel', () => {
-      let eventName = 'test event';
-      let eventData = 'test data';
+      const eventName = 'test event';
+      const eventData = 'test data';
       container.trigger(eventName, eventData);
-      let spyCall = container.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = container.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('_event');
       expect(calledArgs.params).to.deep.equal({
         eventName: 'test event',
-        eventData: 'test data'
+        eventData: 'test data',
       });
     });
 
     it('should not pass undefined eventData', () => {
-      let eventName = 'test event';
+      const eventName = 'test event';
       container.trigger(eventName);
-      let spyCall = container.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = container.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('_event');
       expect(calledArgs.params).to.deep.equal({ eventName: 'test event' });
@@ -64,18 +65,18 @@ describe('AddonContainer', () => {
 
   describe('.update(data)', () => {
     it('should send the updated data through the channel', () => {
-      let data = { test: 'test' };
+      const data = { test: 'test' };
       container.update(data);
-      let spyCall = container.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = container.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('update');
       expect(calledArgs.params).to.deep.equal({ test: 'test' });
     });
 
     it('should raise an error if data is not an object', () => {
-      let errorMessage = 'Data must be an object';
-      let numCalls = container.channel.call.getCalls().length;
+      const errorMessage = 'Data must be an object';
+      const numCalls = container.channel.call.getCalls().length;
 
       ['string', 1, true, false, undefined, null].forEach((params) => {
         expect(container.update(params)).to.eventually.be.rejectedWith(errorMessage);
@@ -88,8 +89,8 @@ describe('AddonContainer', () => {
   describe('.reload()', () => {
     it('should call reload on the channel', () => {
       container.reload();
-      let spyCall = container.channel.call.lastCall;
-      let calledArgs = spyCall.args[0];
+      const spyCall = container.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
 
       expect(calledArgs.method).to.equal('reload');
     });
@@ -98,10 +99,10 @@ describe('AddonContainer', () => {
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       container.destroy();
-      let spyCall = container.channel.destroy.lastCall;
+      const spyCall = container.channel.destroy.lastCall;
       container = undefined;
 
       expect(spyCall).to.exist;
     });
   });
-})
+});

@@ -1,12 +1,12 @@
+/* global document */
 export default {
-  heightCalculationMethod () {
-    const body = document.body;
-    const html = document.documentElement;
+  heightCalculationMethod() {
+    const { body, documentElement: html } = document;
 
     return Math.max.apply(null, [
       body.scrollHeight,
       body.offsetHeight,
-      html.offsetHeight
+      html.offsetHeight,
     ]);
-  }
-}
+  },
+};
