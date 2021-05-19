@@ -235,6 +235,28 @@ addon.downloadDocument('document-id').then(function () {
 });
 ```
 
+#### addon.getSharings()
+
+This method request the list of sharings for the logged in user.
+
+NOTE: Only available for addons with `"switchUser"` feature flag.
+
+```
+addon.getSharings().then(function (sharings) {}).catch(function (err) {});
+```
+
+#### addon.switchUser(id)
+
+This method switches Dashboard to viewing the user with provided id.
+
+NOTE: Only available for addons with `"switchUser"` feature flag.
+
+```
+addon.switchUser(id).then(function () {
+  // Successfully switched
+}).catch(function (err) {});
+```
+
 #### addon.saveData(data)
 
 This method allows add-on to persist data to the Wealthica user preferences. You can use this method to persist user configuration options. The add-on will receive this data under the `data` options parameter [the next time it is initialized](#event-init). Each add-on can store up to 100 KB of data (plus 4 KB per widget). Please note data is stored unencrypted in our database and may not be suitable for storing sensitive information.

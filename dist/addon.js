@@ -50,8 +50,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global window, location */
 
-// eslint-disable-next-line no-unused-vars
-
 
 window.iFrameResizer = _iframeResizerOptions2.default;
 
@@ -237,6 +235,43 @@ var Addon = function (_EventEmitter) {
       return new _es6Promise.Promise(function (resolve, reject) {
         _this8.channel.call({
           method: 'upgradePremium',
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'getSharings',
+    value: function getSharings() {
+      var _this9 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this9.channel.call({
+          method: 'getSharings',
+          success: function success(sharings) {
+            resolve(sharings);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'switchUser',
+    value: function switchUser(id) {
+      var _this10 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
+
+        _this10.channel.call({
+          method: 'switchUser',
+          params: id,
           success: function success() {
             resolve();
           },

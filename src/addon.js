@@ -146,6 +146,29 @@ class Addon extends EventEmitter {
     });
   }
 
+  getSharings() {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'getSharings',
+        success(sharings) { resolve(sharings); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  switchUser(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'switchUser',
+        params: id,
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   destroy() {
     this.channel.destroy();
   }
