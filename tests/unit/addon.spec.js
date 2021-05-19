@@ -237,6 +237,49 @@ describe('Addon', () => {
     });
   });
 
+  describe('.upgradePremium()', () => {
+    it("should call channel's `upgradePremium` method", () => {
+      addon.upgradePremium();
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('upgradePremium');
+    });
+  });
+
+  describe('.getSharings()', () => {
+    it("should call channel's `getSharings` method", () => {
+      addon.getSharings();
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('getSharings');
+    });
+  });
+
+  describe('.switchUser(id)', () => {
+    it("should call channel's `switchUser` method with the id", () => {
+      const id = 'test';
+      addon.switchUser(id);
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('switchUser');
+      expect(calledArgs.params).to.deep.equal(id);
+    });
+
+    it('should raise an error if id is missing or invalid', () => {
+      const errorMessage = 'Invalid id';
+      const numCalls = addon.channel.call.getCalls().length;
+
+      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
+        expect(addon.switchUser(invalid)).to.eventually.be.rejectedWith(errorMessage);
+      });
+
+      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+    });
+  });
+
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       addon.destroy();
