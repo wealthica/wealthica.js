@@ -73,7 +73,7 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium'].forEach(function (event) {
+    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'downloadDocument', 'upgradePremium', 'getSharings', 'switchUser'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
         var eventName = event;
         var eventData = data;
@@ -86,7 +86,7 @@ var AddonContainer = function (_EventEmitter) {
           return tx.complete(result);
         };
 
-        _this.emit(eventName, eventData, callback);
+        _this.emit(eventName, eventData || callback, eventData ? callback : undefined);
       });
     });
 

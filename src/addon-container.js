@@ -45,6 +45,8 @@ class AddonContainer extends EventEmitter {
       'addInstitution',
       'downloadDocument',
       'upgradePremium',
+      'getSharings',
+      'switchUser',
     ].forEach((event) => {
       this.channel.bind(event, (tx, data) => {
         const eventName = event;
@@ -58,7 +60,7 @@ class AddonContainer extends EventEmitter {
           return tx.complete(result);
         };
 
-        this.emit(eventName, eventData, callback);
+        this.emit(eventName, eventData || callback, eventData ? callback : undefined);
       });
     });
 

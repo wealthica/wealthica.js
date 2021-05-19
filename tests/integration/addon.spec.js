@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import _ from 'lodash';
 
 describe('Addon', () => {
@@ -427,6 +428,158 @@ describe('Addon', () => {
         addon.downloadDocument(id).then(resolve).catch(resolve);
       }), id);
       const call = await getSpyCall('downloadDocument');
+
+      expect(call).to.exist;
+      expect(call[1]).to.deep.equal(id);
+      expect(result).to.deep.equal('error');
+    });
+  });
+
+  describe('.upgradePremium()', () => {
+    beforeEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.on('upgradePremium', (callback) => {
+          callback();
+        });
+
+        resolve();
+      }));
+    });
+
+    afterEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.off('upgradePremium');
+
+        resolve();
+      }));
+    });
+
+    it('should be successful', async () => {
+      const addonFrame = (await page.frames())[1];
+
+      const result = await addonFrame.evaluate(() => new Promise((resolve, reject) => {
+        addon.upgradePremium().then(resolve).catch(reject);
+      }));
+      const call = await getSpyCall('upgradePremium');
+
+      expect(call).to.exist;
+      expect(result).to.not.exist;
+    });
+  });
+
+  describe('.getSharings()', () => {
+    const sharings = [{ id: 'test1' }, { id: 'test2' }];
+
+    afterEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.off('getSharings');
+
+        resolve();
+      }));
+    });
+
+    describe('when container returns result', () => {
+      beforeEach(async () => {
+        await page.evaluate((sharings) => new Promise((resolve) => {
+          container.on('getSharings', (callback) => {
+            callback(null, sharings);
+          });
+
+          resolve();
+        }), sharings);
+      });
+
+      it('should receive the result', async () => {
+        const addonFrame = (await page.frames())[1];
+
+        const result = await addonFrame.evaluate(() => new Promise((resolve) => {
+          addon.getSharings().then((sharings) => {
+            resolve(sharings);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }));
+        const call = await getSpyCall('getSharings');
+
+        expect(call).to.exist;
+        expect(result).to.deep.equal(sharings);
+      });
+    });
+
+    describe('when container returns error', () => {
+      beforeEach(async () => {
+        await page.evaluate(() => new Promise((resolve) => {
+          container.on('getSharings', (callback) => {
+            callback('error');
+          });
+
+          resolve();
+        }));
+      });
+
+      it('should receive the error', async () => {
+        const addonFrame = (await page.frames())[1];
+
+        const result = await addonFrame.evaluate(() => new Promise((resolve) => {
+          addon.getSharings().then((sharings) => {
+            resolve(sharings);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }));
+        const call = await getSpyCall('getSharings');
+
+        expect(call).to.exist;
+        expect(result).to.deep.equal('error');
+      });
+    });
+  });
+
+  describe('.switchUser(id)', () => {
+    beforeEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.on('switchUser', (id, callback) => {
+          if (id === 'shouldPass') {
+            callback();
+          } else {
+            callback('error');
+          }
+        });
+
+        resolve();
+      }));
+    });
+
+    afterEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.off('switchUser');
+
+        resolve();
+      }));
+    });
+
+    it('should receive success result from AddonContainer', async () => {
+      const addonFrame = (await page.frames())[1];
+      const id = 'shouldPass';
+
+      const result = await addonFrame.evaluate((id) => new Promise((resolve) => {
+        addon.switchUser(id).then(resolve).catch(resolve);
+      }), id);
+      const call = await getSpyCall('switchUser');
+
+      expect(call).to.exist;
+      expect(call[1]).to.deep.equal(id);
+      expect(result).to.not.exist;
+    });
+
+    it('should receive error result from AddonContainer', async () => {
+      const addonFrame = (await page.frames())[1];
+      const id = 'test';
+
+      const result = await addonFrame.evaluate((id) => new Promise((resolve) => {
+        addon.switchUser(id).then(resolve).catch(resolve);
+      }), id);
+      const call = await getSpyCall('switchUser');
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(id);
