@@ -1,6 +1,6 @@
 # wealthica.js
 
-[![Build Status](https://travis-ci.org/wealthica/wealthica.js.svg?branch=master)](https://travis-ci.org/wealthica/wealthica.js)
+[![Build Status](https://semaphoreci.com/api/v1/wealthica/wealthica-js/branches/master/shields_badge.svg)](https://semaphoreci.com/wealthica/wealthica-js)
 
 Extend Wealthica by writing your own add-ons and widgets.
 
@@ -239,7 +239,7 @@ addon.downloadDocument('document-id').then(function () {
 
 This method request the list of sharings for the logged in user.
 
-NOTE: Only available for addons with `"switchUser"` feature flag.
+NOTE: Only available for addons with `"switch_user"` feature flag.
 
 ```
 addon.getSharings().then(function (sharings) {}).catch(function (err) {});
@@ -249,7 +249,7 @@ addon.getSharings().then(function (sharings) {}).catch(function (err) {});
 
 This method switches Dashboard to viewing the user with provided id.
 
-NOTE: Only available for addons with `"switchUser"` feature flag.
+NOTE: Only available for addons with `"switch_user"` feature flag.
 
 ```
 addon.switchUser(id).then(function () {
@@ -420,7 +420,7 @@ yarn test
 ### Release
 ```
 npm version patch # or minor/major
-npm push --tags
+git push --tags
 # wait until merged then
 npm publish
 ```
