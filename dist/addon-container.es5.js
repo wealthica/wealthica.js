@@ -1,9 +1,9 @@
 var AddonContainer;
-/******/ (() => { // webpackBootstrap
+/******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 669:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -1357,7 +1357,7 @@ return Promise$1;
 /***/ }),
 
 /***/ 729:
-/***/ ((module) => {
+/***/ (function(module) {
 
 "use strict";
 
@@ -1701,7 +1701,7 @@ if (true) {
 /***/ }),
 
 /***/ 303:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -1713,7 +1713,7 @@ module.exports = __webpack_require__(683);
 /***/ }),
 
 /***/ 402:
-/***/ ((module) => {
+/***/ (function(module) {
 
 /*
  * File: iframeResizer.contentWindow.js
@@ -2826,7 +2826,7 @@ module.exports = __webpack_require__(683);
 /***/ }),
 
 /***/ 28:
-/***/ ((module, exports) => {
+/***/ (function(module, exports) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
  * File: iframeResizer.js
@@ -3884,7 +3884,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ 683:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 exports.iframeResizer = __webpack_require__(28);
 exports.iframeResizerContentWindow = __webpack_require__(402);
@@ -3893,7 +3893,7 @@ exports.iframeResizerContentWindow = __webpack_require__(402);
 /***/ }),
 
 /***/ 457:
-/***/ ((module) => {
+/***/ (function(module) {
 
 /*
  * js_channel is a very lightweight abstraction on top of
@@ -4523,7 +4523,7 @@ if (true) {
 /***/ }),
 
 /***/ 218:
-/***/ ((module) => {
+/***/ (function(module) {
 
 /**
  * Checks if `value` is the
@@ -4561,7 +4561,7 @@ module.exports = isObject;
 /***/ }),
 
 /***/ 327:
-/***/ (() => {
+/***/ (function() {
 
 /* (ignored) */
 
@@ -4595,7 +4595,7 @@ module.exports = isObject;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
+/******/ 	!function() {
 /******/ 		__webpack_require__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
@@ -4604,7 +4604,7 @@ module.exports = isObject;
 /******/ 				if (typeof window === 'object') return window;
 /******/ 			}
 /******/ 		})();
-/******/ 	})();
+/******/ 	}();
 /******/ 	
 /************************************************************************/
 /******/ 	

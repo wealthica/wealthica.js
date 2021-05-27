@@ -59,6 +59,33 @@ const browserMinifiedConfig = merge(browserConfig, {
   },
 });
 
+const browserES5Config = merge(browserConfig, {
+  entry: {
+    Addon: {
+      filename: 'addon.es5.js',
+    },
+    AddonContainer: {
+      filename: 'addon-container.es5.js',
+    },
+  },
+  target: ['web', 'es5'],
+});
+
+const browserES5MinifiedConfig = merge(browserES5Config, {
+  devtool: 'source-map',
+  entry: {
+    Addon: {
+      filename: 'addon.es5.min.js',
+    },
+    AddonContainer: {
+      filename: 'addon-container.es5.min.js',
+    },
+  },
+  optimization: {
+    minimize: true,
+  },
+});
+
 const commonJsConfig = merge(browserConfig, {
   entry: {
     Addon: {
@@ -81,4 +108,10 @@ const commonJsConfig = merge(browserConfig, {
   },
 });
 
-module.exports = [browserConfig, browserMinifiedConfig, commonJsConfig];
+module.exports = [
+  browserConfig,
+  browserMinifiedConfig,
+  browserES5Config,
+  browserES5MinifiedConfig,
+  commonJsConfig,
+];

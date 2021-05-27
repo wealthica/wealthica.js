@@ -1,16 +1,24 @@
-var AddonContainer;
-/******/ (() => { // webpackBootstrap
+var Addon;
+/******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 669:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ 541:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var _isObject2 = __webpack_require__(218);
+var _isUndefined2 = __webpack_require__(353);
 
-var _isObject3 = _interopRequireDefault(_isObject2);
+var _isUndefined3 = _interopRequireDefault(_isUndefined2);
+
+var _isString2 = __webpack_require__(37);
+
+var _isString3 = _interopRequireDefault(_isString2);
+
+var _isPlainObject2 = __webpack_require__(630);
+
+var _isPlainObject3 = _interopRequireDefault(_isPlainObject2);
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,7 +32,15 @@ var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
 var _es6Promise = __webpack_require__(702);
 
-var _iframeResizer = __webpack_require__(303);
+__webpack_require__(303);
+
+var _api = __webpack_require__(248);
+
+var _api2 = _interopRequireDefault(_api);
+
+var _iframeResizerOptions = __webpack_require__(249);
+
+var _iframeResizerOptions2 = _interopRequireDefault(_iframeResizerOptions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -32,39 +48,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global window */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* global window, location */
 
 
-var AddonContainer = function (_EventEmitter) {
-  _inherits(AddonContainer, _EventEmitter);
+window.iFrameResizer = _iframeResizerOptions2.default;
 
-  function AddonContainer() {
+var Addon = function (_EventEmitter) {
+  _inherits(Addon, _EventEmitter);
+
+  function Addon() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _classCallCheck(this, AddonContainer);
+    _classCallCheck(this, Addon);
 
-    var _this = _possibleConstructorReturn(this, (AddonContainer.__proto__ || Object.getPrototypeOf(AddonContainer)).call(this));
+    var _this = _possibleConstructorReturn(this, (Addon.__proto__ || Object.getPrototypeOf(Addon)).call(this));
 
     _this.options = options;
+    _this.api = new _api2.default(_this);
 
-    if (!options.iframe) throw new Error('Iframe not defined');
-
-    // Init iframe resizer. This will receive size changes from the addons
-    // and resize the iframe accordingly
-    (0, _iframeResizer.iframeResizer)({
-      checkOrigin: true,
-      heightCalculationMethod: window.ieVersion <= 10 ? 'max' : 'lowestElement',
-      resizeFrom: 'child',
-      resizedCallback: function resizedCallback(data) {
-        _this.emit('iframeResized', data);
-      }
-    }, options.iframe);
-
-    // Create js channel
     _this.channel = _jsChannel2.default.build({
-      window: options.iframe.contentWindow,
-      origin: options.origin || '*',
-      scope: options.id || options.iframe.contentWindow.location.origin,
+      window: options.window || window.parent,
+      origin: '*',
+      scope: options.id || location.origin, // eslint-disable-line no-restricted-globals
       postMessageObserver: function postMessageObserver(origin, message) {
         _this.emit('postMessage', origin, message);
       },
@@ -73,76 +78,223 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'addInvestment', 'downloadDocument', 'upgradePremium', 'getSharings', 'switchUser'].forEach(function (event) {
+    ['init', 'update', 'reload', '_event'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
         var eventName = event;
         var eventData = data;
 
-        tx.delayReturn(true);
+        if (event === '_event') {
+          eventName = data.eventName;
+          eventData = data.eventData;
+        }
+        _this.emit(eventName, eventData);
 
-        var callback = function callback(err, result) {
-          if (err) return tx.error(err);
-
-          return tx.complete(result);
-        };
-
-        _this.emit(eventName, eventData || callback, eventData ? callback : undefined);
+        return 'success';
       });
-    });
-
-    _this.channel.call({
-      method: 'init',
-      params: options.options,
-      success: function success(result) {
-        _this.emit('init', result);
-      }
     });
     return _this;
   }
 
-  _createClass(AddonContainer, [{
-    key: 'trigger',
-    value: function trigger(eventName, eventData) {
+  _createClass(Addon, [{
+    key: 'request',
+    value: function request(params) {
       var _this2 = this;
 
-      var params = { eventName: eventName };
-      if (eventData) params.eventData = eventData;
-
       return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isPlainObject3.default)(params)) throw new Error('Params must be an object');
+
+        var method = params.method,
+            endpoint = params.endpoint,
+            query = params.query,
+            body = params.body;
+
+
+        if (!method || !endpoint || !(0, _isString3.default)(method) || !(0, _isString3.default)(endpoint)) throw new Error('Invalid method or endpoint');
+
+        if (!(0, _isUndefined3.default)(query) && !(0, _isPlainObject3.default)(query)) throw new Error('Query must be an object');
+
+        if (!(0, _isUndefined3.default)(body) && !(0, _isPlainObject3.default)(body)) throw new Error('Body must be an object');
+
         _this2.channel.call({
-          method: '_event',
+          method: 'request',
           params: params,
-          success: resolve,
-          error: reject
+          success: function success(response) {
+            resolve(response);
+          },
+          error: function error(err) {
+            reject(err);
+          }
         });
       });
     }
   }, {
-    key: 'update',
-    value: function update(data) {
+    key: 'saveData',
+    value: function saveData(data) {
       var _this3 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        if (!(0, _isObject3.default)(data)) throw new Error('Data must be an object');
+        if (!(0, _isPlainObject3.default)(data)) throw new Error('Data must be an object');
 
         _this3.channel.call({
-          method: 'update',
+          method: 'saveData',
           params: data,
-          success: resolve,
-          error: reject
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
         });
       });
     }
   }, {
-    key: 'reload',
-    value: function reload() {
+    key: 'addTransaction',
+    value: function addTransaction(attrs) {
       var _this4 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isUndefined3.default)(attrs) && !(0, _isPlainObject3.default)(attrs)) throw new Error('Attrs must be an object');
+
         _this4.channel.call({
-          method: 'reload',
-          success: resolve,
-          error: reject
+          method: 'addTransaction',
+          params: attrs,
+          success: function success(transaction) {
+            resolve(transaction);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'editTransaction',
+    value: function editTransaction(id) {
+      var _this5 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
+
+        _this5.channel.call({
+          method: 'editTransaction',
+          params: id,
+          success: function success(transaction) {
+            resolve(transaction);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'addInstitution',
+    value: function addInstitution(attrs) {
+      var _this6 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isUndefined3.default)(attrs) && !(0, _isPlainObject3.default)(attrs)) throw new Error('Attrs must be an object');
+
+        _this6.channel.call({
+          method: 'addInstitution',
+          params: attrs,
+          success: function success(institution) {
+            resolve(institution);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'addInvestment',
+    value: function addInvestment() {
+      var _this7 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this7.channel.call({
+          method: 'addInvestment',
+          success: function success(result) {
+            resolve(result);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'downloadDocument',
+    value: function downloadDocument(id) {
+      var _this8 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
+
+        _this8.channel.call({
+          method: 'downloadDocument',
+          params: id,
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'upgradePremium',
+    value: function upgradePremium() {
+      var _this9 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this9.channel.call({
+          method: 'upgradePremium',
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'getSharings',
+    value: function getSharings() {
+      var _this10 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this10.channel.call({
+          method: 'getSharings',
+          success: function success(sharings) {
+            resolve(sharings);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'switchUser',
+    value: function switchUser(id) {
+      var _this11 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
+
+        _this11.channel.call({
+          method: 'switchUser',
+          params: id,
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
         });
       });
     }
@@ -153,10 +305,195 @@ var AddonContainer = function (_EventEmitter) {
     }
   }]);
 
-  return AddonContainer;
+  return Addon;
 }(_eventemitter2.default);
 
-module.exports = AddonContainer;
+module.exports = Addon;
+
+/***/ }),
+
+/***/ 248:
+/***/ (function(module) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var API = function () {
+  function API(addon) {
+    _classCallCheck(this, API);
+
+    this.addon = addon;
+  }
+
+  // Assets
+
+
+  _createClass(API, [{
+    key: 'getAssets',
+    value: function getAssets(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'assets',
+        query: query
+      });
+    }
+
+    // Currencies
+
+  }, {
+    key: 'getCurrencies',
+    value: function getCurrencies(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'currencies',
+        query: query
+      });
+    }
+
+    // Institutions
+
+  }, {
+    key: 'getInstitutions',
+    value: function getInstitutions(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'institutions',
+        query: query
+      });
+    }
+  }, {
+    key: 'getInstitution',
+    value: function getInstitution(id) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'institutions/' + id
+      });
+    }
+  }, {
+    key: 'pollInstitution',
+    value: function pollInstitution(id, v) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'institutions/' + id + '/poll?v=' + v
+      });
+    }
+  }, {
+    key: 'syncInstitution',
+    value: function syncInstitution(id) {
+      return this.addon.request({
+        method: 'POST',
+        endpoint: 'institutions/' + id + '/sync'
+      });
+    }
+
+    /**
+     * @deprecated Since version 0.0.12. Will be removed in version 0.1.x.
+     * Use `addon.addInstitution` instead.
+     */
+
+  }, {
+    key: 'addInstitution',
+    value: function addInstitution(data) {
+      // eslint-disable-next-line no-console
+      console.warn('DEPRECATED: `addon.api.addInstitution`. Use `addon.addInstitution instead.`');
+
+      return this.addon.request({
+        method: 'POST',
+        endpoint: 'institutions',
+        body: data
+      });
+    }
+
+    // liabilities
+
+  }, {
+    key: 'getLiabilities',
+    value: function getLiabilities(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'liabilities',
+        query: query
+      });
+    }
+
+    // Positions
+
+  }, {
+    key: 'getPositions',
+    value: function getPositions(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'positions',
+        query: query
+      });
+    }
+
+    // Transactions
+
+  }, {
+    key: 'getTransactions',
+    value: function getTransactions(query) {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'transactions',
+        query: query
+      });
+    }
+  }, {
+    key: 'updateTransaction',
+    value: function updateTransaction(id) {
+      var body = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      return this.addon.request({
+        method: 'PUT',
+        endpoint: 'transactions/' + id,
+        body: body
+      });
+    }
+
+    // User
+
+  }, {
+    key: 'getUser',
+    value: function getUser() {
+      return this.addon.request({
+        method: 'GET',
+        endpoint: 'users/me'
+      });
+    }
+  }]);
+
+  return API;
+}();
+
+module.exports = API;
+
+/***/ }),
+
+/***/ 249:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+/* global document */
+exports.default = {
+  heightCalculationMethod: function heightCalculationMethod() {
+    var _document = document,
+        body = _document.body,
+        html = _document.documentElement;
+
+
+    return Math.max.apply(null, [body.scrollHeight, body.offsetHeight, html.offsetHeight]);
+  }
+};
 
 /***/ }),
 
@@ -1357,7 +1694,7 @@ return Promise$1;
 /***/ }),
 
 /***/ 729:
-/***/ ((module) => {
+/***/ (function(module) {
 
 "use strict";
 
@@ -1701,7 +2038,7 @@ if (true) {
 /***/ }),
 
 /***/ 303:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
@@ -1713,7 +2050,7 @@ module.exports = __webpack_require__(683);
 /***/ }),
 
 /***/ 402:
-/***/ ((module) => {
+/***/ (function(module) {
 
 /*
  * File: iframeResizer.contentWindow.js
@@ -2826,7 +3163,7 @@ module.exports = __webpack_require__(683);
 /***/ }),
 
 /***/ 28:
-/***/ ((module, exports) => {
+/***/ (function(module, exports) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
  * File: iframeResizer.js
@@ -3884,7 +4221,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ 683:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 exports.iframeResizer = __webpack_require__(28);
 exports.iframeResizerContentWindow = __webpack_require__(402);
@@ -3893,7 +4230,7 @@ exports.iframeResizerContentWindow = __webpack_require__(402);
 /***/ }),
 
 /***/ 457:
-/***/ ((module) => {
+/***/ (function(module) {
 
 /*
  * js_channel is a very lightweight abstraction on top of
@@ -4522,46 +4859,404 @@ if (true) {
 
 /***/ }),
 
-/***/ 218:
-/***/ ((module) => {
+/***/ 705:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var root = __webpack_require__(639);
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+
+/***/ 239:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(705),
+    getRawTag = __webpack_require__(607),
+    objectToString = __webpack_require__(333);
+
+/** `Object#toString` result references. */
+var nullTag = '[object Null]',
+    undefinedTag = '[object Undefined]';
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
 /**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ * The base implementation of `getTag` without fallbacks for buggy environments.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+function baseGetTag(value) {
+  if (value == null) {
+    return value === undefined ? undefinedTag : nullTag;
+  }
+  return (symToStringTag && symToStringTag in Object(value))
+    ? getRawTag(value)
+    : objectToString(value);
+}
+
+module.exports = baseGetTag;
+
+
+/***/ }),
+
+/***/ 957:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
+
+module.exports = freeGlobal;
+
+
+/***/ }),
+
+/***/ 924:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var overArg = __webpack_require__(569);
+
+/** Built-in value references. */
+var getPrototype = overArg(Object.getPrototypeOf, Object);
+
+module.exports = getPrototype;
+
+
+/***/ }),
+
+/***/ 607:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(705);
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the raw `toStringTag`.
+ */
+function getRawTag(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag),
+      tag = value[symToStringTag];
+
+  try {
+    value[symToStringTag] = undefined;
+    var unmasked = true;
+  } catch (e) {}
+
+  var result = nativeObjectToString.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag] = tag;
+    } else {
+      delete value[symToStringTag];
+    }
+  }
+  return result;
+}
+
+module.exports = getRawTag;
+
+
+/***/ }),
+
+/***/ 333:
+/***/ (function(module) {
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/**
+ * Converts `value` to a string using `Object.prototype.toString`.
+ *
+ * @private
+ * @param {*} value The value to convert.
+ * @returns {string} Returns the converted string.
+ */
+function objectToString(value) {
+  return nativeObjectToString.call(value);
+}
+
+module.exports = objectToString;
+
+
+/***/ }),
+
+/***/ 569:
+/***/ (function(module) {
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+module.exports = overArg;
+
+
+/***/ }),
+
+/***/ 639:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var freeGlobal = __webpack_require__(957);
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+module.exports = root;
+
+
+/***/ }),
+
+/***/ 469:
+/***/ (function(module) {
+
+/**
+ * Checks if `value` is classified as an `Array` object.
  *
  * @static
  * @memberOf _
  * @since 0.1.0
  * @category Lang
  * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
  * @example
  *
- * _.isObject({});
+ * _.isArray([1, 2, 3]);
  * // => true
  *
- * _.isObject([1, 2, 3]);
- * // => true
+ * _.isArray(document.body.children);
+ * // => false
  *
- * _.isObject(_.noop);
- * // => true
+ * _.isArray('abc');
+ * // => false
  *
- * _.isObject(null);
+ * _.isArray(_.noop);
  * // => false
  */
-function isObject(value) {
-  var type = typeof value;
-  return value != null && (type == 'object' || type == 'function');
+var isArray = Array.isArray;
+
+module.exports = isArray;
+
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module) {
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return value != null && typeof value == 'object';
 }
 
-module.exports = isObject;
+module.exports = isObjectLike;
+
+
+/***/ }),
+
+/***/ 630:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var baseGetTag = __webpack_require__(239),
+    getPrototype = __webpack_require__(924),
+    isObjectLike = __webpack_require__(5);
+
+/** `Object#toString` result references. */
+var objectTag = '[object Object]';
+
+/** Used for built-in method references. */
+var funcProto = Function.prototype,
+    objectProto = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = funcProto.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/** Used to infer the `Object` constructor. */
+var objectCtorString = funcToString.call(Object);
+
+/**
+ * Checks if `value` is a plain object, that is, an object created by the
+ * `Object` constructor or one with a `[[Prototype]]` of `null`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.8.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ * }
+ *
+ * _.isPlainObject(new Foo);
+ * // => false
+ *
+ * _.isPlainObject([1, 2, 3]);
+ * // => false
+ *
+ * _.isPlainObject({ 'x': 0, 'y': 0 });
+ * // => true
+ *
+ * _.isPlainObject(Object.create(null));
+ * // => true
+ */
+function isPlainObject(value) {
+  if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+    return false;
+  }
+  var proto = getPrototype(value);
+  if (proto === null) {
+    return true;
+  }
+  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
+  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
+    funcToString.call(Ctor) == objectCtorString;
+}
+
+module.exports = isPlainObject;
+
+
+/***/ }),
+
+/***/ 37:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var baseGetTag = __webpack_require__(239),
+    isArray = __webpack_require__(469),
+    isObjectLike = __webpack_require__(5);
+
+/** `Object#toString` result references. */
+var stringTag = '[object String]';
+
+/**
+ * Checks if `value` is classified as a `String` primitive or object.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a string, else `false`.
+ * @example
+ *
+ * _.isString('abc');
+ * // => true
+ *
+ * _.isString(1);
+ * // => false
+ */
+function isString(value) {
+  return typeof value == 'string' ||
+    (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag);
+}
+
+module.exports = isString;
+
+
+/***/ }),
+
+/***/ 353:
+/***/ (function(module) {
+
+/**
+ * Checks if `value` is `undefined`.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
+ * @example
+ *
+ * _.isUndefined(void 0);
+ * // => true
+ *
+ * _.isUndefined(null);
+ * // => false
+ */
+function isUndefined(value) {
+  return value === undefined;
+}
+
+module.exports = isUndefined;
 
 
 /***/ }),
 
 /***/ 327:
-/***/ (() => {
+/***/ (function() {
 
 /* (ignored) */
 
@@ -4595,7 +5290,7 @@ module.exports = isObject;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
+/******/ 	!function() {
 /******/ 		__webpack_require__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
@@ -4604,15 +5299,15 @@ module.exports = isObject;
 /******/ 				if (typeof window === 'object') return window;
 /******/ 			}
 /******/ 		})();
-/******/ 	})();
+/******/ 	}();
 /******/ 	
 /************************************************************************/
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(669);
-/******/ 	AddonContainer = __webpack_exports__;
+/******/ 	var __webpack_exports__ = __webpack_require__(541);
+/******/ 	Addon = __webpack_exports__;
 /******/ 	
 /******/ })()
 ;

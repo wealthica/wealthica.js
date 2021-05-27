@@ -43,6 +43,7 @@ class AddonContainer extends EventEmitter {
       'addTransaction',
       'editTransaction',
       'addInstitution',
+      'addInvestment',
       'downloadDocument',
       'upgradePremium',
       'getSharings',

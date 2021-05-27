@@ -214,6 +214,16 @@ describe('Addon', () => {
     });
   });
 
+  describe('.addInvestment()', () => {
+    it("should call channel's `addInvestment` method", () => {
+      addon.addInvestment();
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('addInvestment');
+    });
+  });
+
   describe('.downloadDocument(id)', () => {
     it("should call channel's `downloadDocument` method with the id", () => {
       const id = 'test';
