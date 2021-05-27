@@ -223,6 +223,24 @@ addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstituti
 });
 ```
 
+#### addon.addInvestment()
+
+This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal.
+
+```
+addon.addInvestment().then(function (result) {
+  // The form has been closed
+
+  if (result) {
+    // A new institution, asset or liability has been created
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
 #### addon.downloadDocument(id)
 
 This method triggers download of a Wealthica document

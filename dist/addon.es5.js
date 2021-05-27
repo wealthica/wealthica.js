@@ -208,14 +208,31 @@ var Addon = function (_EventEmitter) {
       });
     }
   }, {
+    key: 'addInvestment',
+    value: function addInvestment() {
+      var _this7 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this7.channel.call({
+          method: 'addInvestment',
+          success: function success(result) {
+            resolve(result);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
     key: 'downloadDocument',
     value: function downloadDocument(id) {
-      var _this7 = this;
+      var _this8 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this7.channel.call({
+        _this8.channel.call({
           method: 'downloadDocument',
           params: id,
           success: function success() {
@@ -230,10 +247,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'upgradePremium',
     value: function upgradePremium() {
-      var _this8 = this;
+      var _this9 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this8.channel.call({
+        _this9.channel.call({
           method: 'upgradePremium',
           success: function success() {
             resolve();
@@ -247,10 +264,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'getSharings',
     value: function getSharings() {
-      var _this9 = this;
+      var _this10 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this9.channel.call({
+        _this10.channel.call({
           method: 'getSharings',
           success: function success(sharings) {
             resolve(sharings);
@@ -264,12 +281,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'switchUser',
     value: function switchUser(id) {
-      var _this10 = this;
+      var _this11 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this10.channel.call({
+        _this11.channel.call({
           method: 'switchUser',
           params: id,
           success: function success() {

@@ -123,6 +123,16 @@ class Addon extends EventEmitter {
     });
   }
 
+  addInvestment() {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'addInvestment',
+        success(result) { resolve(result); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   downloadDocument(id) {
     return new Promise((resolve, reject) => {
       if (!id || !_.isString(id)) throw new Error('Invalid id');

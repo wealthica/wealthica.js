@@ -216,7 +216,7 @@ describe('Addon', () => {
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.deep.equal('error');
+      expect(result).to.equal('error');
     });
   });
 
@@ -299,7 +299,7 @@ describe('Addon', () => {
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(id);
-      expect(result).to.deep.equal('error');
+      expect(result).to.equal('error');
     });
   });
 
@@ -379,7 +379,101 @@ describe('Addon', () => {
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.deep.equal('error');
+      expect(result).to.equal('error');
+    });
+  });
+
+  describe('.addInvestment()', () => {
+    afterEach(async () => {
+      await page.evaluate(() => new Promise((resolve) => {
+        container.off('addInvestment');
+
+        resolve();
+      }));
+    });
+
+    describe('when container returns result', () => {
+      beforeEach(async () => {
+        await page.evaluate(() => new Promise((resolve) => {
+          container.on('addInvestment', (callback) => {
+            callback(null, { created: true });
+          });
+
+          resolve();
+        }));
+      });
+
+      it('should receive result from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+
+        const result = await addonFrame.evaluate(() => new Promise((resolve) => {
+          addon.addInvestment().then((result) => {
+            resolve(result);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }));
+        const call = await getSpyCall('addInvestment');
+
+        expect(call).to.exist;
+        expect(result).to.deep.equal({ created: true });
+      });
+    });
+
+    describe('when container returns neither error nor result', () => {
+      beforeEach(async () => {
+        await page.evaluate(() => new Promise((resolve) => {
+          container.on('addInvestment', (callback) => {
+            callback();
+          });
+
+          resolve();
+        }));
+      });
+
+      it('should proceed as a success', async () => {
+        const addonFrame = (await page.frames())[1];
+
+        const result = await addonFrame.evaluate(() => new Promise((resolve) => {
+          addon.addInvestment().then((result) => {
+            resolve(result);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }));
+        const call = await getSpyCall('addInvestment');
+
+        expect(call).to.exist;
+        expect(result).to.not.exist;
+      });
+    });
+
+    describe('when container returns an error', () => {
+      beforeEach(async () => {
+        await page.evaluate(() => new Promise((resolve) => {
+          container.on('addInvestment', (callback) => {
+            callback('error');
+          });
+
+          resolve();
+        }));
+      });
+
+      it('should receive the error', async () => {
+        const addonFrame = (await page.frames())[1];
+
+        const result = await addonFrame.evaluate(() => new Promise((resolve) => {
+          addon.addInvestment().then((result) => {
+            resolve(result);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }));
+        const call = await getSpyCall('addInvestment');
+
+        expect(call).to.exist;
+        expect(result).to.equal('error');
+      });
     });
   });
 
@@ -431,7 +525,7 @@ describe('Addon', () => {
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(id);
-      expect(result).to.deep.equal('error');
+      expect(result).to.equal('error');
     });
   });
 
@@ -530,7 +624,7 @@ describe('Addon', () => {
         const call = await getSpyCall('getSharings');
 
         expect(call).to.exist;
-        expect(result).to.deep.equal('error');
+        expect(result).to.equal('error');
       });
     });
   });
@@ -583,7 +677,7 @@ describe('Addon', () => {
 
       expect(call).to.exist;
       expect(call[1]).to.deep.equal(id);
-      expect(result).to.deep.equal('error');
+      expect(result).to.equal('error');
     });
   });
 });
