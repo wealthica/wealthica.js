@@ -99,13 +99,25 @@ const commonJsConfig = merge(browserConfig, {
       },
     },
   },
+  output: {
+    path: join(__dirname, 'lib'),
+  },
+});
+
+const commonJsES5Config = merge(commonJsConfig, {
+  entry: {
+    Addon: {
+      filename: 'addon.es5.js',
+    },
+    AddonContainer: {
+      filename: 'addon-container.es5.js',
+    },
+  },
   plugins: [
     // Have eslint here so it only run once instead of once for each build config
     new ESLintPlugin(),
   ],
-  output: {
-    path: join(__dirname, 'lib'),
-  },
+  target: 'es5',
 });
 
 module.exports = [
@@ -114,4 +126,5 @@ module.exports = [
   browserES5Config,
   browserES5MinifiedConfig,
   commonJsConfig,
+  commonJsES5Config,
 ];
