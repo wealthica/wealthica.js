@@ -1,6 +1,6 @@
 {
   "name": "@wealthica/wealthica.js",
-  "version": "0.0.17",
+  "version": "0.0.19",
   "description": "Official Wealthica Add-on Library",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "Wealthica Financial Technology Inc. <hello@wealthica.com> (https://wealthica.com/)",
   "license": "MIT",
   "dependencies": {
-    "es6-promise": "4.2.2",
+    "es6-promise": "~4.2.8",
     "eventemitter3": "3.0.0",
     "iframe-resizer": "3.5.15",
     "js-channel": "1.0.1297",
