@@ -1,6 +1,6 @@
 {
   "name": "@wealthica/wealthica.js",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Official Wealthica Add-on Library",
   "main": "index.js",
   "scripts": {
