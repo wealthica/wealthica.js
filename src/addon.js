@@ -62,6 +62,9 @@ class Addon extends EventEmitter {
 
       if (!_.isUndefined(body) && !_.isPlainObject(body)) throw new Error('Body must be an object');
 
+      // eslint-disable-next-line no-param-reassign
+      if (this.effectiveUser) params.effectiveUser = this.effectiveUser;
+
       this.channel.call({
         method: 'request',
         params,
@@ -69,6 +72,10 @@ class Addon extends EventEmitter {
         error(err) { reject(err); },
       });
     });
+  }
+
+  setEffectiveUser(id) {
+    this.effectiveUser = id;
   }
 
   saveData(data) {
