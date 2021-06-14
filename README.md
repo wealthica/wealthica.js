@@ -414,6 +414,22 @@ addon.request({
 }).then(function (response) { }).catch(function (err) { });
 ```
 
+#### addon.setEffectiveUser(id)
+
+This is used make `addon.request()` calls on behalf of another user who has shared access to the currently logged in user. It has the same effect for any of the `addon.api` helpers which are wrappers around `addon.request()`.
+
+```
+addon.setEffectiveUser(userA);
+addon.request({...}).then(function (response) { }).catch(function (err) { });
+
+addon.setEffectiveUser(userB);
+addon.request({...}).then(function (response) { }).catch(function (err) { });
+
+// It's advised to clear effectiveUser after finishing on-behalf calls
+addon.setEffectiveUser(null);
+addon.request({...}).then(function (response) { }).catch(function (err) { });
+```
+
 ## Development
 
 ### Install
