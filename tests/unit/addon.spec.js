@@ -120,6 +120,32 @@ describe('Addon', () => {
       expect(calledArgs.method).to.equal('request');
       expect(calledArgs.params).to.deep.equal(validParams);
     });
+
+    it('should pass effectiveUser if set', () => {
+      const params = {
+        method: 'GET', endpoint: 'test', query: { some: 'thing' }, body: { another: 'thing' },
+      };
+      addon.setEffectiveUser('test');
+      addon.request(params);
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('request');
+      expect(calledArgs.params).to.deep.equal({ ...params, effectiveUser: 'test' });
+    });
+
+    it('should not pass effectiveUser if not set or null', () => {
+      const params = {
+        method: 'GET', endpoint: 'test', query: { some: 'thing' }, body: { another: 'thing' },
+      };
+      addon.setEffectiveUser(null);
+      addon.request(params);
+      const spyCall = addon.channel.call.lastCall;
+      const calledArgs = spyCall.args[0];
+
+      expect(calledArgs.method).to.equal('request');
+      expect(calledArgs.params).to.deep.equal(params);
+    });
   });
 
   describe('.saveData(data)', () => {

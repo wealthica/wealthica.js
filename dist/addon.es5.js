@@ -115,6 +115,9 @@ var Addon = function (_EventEmitter) {
 
         if (!(0, _isUndefined3.default)(body) && !(0, _isPlainObject3.default)(body)) throw new Error('Body must be an object');
 
+        // eslint-disable-next-line no-param-reassign
+        if (_this2.effectiveUser) params.effectiveUser = _this2.effectiveUser;
+
         _this2.channel.call({
           method: 'request',
           params: params,
@@ -126,6 +129,11 @@ var Addon = function (_EventEmitter) {
           }
         });
       });
+    }
+  }, {
+    key: 'setEffectiveUser',
+    value: function setEffectiveUser(id) {
+      this.effectiveUser = id;
     }
   }, {
     key: 'saveData',
