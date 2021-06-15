@@ -140,246 +140,174 @@ describe('Addon', () => {
     });
   });
 
-  describe('.addTransaction(attrs)', () => {
-    beforeEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.on('addTransaction', (attrs, callback) => {
-          if (attrs.id === 'shouldCreate') {
-            callback(null, { created: true });
-          } else if (attrs.id === 'shouldClose') {
-            callback(null);
-          } else {
-            callback('error');
-          }
-        });
+  ['addTransaction', 'addInstitution'].forEach((method) => {
+    describe(`.${method}(attrs)`, () => {
+      beforeEach(async () => {
+        await page.evaluate((method) => new Promise((resolve) => {
+          container.on(method, (attrs, callback) => {
+            if (attrs.id === 'shouldCreate') {
+              callback(null, { created: true });
+            } else if (attrs.id === 'shouldClose') {
+              callback(null);
+            } else {
+              callback('error');
+            }
+          });
 
-        resolve();
-      }));
-    });
+          resolve();
+        }), method);
+      });
 
-    afterEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.off('addTransaction');
+      afterEach(async () => {
+        await page.evaluate((method) => new Promise((resolve) => {
+          container.off(method);
 
-        resolve();
-      }));
-    });
+          resolve();
+        }), method);
+      });
 
-    it('should receive success result with new transaction from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'shouldCreate' };
+      it('should receive success result with new item from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const attrs = { id: 'shouldCreate' };
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addTransaction(attrs).then((transaction) => {
-          resolve(transaction);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addTransaction');
+        const result = await addonFrame.evaluate(({ attrs, method }) => new Promise((resolve) => {
+          addon[method](attrs).then((item) => {
+            resolve(item);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { attrs, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.deep.equal({ created: true });
-    });
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(attrs);
+        expect(result).to.deep.equal({ created: true });
+      });
 
-    it('should receive success result without new transaction from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'shouldClose' };
+      it('should receive success result without new item from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const attrs = { id: 'shouldClose' };
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addTransaction(attrs).then((transaction) => {
-          resolve(transaction);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addTransaction');
+        const result = await addonFrame.evaluate(({ attrs, method }) => new Promise((resolve) => {
+          addon[method](attrs).then((item) => {
+            resolve(item);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { attrs, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.not.exist;
-    });
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(attrs);
+        expect(result).to.not.exist;
+      });
 
-    it('should receive error result from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'error' };
+      it('should receive error result from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const attrs = { id: 'error' };
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addTransaction(attrs).then((transaction) => {
-          resolve(transaction);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addTransaction');
+        const result = await addonFrame.evaluate(({ attrs, method }) => new Promise((resolve) => {
+          addon[method](attrs).then((item) => {
+            resolve(item);
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { attrs, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.equal('error');
-    });
-  });
-
-  describe('.editTransaction(id)', () => {
-    beforeEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.on('editTransaction', (id, callback) => {
-          if (id === 'shouldUpdate') {
-            callback(null, { updated: true });
-          } else if (id === 'shouldClose') {
-            callback(null);
-          } else {
-            callback('error');
-          }
-        });
-
-        resolve();
-      }));
-    });
-
-    afterEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.off('editTransaction');
-
-        resolve();
-      }));
-    });
-
-    it('should receive success result with updated transaction from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const id = 'shouldUpdate';
-
-      const result = await addonFrame.evaluate((id) => new Promise((resolve) => {
-        addon.editTransaction(id).then((updated) => {
-          if (updated) resolve(updated);
-          else resolve({ updated: false });
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), id);
-      const call = await getSpyCall('editTransaction');
-
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.deep.equal({ updated: true });
-    });
-
-    it('should receive success result without updated transaction from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const id = 'shouldClose';
-
-      const result = await addonFrame.evaluate((id) => new Promise((resolve) => {
-        addon.editTransaction(id).then((updated) => {
-          if (updated) resolve(updated);
-          else resolve({ updated: false });
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), id);
-      const call = await getSpyCall('editTransaction');
-
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.deep.equal({ updated: false });
-    });
-
-    it('should receive error result from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const id = 'test';
-
-      const result = await addonFrame.evaluate((id) => new Promise((resolve) => {
-        addon.editTransaction(id).then((updated) => {
-          if (updated) resolve(updated);
-          else resolve({ updated: false });
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), id);
-      const call = await getSpyCall('editTransaction');
-
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.equal('error');
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(attrs);
+        expect(result).to.equal('error');
+      });
     });
   });
 
-  describe('.addInstitution(attrs)', () => {
-    beforeEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.on('addInstitution', (attrs, callback) => {
-          if (attrs.id === 'shouldCreate') {
-            callback(null, { created: true });
-          } else if (attrs.id === 'shouldClose') {
-            callback(null);
-          } else {
-            callback('error');
-          }
-        });
+  [
+    'editTransaction',
+    'editInstitution', 'editAsset', 'editLiability',
+    'deleteInstitution', 'deleteAsset', 'deleteLiability',
+  ].forEach((method) => {
+    describe(`.${method}(id)`, () => {
+      beforeEach(async () => {
+        await page.evaluate((method) => new Promise((resolve) => {
+          container.on(method, (id, callback) => {
+            if (id === 'shouldUpdate') {
+              callback(null, { updated: true });
+            } else if (id === 'shouldClose') {
+              callback(null);
+            } else {
+              callback('error');
+            }
+          });
 
-        resolve();
-      }));
-    });
+          resolve();
+        }), method);
+      });
 
-    afterEach(async () => {
-      await page.evaluate(() => new Promise((resolve) => {
-        container.off('addInstitution');
+      afterEach(async () => {
+        await page.evaluate((method) => new Promise((resolve) => {
+          container.off(method);
 
-        resolve();
-      }));
-    });
+          resolve();
+        }), method);
+      });
 
-    it('should receive success result with new institution from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'shouldCreate' };
+      it('should receive success result with updated data from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const id = 'shouldUpdate';
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addInstitution(attrs).then((institution) => {
-          resolve(institution);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addInstitution');
+        const result = await addonFrame.evaluate(({ id, method }) => new Promise((resolve) => {
+          addon[method](id).then((updated) => {
+            if (updated) resolve(updated);
+            else resolve({ updated: false });
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { id, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.deep.equal({ created: true });
-    });
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(id);
+        expect(result).to.deep.equal({ updated: true });
+      });
 
-    it('should receive success result without new institution from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'shouldClose' };
+      it('should receive success result without updated data from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const id = 'shouldClose';
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addInstitution(attrs).then((institution) => {
-          resolve(institution);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addInstitution');
+        const result = await addonFrame.evaluate(({ id, method }) => new Promise((resolve) => {
+          addon[method](id).then((updated) => {
+            if (updated) resolve(updated);
+            else resolve({ updated: false });
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { id, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.not.exist;
-    });
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(id);
+        expect(result).to.deep.equal({ updated: false });
+      });
 
-    it('should receive error result from AddonContainer', async () => {
-      const addonFrame = (await page.frames())[1];
-      const attrs = { id: 'error' };
+      it('should receive error result from AddonContainer', async () => {
+        const addonFrame = (await page.frames())[1];
+        const id = 'test';
 
-      const result = await addonFrame.evaluate((attrs) => new Promise((resolve) => {
-        addon.addInstitution(attrs).then((institution) => {
-          resolve(institution);
-        }).catch((err) => {
-          resolve(err);
-        });
-      }), attrs);
-      const call = await getSpyCall('addInstitution');
+        const result = await addonFrame.evaluate(({ id, method }) => new Promise((resolve) => {
+          addon[method](id).then((updated) => {
+            if (updated) resolve(updated);
+            else resolve({ updated: false });
+          }).catch((err) => {
+            resolve(err);
+          });
+        }), { id, method });
+        const call = await getSpyCall(method);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(attrs);
-      expect(result).to.equal('error');
+        expect(call).to.exist;
+        expect(call[1]).to.deep.equal(id);
+        expect(result).to.equal('error');
+      });
     });
   });
 
