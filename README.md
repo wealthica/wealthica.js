@@ -185,7 +185,7 @@ addon.addTransaction({ description: "Some description" }).then(function (newTran
 
 #### addon.editTransaction(id)
 
-This method opens the Edit Transaction form on the Dashboard and waits for user to update the transaction or to close the edit modal. The `updatedTransaction` parameter is provided when the transaction has been updated.
+This method opens the Edit Transaction form on the Dashboard and waits for user to update the transaction or to close the form. The `updatedTransaction` parameter is provided when the transaction has been updated.
 
 ```
 addon.editTransaction('transaction-id').then(function (updatedTransaction) {
@@ -203,7 +203,7 @@ addon.editTransaction('transaction-id').then(function (updatedTransaction) {
 
 #### addon.addInstitution(attrs)
 
-This method opens the Add Institution form on the Dashboard and waits for user to finish the process or to close the modal.
+This method opens the Add Institution form on the Dashboard and waits for user to finish the process or to close the form.
 
 Pass an optional institution object (`{ type, name }`) to go straight to the institution's credentials form. Otherwise the modal will open at the Select Institution step.
 
@@ -225,7 +225,7 @@ addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstituti
 
 #### addon.addInvestment()
 
-This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the modal.
+This method opens the Add Investment form on the Dashboard and waits for user to finish the process or to close the form.
 
 ```
 addon.addInvestment().then(function (result) {
@@ -233,6 +233,46 @@ addon.addInvestment().then(function (result) {
 
   if (result) {
     // A new institution, asset or liability has been created
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
+#### addon.editInstitution(id), addon.editAsset(id) & addon.editLiability(id)
+
+These methods open the corresponding Edit form (Institution/Asset/Liability) on the Dashboard and wait for user to update the item or to close the form.
+
+The `updatedItem` parameter is provided when the item has been successfully updated.
+
+```
+addon.editInstitution('institution-id').then(function (updatedItem) {
+  // The form has been closed
+
+  if (updatedItem) {
+    // The item has been updated
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
+#### addon.deleteInstitution(id), addon.deleteAsset(id) & addon.deleteLiability(id)
+
+These methods open the corresponding Delete form (Institution/Asset/Liability) on the Dashboard and wait for user to confirm or to close the form.
+
+The `deleted` parameter is provided when the item has been successfully deleted.
+
+```
+addon.deleteInstitution('institution-id').then(function (deleted) {
+  // The form has been closed
+
+  if (deleted) {
+    // The item has been deleted
   } else {
     // Nothing changed
   }

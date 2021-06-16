@@ -148,171 +148,71 @@ describe('Addon', () => {
     });
   });
 
-  describe('.saveData(data)', () => {
-    it("should call channel's `saveData` method with the encoded data", () => {
-      const data = { test: 1 };
-      addon.saveData(data);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+  ['saveData', 'addTransaction', 'addInstitution'].forEach((method) => {
+    describe(`.${method}(attrs)`, () => {
+      it(`should call channel's \`${method}\` method with the attrs`, () => {
+        const attrs = { test: 1 };
+        addon[method](attrs);
+        const spyCall = addon.channel.call.lastCall;
+        const calledArgs = spyCall.args[0];
 
-      expect(calledArgs.method).to.equal('saveData');
-      expect(calledArgs.params).to.equal(data);
-    });
-
-    it('should raise an error if data is invalid', () => {
-      const errorMessage = 'Data must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, undefined, [], ''].forEach((invalid) => {
-        expect(addon.saveData(invalid)).to.eventually.be.rejectedWith(errorMessage);
+        expect(calledArgs.method).to.equal(method);
+        expect(calledArgs.params).to.equal(attrs);
       });
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      it('should raise an error if attrs is invalid', () => {
+        const errorMessage = 'Attrs must be an object';
+        const numCalls = addon.channel.call.getCalls().length;
+
+        [1, true, false, null, [], ''].forEach((invalid) => {
+          expect(addon[method](invalid)).to.eventually.be.rejectedWith(errorMessage);
+        });
+
+        expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      });
     });
   });
 
-  describe('.addTransaction(attrs)', () => {
-    it("should call channel's `addTransaction` method with the attrs", () => {
-      const attrs = { test: 1 };
-      addon.addTransaction(attrs);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+  [
+    'editTransaction',
+    'editInstitution', 'editAsset', 'editLiability',
+    'deleteInstitution', 'deleteAsset', 'deleteLiability',
+    'downloadDocument',
+    'switchUser',
+  ].forEach((method) => {
+    describe(`.${method}(id)`, () => {
+      it(`should call channel's \`${method}\` method with the id`, () => {
+        const id = 'test';
+        addon[method](id);
+        const spyCall = addon.channel.call.lastCall;
+        const calledArgs = spyCall.args[0];
 
-      expect(calledArgs.method).to.equal('addTransaction');
-      expect(calledArgs.params).to.equal(attrs);
-    });
-
-    it('should raise an error if attrs is invalid', () => {
-      const errorMessage = 'Attrs must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, [], ''].forEach((invalid) => {
-        expect(addon.addTransaction(invalid)).to.eventually.be.rejectedWith(errorMessage);
+        expect(calledArgs.method).to.equal(method);
+        expect(calledArgs.params).to.deep.equal(id);
       });
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
-    });
-  });
+      it('should raise an error if id is missing or invalid', () => {
+        const errorMessage = 'Invalid id';
+        const numCalls = addon.channel.call.getCalls().length;
 
-  describe('.editTransaction(id)', () => {
-    it("should call channel's `editTransaction` method with the id", () => {
-      const id = 'test';
-      addon.editTransaction(id);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+        [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
+          expect(addon[method](invalid)).to.eventually.be.rejectedWith(errorMessage);
+        });
 
-      expect(calledArgs.method).to.equal('editTransaction');
-      expect(calledArgs.params).to.deep.equal(id);
-    });
-
-    it('should raise an error if id is missing or invalid', () => {
-      const errorMessage = 'Invalid id';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.editTransaction(invalid)).to.eventually.be.rejectedWith(errorMessage);
+        expect(addon.channel.call.getCalls().length).to.equal(numCalls);
       });
-
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
     });
   });
 
-  describe('.addInstitution(attrs)', () => {
-    it("should call channel's `addInstitution` method with the attrs", () => {
-      const attrs = { test: 1 };
-      addon.addInstitution(attrs);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+  ['addInvestment', 'upgradePremium', 'getSharings'].forEach((method) => {
+    describe(`.${method}()`, () => {
+      it(`should call channel's \`${method}\` method`, () => {
+        addon[method]();
+        const spyCall = addon.channel.call.lastCall;
+        const calledArgs = spyCall.args[0];
 
-      expect(calledArgs.method).to.equal('addInstitution');
-      expect(calledArgs.params).to.equal(attrs);
-    });
-
-    it('should raise an error if attrs is invalid', () => {
-      const errorMessage = 'Attrs must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, [], ''].forEach((invalid) => {
-        expect(addon.addInstitution(invalid)).to.eventually.be.rejectedWith(errorMessage);
+        expect(calledArgs.method).to.equal(method);
       });
-
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
-    });
-  });
-
-  describe('.addInvestment()', () => {
-    it("should call channel's `addInvestment` method", () => {
-      addon.addInvestment();
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
-
-      expect(calledArgs.method).to.equal('addInvestment');
-    });
-  });
-
-  describe('.downloadDocument(id)', () => {
-    it("should call channel's `downloadDocument` method with the id", () => {
-      const id = 'test';
-      addon.downloadDocument(id);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
-
-      expect(calledArgs.method).to.equal('downloadDocument');
-      expect(calledArgs.params).to.deep.equal(id);
-    });
-
-    it('should raise an error if id is missing or invalid', () => {
-      const errorMessage = 'Invalid id';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.downloadDocument(invalid)).to.eventually.be.rejectedWith(errorMessage);
-      });
-
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
-    });
-  });
-
-  describe('.upgradePremium()', () => {
-    it("should call channel's `upgradePremium` method", () => {
-      addon.upgradePremium();
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
-
-      expect(calledArgs.method).to.equal('upgradePremium');
-    });
-  });
-
-  describe('.getSharings()', () => {
-    it("should call channel's `getSharings` method", () => {
-      addon.getSharings();
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
-
-      expect(calledArgs.method).to.equal('getSharings');
-    });
-  });
-
-  describe('.switchUser(id)', () => {
-    it("should call channel's `switchUser` method with the id", () => {
-      const id = 'test';
-      addon.switchUser(id);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
-
-      expect(calledArgs.method).to.equal('switchUser');
-      expect(calledArgs.params).to.deep.equal(id);
-    });
-
-    it('should raise an error if id is missing or invalid', () => {
-      const errorMessage = 'Invalid id';
-      const numCalls = addon.channel.call.getCalls().length;
-
-      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.switchUser(invalid)).to.eventually.be.rejectedWith(errorMessage);
-      });
-
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
     });
   });
 

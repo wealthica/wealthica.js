@@ -140,6 +140,84 @@ class Addon extends EventEmitter {
     });
   }
 
+  editInstitution(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'editInstitution',
+        params: id,
+        success(institution) { resolve(institution); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  editAsset(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'editAsset',
+        params: id,
+        success(asset) { resolve(asset); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  editLiability(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'editLiability',
+        params: id,
+        success(liability) { resolve(liability); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  deleteInstitution(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'deleteInstitution',
+        params: id,
+        success(deleted) { resolve(deleted); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  deleteAsset(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'deleteAsset',
+        params: id,
+        success(deleted) { resolve(deleted); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  deleteLiability(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'deleteLiability',
+        params: id,
+        success(deleted) { resolve(deleted); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   downloadDocument(id) {
     return new Promise((resolve, reject) => {
       if (!id || !_.isString(id)) throw new Error('Invalid id');
