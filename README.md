@@ -165,6 +165,26 @@ addon.on('update', function (options) {
 });
 ```
 
+#### event: 'institution:sync'
+
+Emitted when Wealthica Dashboard receives a signal that the institution sync is done.
+
+```
+addon.on('institution:sync', function (institutionId) {
+  // Update synced institution
+});
+```
+
+
+
+Emitted when user updates one of the Dashboard filters. The Dashboard provides common filters including groups, institutions or date range filters. In response add-on should update itself according to received options.
+
+```
+addon.on('update', function (options) {
+  // Update according to the received options
+});
+```
+
 #### addon.addTransaction(attrs)
 
 This method opens the Add Transaction form on the Dashboard and waits for user to submit the transaction or to close the modal. Pass an optional `attrs` object to pre-populate the transaction form. The `newTransaction` parameter is provided when a new transaction has been created.
