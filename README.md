@@ -1,7 +1,5 @@
 # wealthica.js
 
-[![Build Status](https://semaphoreci.com/api/v1/wealthica/wealthica-js/branches/master/shields_badge.svg)](https://semaphoreci.com/wealthica/wealthica-js)
-
 Extend Wealthica by writing your own add-ons and widgets.
 
 [Wealthica](https://wealthica.com) is an aggregation platform that allows investors to see all their investments in a single Dashboard and get an unbiased view of their wealth. Each day, Wealthica connects to your financial institutions and retrieves accounts balances, positions and transactions. Wealthica is the largest financial aggregator in Canada with support for 200+ Canadian financial institutions and investment platforms.
