@@ -54,6 +54,7 @@ class AddonContainer extends EventEmitter {
       'upgradePremium',
       'getSharings',
       'switchUser',
+      'printPage',
     ].forEach((event) => {
       this.channel.bind(event, (tx, data) => {
         const eventName = event;

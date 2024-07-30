@@ -264,6 +264,16 @@ class Addon extends EventEmitter {
     });
   }
 
+  printPage() {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'printPage',
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   destroy() {
     this.channel.destroy();
   }

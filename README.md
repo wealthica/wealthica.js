@@ -269,6 +269,10 @@ addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(funct
 });
 ```
 
+#### addon.printPage()
+
+This method triggers `window.print()` from dashboard itself.
+
 ### API helpers
 
 These are helper functions for requesting API calls. See our API docs for the full list of API endpoints, their parameters and what they do.
