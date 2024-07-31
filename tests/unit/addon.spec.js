@@ -204,7 +204,7 @@ describe('Addon', () => {
     });
   });
 
-  ['addInvestment', 'upgradePremium', 'getSharings'].forEach((method) => {
+  ['addInvestment', 'upgradePremium', 'getSharings', 'printPage'].forEach((method) => {
     describe(`.${method}()`, () => {
       it(`should call channel's \`${method}\` method`, () => {
         addon[method]();
