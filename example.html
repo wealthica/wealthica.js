@@ -18,7 +18,7 @@
     <button type="button" disabled="disabled" id="getTransactions">List Transactions</button>
     <button type="button" disabled="disabled" id="getPositions">List Positions</button>
     <button type="button" disabled="disabled" id="addTransaction">Add Transaction</button>
-    <button type="button" disabled="disabled" id="saveData">Save Data</button>
+    <button type="button" disabled="disabled" id="saveData">Save Addon Data</button>
   </p>
   <textarea id="data" rows="8" cols="100"></textarea>
   <div id="result"></div>
@@ -47,7 +47,9 @@
         addon.addTransaction({
           description: "New transaction from Example Add-on"
         }).then(function (transaction) {
-          $('#result').html('New transaction:<br><code>' + JSON.stringify(transaction) + '</code>');
+          if(transaction) {
+            $('#result').html('New transaction:<br><code>' + JSON.stringify(transaction) + '</code>');
+          }
         }).catch(function (err) {
           $('#result').html('Error:<br><code>' + err + '</code>');
         }).finally(function () {
@@ -100,7 +102,10 @@
 
       // Show addon data in result box and optionally update the text input.
       function showAddonData(data, updateInput) {
-        $('#result').html('Addon data:<br><code>' + JSON.stringify(data) + '</code>');
+        if (data) {
+          $('#result').html('Addon data:<br><code>' + JSON.stringify(data) + '</code>');
+        }
+
         if (updateInput && data) {
           $('#data').val(JSON.stringify(data));
         }
