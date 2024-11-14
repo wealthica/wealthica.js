@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.23]
+
+### Added
+- `setLoadingStatus` method to set loading status, param string
+
 ## [0.0.22]
 
 ### Added

@@ -269,6 +269,9 @@ addon.saveData({ preferredCurrencies: ['CAD', 'USD', 'GBP', 'MXN'] }).then(funct
 });
 ```
 
+#### addon.setLoadingStatus(status)
+This method sets the loading status, sets the status string - shows the loader, sets an empty string - hides the loader.
+
 #### addon.printPage()
 
 This method triggers `window.print()` from dashboard itself.

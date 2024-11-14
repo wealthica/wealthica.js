@@ -264,6 +264,17 @@ class Addon extends EventEmitter {
     });
   }
 
+  setLoadingStatus(status) {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'setLoadingStatus',
+        params: status,
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   printPage() {
     return new Promise((resolve, reject) => {
       this.channel.call({
