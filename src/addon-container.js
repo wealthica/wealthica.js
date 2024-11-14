@@ -55,6 +55,7 @@ class AddonContainer extends EventEmitter {
       'getSharings',
       'switchUser',
       'printPage',
+      'setLoadingStatus',
     ].forEach((event) => {
       this.channel.bind(event, (tx, data) => {
         const eventName = event;
