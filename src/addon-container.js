@@ -69,7 +69,15 @@ class AddonContainer extends EventEmitter {
           return tx.complete(result);
         };
 
-        this.emit(eventName, eventData || callback, eventData ? callback : undefined);
+        if (event === 'setLoadingStatus') {
+          this.emit(
+            eventName,
+            eventData !== undefined ? eventData : callback,
+            eventData !== undefined ? callback : undefined,
+          );
+        } else {
+          this.emit(eventName, eventData || callback, eventData ? callback : undefined);
+        }
       });
     });
 
