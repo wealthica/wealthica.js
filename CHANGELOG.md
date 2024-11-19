@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.24]
+
+### Fixed
+- `setLoadingStatus` allow emit empty value
+
 ## [0.0.23]
 
 ### Added
