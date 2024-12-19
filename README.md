@@ -276,6 +276,10 @@ This method sets the loading status, sets the status string - shows the loader, 
 
 This method triggers `window.print()` from dashboard itself.
 
+#### addon.upgradePremium(plan)
+
+This method triggers `window.upgradePremium(plan)` popup which suggesting user to upgrade his plan (available options: 'premium' and 'prestige' )
+
 ### API helpers
 
 These are helper functions for requesting API calls. See our API docs for the full list of API endpoints, their parameters and what they do.

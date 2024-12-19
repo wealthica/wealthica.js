@@ -374,12 +374,13 @@ var Addon = function (_EventEmitter) {
     }
   }, {
     key: 'upgradePremium',
-    value: function upgradePremium() {
+    value: function upgradePremium(plan) {
       var _this15 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         _this15.channel.call({
           method: 'upgradePremium',
+          params: plan,
           success: function success() {
             resolve();
           },

@@ -231,10 +231,11 @@ class Addon extends EventEmitter {
     });
   }
 
-  upgradePremium() {
+  upgradePremium(plan) {
     return new Promise((resolve, reject) => {
       this.channel.call({
         method: 'upgradePremium',
+        params: plan,
         success() { resolve(); },
         error(err) { reject(err); },
       });

@@ -86,7 +86,7 @@ var AddonContainer = function (_EventEmitter) {
           return tx.complete(result);
         };
 
-        if (event === 'setLoadingStatus') {
+        if (['setLoadingStatus', 'upgradePremium'].includes(event)) {
           _this.emit(eventName, eventData !== undefined ? eventData : callback, eventData !== undefined ? callback : undefined);
         } else {
           _this.emit(eventName, eventData || callback, eventData ? callback : undefined);
