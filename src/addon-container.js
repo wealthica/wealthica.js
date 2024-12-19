@@ -69,7 +69,7 @@ class AddonContainer extends EventEmitter {
           return tx.complete(result);
         };
 
-        if (event === 'setLoadingStatus') {
+        if (['setLoadingStatus', 'upgradePremium'].includes(event)) {
           this.emit(
             eventName,
             eventData !== undefined ? eventData : callback,

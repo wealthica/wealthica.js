@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.0.25]
+- `upgradePremium(plan)` support passing plan param
+
 ## [0.0.24]
 
 ### Fixed
