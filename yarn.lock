@@ -135,6 +135,11 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
+"@wealthica/js-channel@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@wealthica/js-channel/-/js-channel-1.0.1.tgz#20d1b9bbb2fa9ed0ae17cc235c421559c284a9cd"
+  integrity sha512-0F2F29+i0VYbC7ymF8Y9rsCfeedlbSUg6kkeQDyAtk2cnymzGAcMeMA0HlSbAUBRL7G8Dpw3ZwVBO0m0GjPr4Q==
+
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.0.tgz#a5aa679efdc9e51707a4207139da57920555961f"
@@ -2983,10 +2988,6 @@ jest-worker@^26.6.2:
     "@types/node" "*"
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
-
-js-channel@1.0.1297:
-  version "1.0.1297"
-  resolved "https://registry.yarnpkg.com/js-channel/-/js-channel-1.0.1297.tgz#d3dc5c682c03c37b4c05ecab8e2546f4a36a89e2"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
