@@ -1,5 +1,5 @@
 /* global window, location */
-import Channel from 'js-channel';
+import Channel from '@wealthica/js-channel';
 import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
 import 'iframe-resizer';
