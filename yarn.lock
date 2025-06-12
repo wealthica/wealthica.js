@@ -135,10 +135,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@wealthica/js-channel@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@wealthica/js-channel/-/js-channel-1.0.1.tgz#20d1b9bbb2fa9ed0ae17cc235c421559c284a9cd"
-  integrity sha512-0F2F29+i0VYbC7ymF8Y9rsCfeedlbSUg6kkeQDyAtk2cnymzGAcMeMA0HlSbAUBRL7G8Dpw3ZwVBO0m0GjPr4Q==
+"@wealthica/js-channel@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@wealthica/js-channel/-/js-channel-1.0.3.tgz#23b19ede226b5d52866969ad3496c1050732db96"
+  integrity sha512-kiYOMXzl7FfxCJelhLwFvRh72pBKPoiaDagn0qRuDCrau3RSG9clBYDG62ecahHoZDWXzsg9AZP+U/wCwnZf/g==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
