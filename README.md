@@ -446,6 +446,9 @@ yarn test
 
 ### Release
 ```
+yarn install
+yarn build
+
 npm version patch # or minor/major
 git push --tags
 # wait until merged then
