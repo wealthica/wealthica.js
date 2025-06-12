@@ -449,6 +449,8 @@ yarn test
 yarn install
 yarn build
 
+// update files
+
 npm version patch # or minor/major
 git push --tags
 # wait until merged then
