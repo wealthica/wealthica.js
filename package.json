@@ -1,6 +1,6 @@
 {
   "name": "@wealthica/wealthica.js",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "Official Wealthica Add-on Library",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
     "es6-promise": "~4.2.8",
     "eventemitter3": "3.0.0",
     "iframe-resizer": "3.5.15",
-    "@wealthica/js-channel": "1.0.2",
+    "@wealthica/js-channel": "1.0.4",
     "lodash": "~4.17.13"
   },
   "devDependencies": {
