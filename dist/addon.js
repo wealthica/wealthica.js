@@ -141,11 +141,12 @@ var Addon;
             return;
         }
         
-        var w, o, s = '', i, meth; // Initialize scope s to empty string by default
+        var w, o, s, i, meth; // Initialize scope s to empty string by default
         
         if (window.ReactNativeWebView) {
             o = '*'; // Origin isn't typically provided or meaningful in RNWebView postMessage
             w = window.ReactNativeWebView; // The interface object acts as the 'window'
+            s = '';
         } else {
             o = e.origin;
             w = e.source;
@@ -679,7 +680,7 @@ var Addon;
             // Force post in RNWebView context.
             window.setTimeout(function () {
                 postMessage({ method: scopeMethod('__ready'), params: "ping" }, true);
-            }, 100);
+            }, 0);
             return obj;
         }
     };
@@ -1063,12 +1064,38 @@ var Addon = function (_EventEmitter) {
       });
     }
   }, {
-    key: 'upgradePremium',
-    value: function upgradePremium(plan) {
+    key: 'downloadFile',
+    value: function downloadFile(_ref) {
       var _this15 = this;
 
+      var fileName = _ref.fileName,
+          fileType = _ref.fileType,
+          fileContent = _ref.fileContent;
+
       return new _es6Promise.Promise(function (resolve, reject) {
+        if (!fileName || !(0, _isString3.default)(fileName)) throw new Error('No file name provided');
+        if (!fileType || !(0, _isString3.default)(fileType)) throw new Error('No file type provided');
+        if (!fileContent || !(0, _isString3.default)(fileContent)) throw new Error('No content provided');
+
         _this15.channel.call({
+          method: 'downloadFile',
+          params: { fileName: fileName, fileType: fileType, fileContent: fileContent },
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'upgradePremium',
+    value: function upgradePremium(plan) {
+      var _this16 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this16.channel.call({
           method: 'upgradePremium',
           params: plan,
           success: function success() {
@@ -1083,10 +1110,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'getSharings',
     value: function getSharings() {
-      var _this16 = this;
+      var _this17 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this16.channel.call({
+        _this17.channel.call({
           method: 'getSharings',
           success: function success(sharings) {
             resolve(sharings);
@@ -1100,12 +1127,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'switchUser',
     value: function switchUser(id) {
-      var _this17 = this;
+      var _this18 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this17.channel.call({
+        _this18.channel.call({
           method: 'switchUser',
           params: id,
           success: function success() {
@@ -1120,10 +1147,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'setLoadingStatus',
     value: function setLoadingStatus(status) {
-      var _this18 = this;
+      var _this19 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this18.channel.call({
+        _this19.channel.call({
           method: 'setLoadingStatus',
           params: status,
           success: function success() {
@@ -1138,10 +1165,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'printPage',
     value: function printPage() {
-      var _this19 = this;
+      var _this20 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this19.channel.call({
+        _this20.channel.call({
           method: 'printPage',
           success: function success() {
             resolve();
