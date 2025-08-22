@@ -231,6 +231,21 @@ class Addon extends EventEmitter {
     });
   }
 
+  downloadFile({ fileName, fileType, fileContent }) {
+    return new Promise((resolve, reject) => {
+      if (!fileName || !_.isString(fileName)) throw new Error('No file name provided');
+      if (!fileType || !_.isString(fileType)) throw new Error('No file type provided');
+      if (!fileContent || !_.isString(fileContent)) throw new Error('No content provided');
+
+      this.channel.call({
+        method: 'downloadFile',
+        params: { fileName, fileType, fileContent },
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   upgradePremium(plan) {
     return new Promise((resolve, reject) => {
       this.channel.call({

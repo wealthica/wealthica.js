@@ -51,6 +51,7 @@ class AddonContainer extends EventEmitter {
       'deleteAsset',
       'deleteLiability',
       'downloadDocument',
+      'downloadFile',
       'upgradePremium',
       'getSharings',
       'switchUser',

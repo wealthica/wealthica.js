@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.6]
+- `downloadFile({ fileName, fileType, fileContent })` method to trigger download files from web and mobile app
+
+## [1.0.5]
+- Completed support for react native
+
 ## [0.0.25]
 - `upgradePremium(plan)` support passing plan param
 
