@@ -235,6 +235,18 @@ addon.downloadDocument('document-id').then(function () {
 });
 ```
 
+#### addon.downloadFile({ fileName, fileType, fileContent })
+
+This method triggers download of a Wealthica document
+
+```
+addon.downloadFile({ fileName: 'test.csv', fileType: 'text/csv;charset=utf-8;', 'value 1, value 2' }).then(function () {
+  // The action has been successfully carried out.
+}).catch(function (err) {
+
+});
+```
+
 #### addon.getSharings()
 
 This method request the list of sharings for the logged in user.

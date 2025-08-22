@@ -141,11 +141,12 @@ var AddonContainer;
             return;
         }
         
-        var w, o, s = '', i, meth; // Initialize scope s to empty string by default
+        var w, o, s, i, meth; // Initialize scope s to empty string by default
         
         if (window.ReactNativeWebView) {
             o = '*'; // Origin isn't typically provided or meaningful in RNWebView postMessage
             w = window.ReactNativeWebView; // The interface object acts as the 'window'
+            s = '';
         } else {
             o = e.origin;
             w = e.source;
@@ -679,7 +680,7 @@ var AddonContainer;
             // Force post in RNWebView context.
             window.setTimeout(function () {
                 postMessage({ method: scopeMethod('__ready'), params: "ping" }, true);
-            }, 100);
+            }, 0);
             return obj;
         }
     };
@@ -763,7 +764,7 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'addInvestment', 'editInstitution', 'editAsset', 'editLiability', 'deleteInstitution', 'deleteAsset', 'deleteLiability', 'downloadDocument', 'upgradePremium', 'getSharings', 'switchUser', 'printPage', 'setLoadingStatus'].forEach(function (event) {
+    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'addInvestment', 'editInstitution', 'editAsset', 'editLiability', 'deleteInstitution', 'deleteAsset', 'deleteLiability', 'downloadDocument', 'downloadFile', 'upgradePremium', 'getSharings', 'switchUser', 'printPage', 'setLoadingStatus'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
         var eventName = event;
         var eventData = data;
