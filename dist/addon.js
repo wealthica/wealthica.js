@@ -915,12 +915,49 @@ var Addon = function (_EventEmitter) {
       });
     }
   }, {
-    key: 'addInvestment',
-    value: function addInvestment() {
+    key: 'addManualInstitution',
+    value: function addManualInstitution() {
       var _this7 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         _this7.channel.call({
+          method: 'addManualInstitution',
+          success: function success(result) {
+            resolve(result);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'addManualAccount',
+    value: function addManualAccount(id) {
+      var _this8 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
+
+        _this8.channel.call({
+          method: 'addManualAccount',
+          params: id,
+          success: function success(institution) {
+            resolve(institution);
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'addInvestment',
+    value: function addInvestment() {
+      var _this9 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        _this9.channel.call({
           method: 'addInvestment',
           success: function success(result) {
             resolve(result);
@@ -934,12 +971,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'editInstitution',
     value: function editInstitution(id) {
-      var _this8 = this;
+      var _this10 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this8.channel.call({
+        _this10.channel.call({
           method: 'editInstitution',
           params: id,
           success: function success(institution) {
@@ -954,12 +991,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'editAsset',
     value: function editAsset(id) {
-      var _this9 = this;
+      var _this11 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this9.channel.call({
+        _this11.channel.call({
           method: 'editAsset',
           params: id,
           success: function success(asset) {
@@ -974,12 +1011,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'editLiability',
     value: function editLiability(id) {
-      var _this10 = this;
+      var _this12 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this10.channel.call({
+        _this12.channel.call({
           method: 'editLiability',
           params: id,
           success: function success(liability) {
@@ -994,12 +1031,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'deleteInstitution',
     value: function deleteInstitution(id) {
-      var _this11 = this;
+      var _this13 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this11.channel.call({
+        _this13.channel.call({
           method: 'deleteInstitution',
           params: id,
           success: function success(deleted) {
@@ -1014,12 +1051,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'deleteAsset',
     value: function deleteAsset(id) {
-      var _this12 = this;
+      var _this14 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this12.channel.call({
+        _this14.channel.call({
           method: 'deleteAsset',
           params: id,
           success: function success(deleted) {
@@ -1034,12 +1071,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'deleteLiability',
     value: function deleteLiability(id) {
-      var _this13 = this;
+      var _this15 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this13.channel.call({
+        _this15.channel.call({
           method: 'deleteLiability',
           params: id,
           success: function success(deleted) {
@@ -1054,12 +1091,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'downloadDocument',
     value: function downloadDocument(id) {
-      var _this14 = this;
+      var _this16 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this14.channel.call({
+        _this16.channel.call({
           method: 'downloadDocument',
           params: id,
           success: function success() {
@@ -1074,7 +1111,7 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'downloadFile',
     value: function downloadFile(_ref) {
-      var _this15 = this;
+      var _this17 = this;
 
       var fileName = _ref.fileName,
           fileType = _ref.fileType,
@@ -1085,7 +1122,7 @@ var Addon = function (_EventEmitter) {
         if (!fileType || !(0, _isString3.default)(fileType)) throw new Error('No file type provided');
         if (!fileContent || !(0, _isString3.default)(fileContent)) throw new Error('No content provided');
 
-        _this15.channel.call({
+        _this17.channel.call({
           method: 'downloadFile',
           params: { fileName: fileName, fileType: fileType, fileContent: fileContent },
           success: function success() {
@@ -1100,10 +1137,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'upgradePremium',
     value: function upgradePremium(plan) {
-      var _this16 = this;
+      var _this18 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this16.channel.call({
+        _this18.channel.call({
           method: 'upgradePremium',
           params: plan,
           success: function success() {
@@ -1118,10 +1155,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'getSharings',
     value: function getSharings() {
-      var _this17 = this;
+      var _this19 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this17.channel.call({
+        _this19.channel.call({
           method: 'getSharings',
           success: function success(sharings) {
             resolve(sharings);
@@ -1135,12 +1172,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'switchUser',
     value: function switchUser(id) {
-      var _this18 = this;
+      var _this20 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this18.channel.call({
+        _this20.channel.call({
           method: 'switchUser',
           params: id,
           success: function success() {
@@ -1155,10 +1192,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'setLoadingStatus',
     value: function setLoadingStatus(status) {
-      var _this19 = this;
+      var _this21 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this19.channel.call({
+        _this21.channel.call({
           method: 'setLoadingStatus',
           params: status,
           success: function success() {
@@ -1173,10 +1210,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'printPage',
     value: function printPage() {
-      var _this20 = this;
+      var _this22 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this20.channel.call({
+        _this22.channel.call({
           method: 'printPage',
           success: function success() {
             resolve();
