@@ -772,7 +772,7 @@ var AddonContainer = function (_EventEmitter) {
       }
     });
 
-    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'addInvestment', 'editInstitution', 'editAsset', 'editLiability', 'deleteInstitution', 'deleteAsset', 'deleteLiability', 'downloadDocument', 'downloadFile', 'upgradePremium', 'getSharings', 'switchUser', 'printPage', 'setLoadingStatus'].forEach(function (event) {
+    ['saveData', 'request', 'addTransaction', 'editTransaction', 'addInstitution', 'addManualInstitution', 'addManualAccount', 'addInvestment', 'editInstitution', 'editAsset', 'editLiability', 'deleteInstitution', 'deleteAsset', 'deleteLiability', 'downloadDocument', 'downloadFile', 'upgradePremium', 'getSharings', 'switchUser', 'printPage', 'setLoadingStatus'].forEach(function (event) {
       _this.channel.bind(event, function (tx, data) {
         var eventName = event;
         var eventData = data;

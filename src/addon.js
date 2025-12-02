@@ -130,6 +130,29 @@ class Addon extends EventEmitter {
     });
   }
 
+  addManualInstitution() {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'addManualInstitution',
+        success(result) { resolve(result); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  addManualAccount(id) {
+    return new Promise((resolve, reject) => {
+      if (!id || !_.isString(id)) throw new Error('Invalid id');
+
+      this.channel.call({
+        method: 'addManualAccount',
+        params: id,
+        success(institution) { resolve(institution); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   addInvestment() {
     return new Promise((resolve, reject) => {
       this.channel.call({
