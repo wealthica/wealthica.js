@@ -59,6 +59,7 @@ class AddonContainer extends EventEmitter {
       'switchUser',
       'printPage',
       'setLoadingStatus',
+      'addGroupPopup',
     ].forEach((event) => {
       this.channel.bind(event, (tx, data) => {
         const eventName = event;

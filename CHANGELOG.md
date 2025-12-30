@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.9]
+- `addGroupPopup` method to open popup
+
 ## [1.0.8]
 - `addManualAccount(id)` method to open popup
 - `addManualInstitution` method to open popup

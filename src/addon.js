@@ -130,6 +130,16 @@ class Addon extends EventEmitter {
     });
   }
 
+  addGroupPopup() {
+    return new Promise((resolve, reject) => {
+      this.channel.call({
+        method: 'addGroupPopup',
+        success(result) { resolve(result); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   addManualInstitution() {
     return new Promise((resolve, reject) => {
       this.channel.call({
