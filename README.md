@@ -165,6 +165,24 @@ addon.addInstitution({ type: 'demo', name: 'Demo' }).then(function (newInstituti
 });
 ```
 
+#### addon.addGroupPopup()
+
+This methods opens the Add Group
+
+```
+addon.addGroupPopup().then(function (newGroupId) {
+  // The form has been closed
+
+  if (newGroupId) {
+    // A new Group has been created
+  } else {
+    // Nothing changed
+  }
+}).catch(function (err) {
+
+});
+```
+
 #### addon.addManualInstitution()
 
 This method opens the Add Institution form on the Dashboard in manual mode and waits for user to finish the process or to close the form.
