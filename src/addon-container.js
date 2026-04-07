@@ -58,6 +58,9 @@ class AddonContainer extends EventEmitter {
       'getSharings',
       'switchUser',
       'printPage',
+      'toastSuccess',
+      'toastError',
+      'toastWarning',
       'setLoadingStatus',
       'addGroupPopup',
     ].forEach((event) => {

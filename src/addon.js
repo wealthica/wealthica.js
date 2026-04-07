@@ -251,6 +251,45 @@ class Addon extends EventEmitter {
     });
   }
 
+  toastSuccess(data) {
+    return new Promise((resolve, reject) => {
+      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+
+      this.channel.call({
+        method: 'toastSuccess',
+        params: data,
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  toastError(data) {
+    return new Promise((resolve, reject) => {
+      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+
+      this.channel.call({
+        method: 'toastError',
+        params: data,
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
+  toastWarning(data) {
+    return new Promise((resolve, reject) => {
+      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+
+      this.channel.call({
+        method: 'toastWarning',
+        params: data,
+        success() { resolve(); },
+        error(err) { reject(err); },
+      });
+    });
+  }
+
   downloadDocument(id) {
     return new Promise((resolve, reject) => {
       if (!id || !_.isString(id)) throw new Error('Invalid id');

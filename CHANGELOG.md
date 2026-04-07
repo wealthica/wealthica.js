@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.10]
+- `toastSuccess(data)`, `toastError(data)` and `toastWarning(data)` methods to show toast notifications
+
 ## [1.0.9]
 - `addGroupPopup` method to open popup
 

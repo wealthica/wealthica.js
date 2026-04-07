@@ -346,6 +346,22 @@ This method triggers `window.print()` from dashboard itself.
 
 This method triggers `window.upgradePremium(plan)` popup which suggesting user to upgrade his plan (available options: 'premium' and 'prestige' )
 
+#### addon.toastSuccess(data), addon.toastError(data) & addon.toastWarning(data)
+
+These methods show success, error and warning toast notifications in the Dashboard. The `data` object contains configuration for the toast (such as message text and other options) and is passed through to the Dashboard.
+
+```
+addon.toastSuccess({ message: 'Saved successfully' }).then(function () {
+  // Toast has been shown
+}).catch(function (err) {
+
+});
+
+addon.toastError({ message: 'Something went wrong' });
+
+addon.toastWarning({ message: 'Be careful' });
+```
+
 ### API helpers
 
 These are helper functions for requesting API calls. See our API docs for the full list of API endpoints, their parameters and what they do.

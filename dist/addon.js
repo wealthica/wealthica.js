@@ -1106,14 +1106,74 @@ var Addon = function (_EventEmitter) {
       });
     }
   }, {
+    key: 'toastSuccess',
+    value: function toastSuccess(data) {
+      var _this17 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isPlainObject3.default)(data)) throw new Error('Data must be an object');
+
+        _this17.channel.call({
+          method: 'toastSuccess',
+          params: data,
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'toastError',
+    value: function toastError(data) {
+      var _this18 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isPlainObject3.default)(data)) throw new Error('Data must be an object');
+
+        _this18.channel.call({
+          method: 'toastError',
+          params: data,
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
+    key: 'toastWarning',
+    value: function toastWarning(data) {
+      var _this19 = this;
+
+      return new _es6Promise.Promise(function (resolve, reject) {
+        if (!(0, _isPlainObject3.default)(data)) throw new Error('Data must be an object');
+
+        _this19.channel.call({
+          method: 'toastWarning',
+          params: data,
+          success: function success() {
+            resolve();
+          },
+          error: function error(err) {
+            reject(err);
+          }
+        });
+      });
+    }
+  }, {
     key: 'downloadDocument',
     value: function downloadDocument(id) {
-      var _this17 = this;
+      var _this20 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this17.channel.call({
+        _this20.channel.call({
           method: 'downloadDocument',
           params: id,
           success: function success() {
@@ -1128,7 +1188,7 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'downloadFile',
     value: function downloadFile(_ref) {
-      var _this18 = this;
+      var _this21 = this;
 
       var fileName = _ref.fileName,
           fileType = _ref.fileType,
@@ -1139,7 +1199,7 @@ var Addon = function (_EventEmitter) {
         if (!fileType || !(0, _isString3.default)(fileType)) throw new Error('No file type provided');
         if (!fileContent || !(0, _isString3.default)(fileContent)) throw new Error('No content provided');
 
-        _this18.channel.call({
+        _this21.channel.call({
           method: 'downloadFile',
           params: { fileName: fileName, fileType: fileType, fileContent: fileContent },
           success: function success() {
@@ -1154,10 +1214,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'upgradePremium',
     value: function upgradePremium(plan) {
-      var _this19 = this;
+      var _this22 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this19.channel.call({
+        _this22.channel.call({
           method: 'upgradePremium',
           params: plan,
           success: function success() {
@@ -1172,10 +1232,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'getSharings',
     value: function getSharings() {
-      var _this20 = this;
+      var _this23 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this20.channel.call({
+        _this23.channel.call({
           method: 'getSharings',
           success: function success(sharings) {
             resolve(sharings);
@@ -1189,12 +1249,12 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'switchUser',
     value: function switchUser(id) {
-      var _this21 = this;
+      var _this24 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
         if (!id || !(0, _isString3.default)(id)) throw new Error('Invalid id');
 
-        _this21.channel.call({
+        _this24.channel.call({
           method: 'switchUser',
           params: id,
           success: function success() {
@@ -1209,10 +1269,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'setLoadingStatus',
     value: function setLoadingStatus(status) {
-      var _this22 = this;
+      var _this25 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this22.channel.call({
+        _this25.channel.call({
           method: 'setLoadingStatus',
           params: status,
           success: function success() {
@@ -1227,10 +1287,10 @@ var Addon = function (_EventEmitter) {
   }, {
     key: 'printPage',
     value: function printPage() {
-      var _this23 = this;
+      var _this26 = this;
 
       return new _es6Promise.Promise(function (resolve, reject) {
-        _this23.channel.call({
+        _this26.channel.call({
           method: 'printPage',
           success: function success() {
             resolve();
