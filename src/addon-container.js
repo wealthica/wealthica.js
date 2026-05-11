@@ -70,11 +70,7 @@ class AddonContainer extends EventEmitter {
 
         tx.delayReturn(true);
 
-        const callback = (err, result) => {
-          if (err) return tx.error(err);
-
-          return tx.complete(result);
-        };
+        const callback = this.createTxCallback(tx);
 
         if (['setLoadingStatus', 'upgradePremium'].includes(event)) {
           this.emit(
@@ -136,6 +132,33 @@ class AddonContainer extends EventEmitter {
 
   destroy() {
     this.channel.destroy();
+  }
+
+  // Build the (err, result) callback handed to each registered host handler.
+  // jschannel removes the transaction entry from its inbound table on the first
+  // tx.complete()/tx.error() call and throws strings like
+  // "complete called for nonexistent message: <id>" on any subsequent call.
+  // The same throw happens when the channel has been destroyed (e.g. the host
+  // navigated between addons) before an in-flight async handler finishes. We
+  // can't dictate how host apps wire up their handlers, so make the callback
+  // itself idempotent and swallow those lifecycle throws — they aren't
+  // actionable bugs. Real exceptions from tx.error/tx.complete still propagate.
+  // eslint-disable-next-line class-methods-use-this
+  createTxCallback(tx) {
+    let invoked = false;
+    return (err, result) => {
+      if (invoked) return undefined;
+      invoked = true;
+      try {
+        if (err) return tx.error(err);
+        return tx.complete(result);
+      } catch (e) {
+        if (typeof e === 'string' && /nonexistent message/.test(e)) {
+          return undefined;
+        }
+        throw e;
+      }
+    };
   }
 }
 
