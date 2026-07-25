@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.11]
+- AddonContainer: make the per-transaction callback handed to host handlers idempotent. jschannel removes the transaction entry on the first `tx.complete()`/`tx.error()` call and throws `"complete called for nonexistent message: <id>"` / `"error called for nonexistent message: <id>"` on any subsequent call (also when the channel was destroyed mid-flight). The wrapper now ignores second invocations and swallows those specific lifecycle throws; real exceptions still propagate. Closes Sentry WP-V2-8 / 59 / 2B.
+
 ## [1.0.10]
 - `toastSuccess(data)`, `toastError(data)` and `toastWarning(data)` methods to show toast notifications
 

@@ -96,6 +96,83 @@ describe('AddonContainer', () => {
     });
   });
 
+  describe('.createTxCallback(tx)', () => {
+    let tx;
+
+    beforeEach(() => {
+      tx = { complete: sinon.stub(), error: sinon.stub() };
+    });
+
+    it('should call tx.complete on the first success invocation', () => {
+      const cb = container.createTxCallback(tx);
+      cb(null, 'result');
+
+      expect(tx.complete.calledOnceWithExactly('result')).to.equal(true);
+      expect(tx.error.notCalled).to.equal(true);
+    });
+
+    it('should call tx.error when the first arg is truthy', () => {
+      const cb = container.createTxCallback(tx);
+      const err = new Error('boom');
+      cb(err);
+
+      expect(tx.error.calledOnceWithExactly(err)).to.equal(true);
+      expect(tx.complete.notCalled).to.equal(true);
+    });
+
+    it('should be a no-op on the second invocation (idempotent)', () => {
+      const cb = container.createTxCallback(tx);
+      cb(null, 'first');
+      cb(null, 'second');
+
+      expect(tx.complete.calledOnce).to.equal(true);
+      expect(tx.complete.firstCall.args).to.deep.equal(['first']);
+    });
+
+    it('should ignore complete-after-error and error-after-complete', () => {
+      const cbA = container.createTxCallback(tx);
+      cbA(new Error('first'));
+      cbA(null, 'second');
+      expect(tx.error.calledOnce).to.equal(true);
+      expect(tx.complete.notCalled).to.equal(true);
+
+      const tx2 = { complete: sinon.stub(), error: sinon.stub() };
+      const cbB = container.createTxCallback(tx2);
+      cbB(null, 'first');
+      cbB(new Error('second'));
+      expect(tx2.complete.calledOnce).to.equal(true);
+      expect(tx2.error.notCalled).to.equal(true);
+    });
+
+    it('should swallow jschannel "nonexistent message" string throws from tx.complete', () => {
+      tx.complete.callsFake(() => { throw 'complete called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
+      const cb = container.createTxCallback(tx);
+
+      expect(() => cb(null, 'x')).to.not.throw();
+    });
+
+    it('should swallow jschannel "nonexistent message" string throws from tx.error', () => {
+      tx.error.callsFake(() => { throw 'error called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
+      const cb = container.createTxCallback(tx);
+
+      expect(() => cb(new Error('boom'))).to.not.throw();
+    });
+
+    it('should propagate non-lifecycle errors from tx.complete', () => {
+      tx.complete.throws(new Error('real bug'));
+      const cb = container.createTxCallback(tx);
+
+      expect(() => cb(null, 'x')).to.throw('real bug');
+    });
+
+    it('should propagate non-matching string throws', () => {
+      tx.complete.callsFake(() => { throw 'something else entirely'; }); // eslint-disable-line no-throw-literal
+      const cb = container.createTxCallback(tx);
+
+      expect(() => cb(null, 'x')).to.throw();
+    });
+  });
+
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       container.destroy();
