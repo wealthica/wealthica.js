@@ -4,17 +4,8 @@
   "description": "Official Wealthica Add-on Library",
   "author": "Wealthica Financial Technology Inc. <hello@wealthica.com> (https://wealthica.com/)",
   "license": "MIT",
-  "type": "module",
   "main": "dist/wealthica.cjs.js",
   "module": "dist/wealthica.es.js",
-  "exports": {
-    ".": {
-      "import": "./dist/wealthica.es.js",
-      "require": "./dist/wealthica.cjs.js"
-    },
-    "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist"
   ],
