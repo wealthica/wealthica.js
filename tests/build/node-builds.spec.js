@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { JSDOM } from 'jsdom';
+import * as acorn from 'acorn';
 
 const require = createRequire(import.meta.url);
 const cjs = readFileSync('dist/wealthica.cjs.js', 'utf8');
@@ -47,5 +48,15 @@ describe('dist/wealthica.es.js', () => {
     // The side-effect import is merged into the named one; either form executes iframe-resizer
     expect(es).toMatch(/(import|from) "iframe-resizer"/);
     expect(es).toMatch(/export \{[^}]*\bAddon\b[^}]*\bAddonContainer\b[^}]*\}/);
+  });
+});
+
+// Vue CLI 4 / webpack 4 resolve `module` (the ES build) and parse it with acorn 6: no `?.` / `??`
+describe.each([
+  ['dist/wealthica.es.js', es, 'module'],
+  ['dist/wealthica.cjs.js', cjs, 'script'],
+])('%s', (file, src, sourceType) => {
+  it('parses as ES2019 for webpack 4 consumers', () => {
+    expect(() => acorn.parse(src, { ecmaVersion: 2019, sourceType })).not.toThrow();
   });
 });

@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     emptyOutDir: false,
-    target: 'es2020',
+    target: 'es2019',
     minify: false,
     lib: {
       entry: './src/index.js',
