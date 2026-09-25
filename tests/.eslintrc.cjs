@@ -4,5 +4,6 @@ module.exports = {
     'no-undef': 'off',
     'no-unused-expressions': 'off',
     'no-shadow': 'off',
+    'import/no-extraneous-dependencies': 'off',
   },
 };

@@ -3,7 +3,9 @@ import Channel from '@wealthica/js-channel';
 import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
 import 'iframe-resizer';
-import * as _ from 'lodash';
+import isPlainObject from 'lodash/isPlainObject';
+import isString from 'lodash/isString';
+import isUndefined from 'lodash/isUndefined';
 import API from './api';
 
 import iframeResizerOptions from './iframe-resizer-options';
@@ -47,7 +49,7 @@ class Addon extends EventEmitter {
 
   request(params) {
     return new Promise((resolve, reject) => {
-      if (!_.isPlainObject(params)) throw new Error('Params must be an object');
+      if (!isPlainObject(params)) throw new Error('Params must be an object');
 
       const {
         method,
@@ -56,11 +58,11 @@ class Addon extends EventEmitter {
         body,
       } = params;
 
-      if (!method || !endpoint || !_.isString(method) || !_.isString(endpoint)) throw new Error('Invalid method or endpoint');
+      if (!method || !endpoint || !isString(method) || !isString(endpoint)) throw new Error('Invalid method or endpoint');
 
-      if (!_.isUndefined(query) && !_.isPlainObject(query)) throw new Error('Query must be an object');
+      if (!isUndefined(query) && !isPlainObject(query)) throw new Error('Query must be an object');
 
-      if (!_.isUndefined(body) && !_.isPlainObject(body)) throw new Error('Body must be an object');
+      if (!isUndefined(body) && !isPlainObject(body)) throw new Error('Body must be an object');
 
       // eslint-disable-next-line no-param-reassign
       if (this.effectiveUser) params.effectiveUser = this.effectiveUser;
@@ -80,7 +82,7 @@ class Addon extends EventEmitter {
 
   saveData(data) {
     return new Promise((resolve, reject) => {
-      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+      if (!isPlainObject(data)) throw new Error('Data must be an object');
 
       this.channel.call({
         method: 'saveData',
@@ -93,7 +95,7 @@ class Addon extends EventEmitter {
 
   addTransaction(attrs) {
     return new Promise((resolve, reject) => {
-      if (!_.isUndefined(attrs) && !_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
+      if (!isUndefined(attrs) && !isPlainObject(attrs)) throw new Error('Attrs must be an object');
 
       this.channel.call({
         method: 'addTransaction',
@@ -106,7 +108,7 @@ class Addon extends EventEmitter {
 
   editTransaction(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'editTransaction',
@@ -119,7 +121,7 @@ class Addon extends EventEmitter {
 
   addInstitution(attrs) {
     return new Promise((resolve, reject) => {
-      if (!_.isUndefined(attrs) && !_.isPlainObject(attrs)) throw new Error('Attrs must be an object');
+      if (!isUndefined(attrs) && !isPlainObject(attrs)) throw new Error('Attrs must be an object');
 
       this.channel.call({
         method: 'addInstitution',
@@ -152,7 +154,7 @@ class Addon extends EventEmitter {
 
   addManualAccount(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'addManualAccount',
@@ -175,7 +177,7 @@ class Addon extends EventEmitter {
 
   editInstitution(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'editInstitution',
@@ -188,7 +190,7 @@ class Addon extends EventEmitter {
 
   editAsset(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'editAsset',
@@ -201,7 +203,7 @@ class Addon extends EventEmitter {
 
   editLiability(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'editLiability',
@@ -214,7 +216,7 @@ class Addon extends EventEmitter {
 
   deleteInstitution(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'deleteInstitution',
@@ -227,7 +229,7 @@ class Addon extends EventEmitter {
 
   deleteAsset(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'deleteAsset',
@@ -240,7 +242,7 @@ class Addon extends EventEmitter {
 
   deleteLiability(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'deleteLiability',
@@ -253,7 +255,7 @@ class Addon extends EventEmitter {
 
   toastSuccess(data) {
     return new Promise((resolve, reject) => {
-      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+      if (!isPlainObject(data)) throw new Error('Data must be an object');
 
       this.channel.call({
         method: 'toastSuccess',
@@ -266,7 +268,7 @@ class Addon extends EventEmitter {
 
   toastError(data) {
     return new Promise((resolve, reject) => {
-      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+      if (!isPlainObject(data)) throw new Error('Data must be an object');
 
       this.channel.call({
         method: 'toastError',
@@ -279,7 +281,7 @@ class Addon extends EventEmitter {
 
   toastWarning(data) {
     return new Promise((resolve, reject) => {
-      if (!_.isPlainObject(data)) throw new Error('Data must be an object');
+      if (!isPlainObject(data)) throw new Error('Data must be an object');
 
       this.channel.call({
         method: 'toastWarning',
@@ -292,7 +294,7 @@ class Addon extends EventEmitter {
 
   downloadDocument(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'downloadDocument',
@@ -305,9 +307,9 @@ class Addon extends EventEmitter {
 
   downloadFile({ fileName, fileType, fileContent }) {
     return new Promise((resolve, reject) => {
-      if (!fileName || !_.isString(fileName)) throw new Error('No file name provided');
-      if (!fileType || !_.isString(fileType)) throw new Error('No file type provided');
-      if (!fileContent || !_.isString(fileContent)) throw new Error('No content provided');
+      if (!fileName || !isString(fileName)) throw new Error('No file name provided');
+      if (!fileType || !isString(fileType)) throw new Error('No file type provided');
+      if (!fileContent || !isString(fileContent)) throw new Error('No content provided');
 
       this.channel.call({
         method: 'downloadFile',
@@ -341,7 +343,7 @@ class Addon extends EventEmitter {
 
   switchUser(id) {
     return new Promise((resolve, reject) => {
-      if (!id || !_.isString(id)) throw new Error('Invalid id');
+      if (!id || !isString(id)) throw new Error('Invalid id');
 
       this.channel.call({
         method: 'switchUser',
@@ -378,4 +380,4 @@ class Addon extends EventEmitter {
   }
 }
 
-module.exports = Addon;
+export default Addon;
