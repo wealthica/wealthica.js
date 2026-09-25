@@ -32,7 +32,7 @@ describe('dist/wealthica.cjs.js', () => {
     Object.assign(globalThis, { window, document: window.document, location: window.location });
     // Node 22 defines a getter-only global navigator
     Object.defineProperty(globalThis, 'navigator', { value: window.navigator, configurable: true });
-    // eslint-disable-next-line import/extensions
+    // eslint-disable-next-line import/extensions, import/no-unresolved -- built by `yarn build`
     const lib = require('../../dist/wealthica.cjs.js');
     expect(typeof lib.Addon).toBe('function');
     expect(typeof lib.AddonContainer).toBe('function');
