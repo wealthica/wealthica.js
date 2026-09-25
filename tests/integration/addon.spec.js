@@ -1,5 +1,19 @@
-import { expect } from 'chai';
+import {
+  describe, it, expect, beforeAll, afterAll, beforeEach, afterEach,
+} from 'vitest';
+import puppeteer from 'puppeteer';
 import _ from 'lodash';
+
+const url = 'http://localhost:9898/tests/integration/addon-container.html';
+let browser;
+
+beforeAll(async () => {
+  browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+});
+
+afterAll(async () => {
+  await browser.close();
+});
 
 describe('Addon', () => {
   let page;
@@ -15,12 +29,14 @@ describe('Addon', () => {
     return _.find(spyCalls, (c) => c[0] === eventName);
   };
 
-  before(async () => {
+  beforeAll(async () => {
     page = await browser.newPage();
     await page.goto(url);
+    // the addon iframe must have booted before the tests poke at window.container / addon
+    await page.waitForFunction(() => window.container !== undefined);
   });
 
-  after(async () => {
+  afterAll(async () => {
     await page.close();
   });
 
@@ -65,9 +81,9 @@ describe('Addon', () => {
       }), params);
       const call = await getSpyCall('request');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(params);
-      expect(result).to.deep.equal({ success: true });
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(params);
+      expect(result).toEqual({ success: true });
     });
 
     it('should receive error result from AddonContainer', async () => {
@@ -82,9 +98,9 @@ describe('Addon', () => {
       }), params);
       const call = await getSpyCall('request');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(params);
-      expect(result).to.equal('error');
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(params);
+      expect(result).toBe('error');
     });
   });
 
@@ -116,9 +132,9 @@ describe('Addon', () => {
       }), data);
       const call = await getSpyCall('saveData');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(data);
-      expect(result).to.deep.equal({ saved: true });
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(data);
+      expect(result).toEqual({ saved: true });
     });
 
     it('should receive error result from AddonContainer', async () => {
@@ -134,9 +150,9 @@ describe('Addon', () => {
       }), data);
       const call = await getSpyCall('saveData');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(data);
-      expect(result).to.deep.equal('not saved');
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(data);
+      expect(result).toEqual('not saved');
     });
   });
 
@@ -179,9 +195,9 @@ describe('Addon', () => {
         }), { attrs, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(attrs);
-        expect(result).to.deep.equal({ created: true });
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(attrs);
+        expect(result).toEqual({ created: true });
       });
 
       it('should receive success result without new item from AddonContainer', async () => {
@@ -197,9 +213,9 @@ describe('Addon', () => {
         }), { attrs, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(attrs);
-        expect(result).to.not.exist;
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(attrs);
+        expect(result == null).toBe(true);
       });
 
       it('should receive error result from AddonContainer', async () => {
@@ -215,9 +231,9 @@ describe('Addon', () => {
         }), { attrs, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(attrs);
-        expect(result).to.equal('error');
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(attrs);
+        expect(result).toBe('error');
       });
     });
   });
@@ -266,9 +282,9 @@ describe('Addon', () => {
         }), { id, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(id);
-        expect(result).to.deep.equal({ updated: true });
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(id);
+        expect(result).toEqual({ updated: true });
       });
 
       it('should receive success result without updated data from AddonContainer', async () => {
@@ -285,9 +301,9 @@ describe('Addon', () => {
         }), { id, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(id);
-        expect(result).to.deep.equal({ updated: false });
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(id);
+        expect(result).toEqual({ updated: false });
       });
 
       it('should receive error result from AddonContainer', async () => {
@@ -304,9 +320,9 @@ describe('Addon', () => {
         }), { id, method });
         const call = await getSpyCall(method);
 
-        expect(call).to.exist;
-        expect(call[1]).to.deep.equal(id);
-        expect(result).to.equal('error');
+        expect(call).toBeDefined();
+        expect(call[1]).toEqual(id);
+        expect(result).toBe('error');
       });
     });
   });
@@ -343,8 +359,8 @@ describe('Addon', () => {
         }));
         const call = await getSpyCall('addInvestment');
 
-        expect(call).to.exist;
-        expect(result).to.deep.equal({ created: true });
+        expect(call).toBeDefined();
+        expect(result).toEqual({ created: true });
       });
     });
 
@@ -371,8 +387,8 @@ describe('Addon', () => {
         }));
         const call = await getSpyCall('addInvestment');
 
-        expect(call).to.exist;
-        expect(result).to.not.exist;
+        expect(call).toBeDefined();
+        expect(result == null).toBe(true);
       });
     });
 
@@ -399,8 +415,8 @@ describe('Addon', () => {
         }));
         const call = await getSpyCall('addInvestment');
 
-        expect(call).to.exist;
-        expect(result).to.equal('error');
+        expect(call).toBeDefined();
+        expect(result).toBe('error');
       });
     });
   });
@@ -437,9 +453,9 @@ describe('Addon', () => {
       }), id);
       const call = await getSpyCall('downloadDocument');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.not.exist;
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(id);
+      expect(result == null).toBe(true);
     });
 
     it('should receive error result from AddonContainer', async () => {
@@ -451,9 +467,9 @@ describe('Addon', () => {
       }), id);
       const call = await getSpyCall('downloadDocument');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.equal('error');
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(id);
+      expect(result).toBe('error');
     });
   });
 
@@ -484,8 +500,8 @@ describe('Addon', () => {
       }));
       const call = await getSpyCall('upgradePremium');
 
-      expect(call).to.exist;
-      expect(result).to.not.exist;
+      expect(call).toBeDefined();
+      expect(result == null).toBe(true);
     });
   });
 
@@ -523,8 +539,8 @@ describe('Addon', () => {
         }));
         const call = await getSpyCall('getSharings');
 
-        expect(call).to.exist;
-        expect(result).to.deep.equal(sharings);
+        expect(call).toBeDefined();
+        expect(result).toEqual(sharings);
       });
     });
 
@@ -551,8 +567,8 @@ describe('Addon', () => {
         }));
         const call = await getSpyCall('getSharings');
 
-        expect(call).to.exist;
-        expect(result).to.equal('error');
+        expect(call).toBeDefined();
+        expect(result).toBe('error');
       });
     });
   });
@@ -589,9 +605,9 @@ describe('Addon', () => {
       }), id);
       const call = await getSpyCall('switchUser');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.not.exist;
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(id);
+      expect(result == null).toBe(true);
     });
 
     it('should receive error result from AddonContainer', async () => {
@@ -603,9 +619,9 @@ describe('Addon', () => {
       }), id);
       const call = await getSpyCall('switchUser');
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(id);
-      expect(result).to.equal('error');
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(id);
+      expect(result).toBe('error');
     });
   });
 });
