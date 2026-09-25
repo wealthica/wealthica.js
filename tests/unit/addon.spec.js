@@ -1,17 +1,13 @@
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-
-import sinon from 'sinon';
+import {
+  describe, it, expect, beforeAll, afterAll, vi,
+} from 'vitest';
 import { JSDOM } from 'jsdom';
 import Addon from '../../src/addon';
-
-chai.use(chaiAsPromised);
-const { expect } = chai;
 
 describe('Addon', () => {
   let addon;
 
-  before(() => {
+  beforeAll(() => {
     // JsChannel requires JSON implementation while JSDOM does not provide one.
     window.JSON = {
       stringify: () => {},
@@ -19,11 +15,12 @@ describe('Addon', () => {
     };
 
     addon = new Addon({ window: new JSDOM().window });
-    sinon.spy(addon.channel, 'call');
-    sinon.spy(addon.channel, 'destroy');
+    vi.spyOn(addon.channel, 'call');
+    vi.spyOn(addon.channel, 'destroy');
   });
 
-  after(() => {
+  afterAll(() => {
+    vi.restoreAllMocks();
     if (addon) {
       addon.destroy();
       addon = undefined;
@@ -31,12 +28,12 @@ describe('Addon', () => {
   });
 
   it('should configure heightCalculationMethod for iFrameResizer', () => {
-    expect(window.iFrameResizer.heightCalculationMethod).to.exist;
+    expect(window.iFrameResizer.heightCalculationMethod).toBeDefined();
   });
 
   it('should setup js-channel channel', () => {
-    expect(addon.channel).to.be.an('object');
-    expect(addon.channel).to.have.all.keys('bind', 'unbind', 'notify', 'call', 'destroy');
+    expect(typeof addon.channel).toBe('object');
+    expect(Object.keys(addon.channel).sort()).toEqual(['bind', 'call', 'destroy', 'notify', 'unbind']);
   });
 
   describe('.request(params)', () => {
@@ -45,80 +42,73 @@ describe('Addon', () => {
         method: 'GET', endpoint: 'test', query: { some: 'thing' }, body: { another: 'thing' },
       };
       addon.request(params);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params).to.deep.equal(params);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params).toEqual(params);
     });
 
-    it('should raise an error if params is not an object', () => {
+    it('should raise an error if params is not an object', async () => {
       const errorMessage = 'Params must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
+      const numCalls = addon.channel.call.mock.calls.length;
 
-      ['string', 1, true, false, undefined, null, []].forEach((params) => {
-        expect(addon.request(params)).to.eventually.be.rejectedWith(errorMessage);
-      });
+      await Promise.all(['string', 1, true, false, undefined, null, []].map((params) => (
+        expect(addon.request(params)).rejects.toThrow(errorMessage)
+      )));
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      expect(addon.channel.call.mock.calls.length).toBe(numCalls);
     });
 
-    it('should raise an error if method or endpoint is missing or invalid', () => {
+    it('should raise an error if method or endpoint is missing or invalid', async () => {
       const errorMessage = 'Invalid method or endpoint';
-      const numCalls = addon.channel.call.getCalls().length;
+      const numCalls = addon.channel.call.mock.calls.length;
 
-      [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-        expect(addon.request({ method: invalid, endpoint: 'test' }))
-          .to.eventually.be.rejectedWith(errorMessage);
-        expect(addon.request({ method: 'test', endpoint: invalid }))
-          .to.eventually.be.rejectedWith(errorMessage);
-      });
+      await Promise.all([1, true, false, null, undefined, [], {}, ''].flatMap((invalid) => [
+        expect(addon.request({ method: invalid, endpoint: 'test' })).rejects.toThrow(errorMessage),
+        expect(addon.request({ method: 'test', endpoint: invalid })).rejects.toThrow(errorMessage),
+      ]));
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      expect(addon.channel.call.mock.calls.length).toBe(numCalls);
     });
 
-    it('should raise an error if query is not an object', () => {
+    it('should raise an error if query is not an object', async () => {
       const errorMessage = 'Query must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
+      const numCalls = addon.channel.call.mock.calls.length;
 
-      ['string', 1, true, false, null, []].forEach((query) => {
-        expect(addon.request({ method: 'GET', endpoint: 'test', query }))
-          .to.eventually.be.rejectedWith(errorMessage);
-      });
+      await Promise.all(['string', 1, true, false, null, []].map((query) => (
+        expect(addon.request({ method: 'GET', endpoint: 'test', query })).rejects.toThrow(errorMessage)
+      )));
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      expect(addon.channel.call.mock.calls.length).toBe(numCalls);
     });
 
     it('should still proceed if query is not provided', () => {
       const validParams = { method: 'GET', endpoint: 'test', query: undefined };
       addon.request(validParams);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params).to.deep.equal(validParams);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params).toEqual(validParams);
     });
 
-    it('should raise an error if body is not an object', () => {
+    it('should raise an error if body is not an object', async () => {
       const errorMessage = 'Body must be an object';
-      const numCalls = addon.channel.call.getCalls().length;
+      const numCalls = addon.channel.call.mock.calls.length;
 
-      ['string', 1, true, false, null, []].forEach((body) => {
-        expect(addon.request({ method: 'GET', endpoint: 'test', body }))
-          .to.eventually.be.rejectedWith(errorMessage);
-      });
+      await Promise.all(['string', 1, true, false, null, []].map((body) => (
+        expect(addon.request({ method: 'GET', endpoint: 'test', body })).rejects.toThrow(errorMessage)
+      )));
 
-      expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+      expect(addon.channel.call.mock.calls.length).toBe(numCalls);
     });
 
     it('should still proceed if body is not provided', () => {
       const validParams = { method: 'GET', endpoint: 'test', body: undefined };
       addon.request(validParams);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params).to.deep.equal(validParams);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params).toEqual(validParams);
     });
 
     it('should pass effectiveUser if set', () => {
@@ -127,11 +117,10 @@ describe('Addon', () => {
       };
       addon.setEffectiveUser('test');
       addon.request(params);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params).to.deep.equal({ ...params, effectiveUser: 'test' });
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params).toEqual({ ...params, effectiveUser: 'test' });
     });
 
     it('should not pass effectiveUser if not set or null', () => {
@@ -140,11 +129,10 @@ describe('Addon', () => {
       };
       addon.setEffectiveUser(null);
       addon.request(params);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params).to.deep.equal(params);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params).toEqual(params);
     });
   });
 
@@ -153,22 +141,21 @@ describe('Addon', () => {
       it(`should call channel's \`${method}\` method with the attrs`, () => {
         const attrs = { test: 1 };
         addon[method](attrs);
-        const spyCall = addon.channel.call.lastCall;
-        const calledArgs = spyCall.args[0];
+        const [calledArgs] = addon.channel.call.mock.lastCall;
 
-        expect(calledArgs.method).to.equal(method);
-        expect(calledArgs.params).to.equal(attrs);
+        expect(calledArgs.method).toBe(method);
+        expect(calledArgs.params).toBe(attrs);
       });
 
-      it('should raise an error if attrs is invalid', () => {
-        const errorMessage = 'Attrs must be an object';
-        const numCalls = addon.channel.call.getCalls().length;
+      it('should raise an error if attrs is invalid', async () => {
+        const errorMessage = method === 'saveData' ? 'Data must be an object' : 'Attrs must be an object';
+        const numCalls = addon.channel.call.mock.calls.length;
 
-        [1, true, false, null, [], ''].forEach((invalid) => {
-          expect(addon[method](invalid)).to.eventually.be.rejectedWith(errorMessage);
-        });
+        await Promise.all([1, true, false, null, [], ''].map((invalid) => (
+          expect(addon[method](invalid)).rejects.toThrow(errorMessage)
+        )));
 
-        expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+        expect(addon.channel.call.mock.calls.length).toBe(numCalls);
       });
     });
   });
@@ -184,22 +171,21 @@ describe('Addon', () => {
       it(`should call channel's \`${method}\` method with the id`, () => {
         const id = 'test';
         addon[method](id);
-        const spyCall = addon.channel.call.lastCall;
-        const calledArgs = spyCall.args[0];
+        const [calledArgs] = addon.channel.call.mock.lastCall;
 
-        expect(calledArgs.method).to.equal(method);
-        expect(calledArgs.params).to.deep.equal(id);
+        expect(calledArgs.method).toBe(method);
+        expect(calledArgs.params).toEqual(id);
       });
 
-      it('should raise an error if id is missing or invalid', () => {
+      it('should raise an error if id is missing or invalid', async () => {
         const errorMessage = 'Invalid id';
-        const numCalls = addon.channel.call.getCalls().length;
+        const numCalls = addon.channel.call.mock.calls.length;
 
-        [1, true, false, null, undefined, [], {}, ''].forEach((invalid) => {
-          expect(addon[method](invalid)).to.eventually.be.rejectedWith(errorMessage);
-        });
+        await Promise.all([1, true, false, null, undefined, [], {}, ''].map((invalid) => (
+          expect(addon[method](invalid)).rejects.toThrow(errorMessage)
+        )));
 
-        expect(addon.channel.call.getCalls().length).to.equal(numCalls);
+        expect(addon.channel.call.mock.calls.length).toBe(numCalls);
       });
     });
   });
@@ -208,10 +194,9 @@ describe('Addon', () => {
     describe(`.${method}()`, () => {
       it(`should call channel's \`${method}\` method`, () => {
         addon[method]();
-        const spyCall = addon.channel.call.lastCall;
-        const calledArgs = spyCall.args[0];
+        const [calledArgs] = addon.channel.call.mock.lastCall;
 
-        expect(calledArgs.method).to.equal(method);
+        expect(calledArgs.method).toBe(method);
       });
     });
   });
@@ -219,10 +204,8 @@ describe('Addon', () => {
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       addon.destroy();
-      const spyCall = addon.channel.destroy.lastCall;
+      expect(addon.channel.destroy).toHaveBeenCalled();
       addon = undefined;
-
-      expect(spyCall).to.exist;
     });
   });
 });
