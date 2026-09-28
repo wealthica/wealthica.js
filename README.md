@@ -513,7 +513,7 @@ addon.request({...}).then(function (response) { }).catch(function (err) { });
 
 ### Install, build, test
 
-Requires Node >= 22.
+Building and testing require Node >= 22 (see `.nvmrc`). The published package itself has no Node version restriction.
 
 ```
 yarn install
