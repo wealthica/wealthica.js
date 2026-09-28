@@ -11,7 +11,8 @@
   and now target Chrome/Edge 111+, Firefox 114+, Safari/iOS 16.4+.
 - `lodash` 4.17 -> 4.18 (advisory fix). The runtime API of `Addon` and `AddonContainer` is unchanged
   (pinned by `tests/build/browser-bundles.spec.js`).
-- `dist/` is no longer committed; releases are built by `prepublishOnly`. Requires Node >= 22 to build.
+- `dist/` is no longer committed; releases are built by `prepublishOnly`. Building needs Node >= 22 (see `.nvmrc`);
+  the published package has no `engines` field and installs on older Node (e.g. Node 14 add-on toolchains).
   Temporary exception: the 1.0.11 `dist/addon.min.js` stays in git so GitHub Pages keeps serving it
   until the last add-on loading it from `wealthica.github.io` moves to unpkg.
 

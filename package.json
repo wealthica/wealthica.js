@@ -10,9 +10,6 @@
     "dist"
   ],
   "sideEffects": true,
-  "engines": {
-    "node": ">=22"
-  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "yarn build:node && yarn build:browser",
