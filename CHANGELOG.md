@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0]
+## [2.0.0] - 2026-10-01
 - Build moved from webpack 5.31 / Babel 6 to Vite 8; tests from mocha/chai/sinon to vitest.
 - **Breaking:** the ES5 builds (`dist/*.es5.*`), the `lib/` directory and the root `index.js` are gone.
   `import { Addon, AddonContainer } from '@wealthica/wealthica.js'` keeps working through
