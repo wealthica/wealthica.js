@@ -1,12 +1,13 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
+import {
+  describe, it, expect, beforeAll, afterAll, vi,
+} from 'vitest';
 import { JSDOM } from 'jsdom';
 import Addon from '../../src/addon';
 
 describe('API', () => {
   let addon;
 
-  before(() => {
+  beforeAll(() => {
     // JsChannel requires JSON implementation while JSDOM does not provide one.
     window.JSON = {
       stringify: () => {},
@@ -14,10 +15,11 @@ describe('API', () => {
     };
 
     addon = new Addon({ window: new JSDOM().window });
-    sinon.spy(addon.channel, 'call');
+    vi.spyOn(addon.channel, 'call');
   });
 
-  after(() => {
+  afterAll(() => {
+    vi.restoreAllMocks();
     if (addon) {
       addon.destroy();
       addon = undefined;
@@ -28,13 +30,12 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getAssets(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('assets');
-      expect(calledArgs.params.query).to.equal(query);
-      expect(calledArgs.params.method).to.equal('GET');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('assets');
+      expect(calledArgs.params.query).toBe(query);
+      expect(calledArgs.params.method).toBe('GET');
     });
   });
 
@@ -42,13 +43,12 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getCurrencies(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('currencies');
-      expect(calledArgs.params.query).to.equal(query);
-      expect(calledArgs.params.method).to.equal('GET');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('currencies');
+      expect(calledArgs.params.query).toBe(query);
+      expect(calledArgs.params.method).toBe('GET');
     });
   });
 
@@ -56,49 +56,45 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getInstitutions(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('institutions');
-      expect(calledArgs.params.query).to.equal(query);
-      expect(calledArgs.params.method).to.equal('GET');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('institutions');
+      expect(calledArgs.params.query).toBe(query);
+      expect(calledArgs.params.method).toBe('GET');
     });
   });
 
   describe('.getInstitution(id)', () => {
     it('should execute request', () => {
       addon.api.getInstitution('test');
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('institutions/test');
-      expect(calledArgs.params.method).to.equal('GET');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('institutions/test');
+      expect(calledArgs.params.method).toBe('GET');
     });
   });
 
   describe('.pollInstitution(id, v)', () => {
     it('should execute request', () => {
       addon.api.pollInstitution('test', 1);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('institutions/test/poll?v=1');
-      expect(calledArgs.params.method).to.equal('GET');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('institutions/test/poll?v=1');
+      expect(calledArgs.params.method).toBe('GET');
     });
   });
 
   describe('.syncInstitution(id)', () => {
     it('should execute request', () => {
       addon.api.syncInstitution('test');
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('institutions/test/sync');
-      expect(calledArgs.params.method).to.equal('POST');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('institutions/test/sync');
+      expect(calledArgs.params.method).toBe('POST');
     });
   });
 
@@ -106,13 +102,12 @@ describe('API', () => {
     it('should execute request', () => {
       const data = { some: 'thing' };
       addon.api.addInstitution(data);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('institutions');
-      expect(calledArgs.params.body).to.equal(data);
-      expect(calledArgs.params.method).to.equal('POST');
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('institutions');
+      expect(calledArgs.params.body).toBe(data);
+      expect(calledArgs.params.method).toBe('POST');
     });
   });
 
@@ -120,12 +115,11 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getLiabilities(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('liabilities');
-      expect(calledArgs.params.query).to.equal(query);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('liabilities');
+      expect(calledArgs.params.query).toBe(query);
     });
   });
 
@@ -133,12 +127,11 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getPositions(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('positions');
-      expect(calledArgs.params.query).to.equal(query);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('positions');
+      expect(calledArgs.params.query).toBe(query);
     });
   });
 
@@ -146,12 +139,11 @@ describe('API', () => {
     it('should execute request', () => {
       const query = { some: 'thing' };
       addon.api.getTransactions(query);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('transactions');
-      expect(calledArgs.params.query).to.equal(query);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('transactions');
+      expect(calledArgs.params.query).toBe(query);
     });
   });
 
@@ -159,12 +151,11 @@ describe('API', () => {
     it('should execute request', () => {
       const attrs = { some: 'thing' };
       addon.api.updateTransaction('test', attrs);
-      const spyCall = addon.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = addon.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('request');
-      expect(calledArgs.params.endpoint).to.equal('transactions/test');
-      expect(calledArgs.params.body).to.equal(attrs);
+      expect(calledArgs.method).toBe('request');
+      expect(calledArgs.params.endpoint).toBe('transactions/test');
+      expect(calledArgs.params.body).toBe(attrs);
     });
   });
 });

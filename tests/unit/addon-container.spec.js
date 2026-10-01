@@ -1,16 +1,12 @@
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-
-import sinon from 'sinon';
+import {
+  describe, it, expect, beforeAll, afterAll, beforeEach, vi,
+} from 'vitest';
 import AddonContainer from '../../src/addon-container';
-
-chai.use(chaiAsPromised);
-const { expect } = chai;
 
 describe('AddonContainer', () => {
   let container;
 
-  before(() => {
+  beforeAll(() => {
     // JsChannel requires JSON implementation.
     window.JSON = {
       stringify: () => {},
@@ -21,11 +17,12 @@ describe('AddonContainer', () => {
     document.body.appendChild(iframe);
     iframe.src = 'about:blank';
     container = new AddonContainer({ iframe });
-    sinon.spy(container.channel, 'call');
-    sinon.spy(container.channel, 'destroy');
+    vi.spyOn(container.channel, 'call');
+    vi.spyOn(container.channel, 'destroy');
   });
 
-  after(() => {
+  afterAll(() => {
+    vi.restoreAllMocks();
     if (container) {
       container.destroy();
       container = undefined;
@@ -33,8 +30,8 @@ describe('AddonContainer', () => {
   });
 
   it('should setup js-channel channel', () => {
-    expect(container.channel).to.be.an('object');
-    expect(container.channel).to.have.all.keys('bind', 'unbind', 'notify', 'call', 'destroy');
+    expect(typeof container.channel).toBe('object');
+    expect(Object.keys(container.channel).sort()).toEqual(['bind', 'call', 'destroy', 'notify', 'unbind']);
   });
 
   describe('.trigger(eventName, eventData)', () => {
@@ -42,11 +39,10 @@ describe('AddonContainer', () => {
       const eventName = 'test event';
       const eventData = 'test data';
       container.trigger(eventName, eventData);
-      const spyCall = container.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = container.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('_event');
-      expect(calledArgs.params).to.deep.equal({
+      expect(calledArgs.method).toBe('_event');
+      expect(calledArgs.params).toEqual({
         eventName: 'test event',
         eventData: 'test data',
       });
@@ -55,11 +51,10 @@ describe('AddonContainer', () => {
     it('should not pass undefined eventData', () => {
       const eventName = 'test event';
       container.trigger(eventName);
-      const spyCall = container.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = container.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('_event');
-      expect(calledArgs.params).to.deep.equal({ eventName: 'test event' });
+      expect(calledArgs.method).toBe('_event');
+      expect(calledArgs.params).toEqual({ eventName: 'test event' });
     });
   });
 
@@ -67,32 +62,30 @@ describe('AddonContainer', () => {
     it('should send the updated data through the channel', () => {
       const data = { test: 'test' };
       container.update(data);
-      const spyCall = container.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = container.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('update');
-      expect(calledArgs.params).to.deep.equal({ test: 'test' });
+      expect(calledArgs.method).toBe('update');
+      expect(calledArgs.params).toEqual({ test: 'test' });
     });
 
-    it('should raise an error if data is not an object', () => {
+    it('should raise an error if data is not an object', async () => {
       const errorMessage = 'Data must be an object';
-      const numCalls = container.channel.call.getCalls().length;
+      const numCalls = container.channel.call.mock.calls.length;
 
-      ['string', 1, true, false, undefined, null].forEach((params) => {
-        expect(container.update(params)).to.eventually.be.rejectedWith(errorMessage);
-      });
+      await Promise.all(['string', 1, true, false, undefined, null].map((params) => (
+        expect(container.update(params)).rejects.toThrow(errorMessage)
+      )));
 
-      expect(container.channel.call.getCalls().length).to.equal(numCalls);
+      expect(container.channel.call.mock.calls.length).toBe(numCalls);
     });
   });
 
   describe('.reload()', () => {
     it('should call reload on the channel', () => {
       container.reload();
-      const spyCall = container.channel.call.lastCall;
-      const calledArgs = spyCall.args[0];
+      const [calledArgs] = container.channel.call.mock.lastCall;
 
-      expect(calledArgs.method).to.equal('reload');
+      expect(calledArgs.method).toBe('reload');
     });
   });
 
@@ -100,15 +93,15 @@ describe('AddonContainer', () => {
     let tx;
 
     beforeEach(() => {
-      tx = { complete: sinon.stub(), error: sinon.stub() };
+      tx = { complete: vi.fn(), error: vi.fn() };
     });
 
     it('should call tx.complete on the first success invocation', () => {
       const cb = container.createTxCallback(tx);
       cb(null, 'result');
 
-      expect(tx.complete.calledOnceWithExactly('result')).to.equal(true);
-      expect(tx.error.notCalled).to.equal(true);
+      expect(tx.complete).toHaveBeenCalledExactlyOnceWith('result');
+      expect(tx.error).not.toHaveBeenCalled();
     });
 
     it('should call tx.error when the first arg is truthy', () => {
@@ -116,8 +109,8 @@ describe('AddonContainer', () => {
       const err = new Error('boom');
       cb(err);
 
-      expect(tx.error.calledOnceWithExactly(err)).to.equal(true);
-      expect(tx.complete.notCalled).to.equal(true);
+      expect(tx.error).toHaveBeenCalledExactlyOnceWith(err);
+      expect(tx.complete).not.toHaveBeenCalled();
     });
 
     it('should be a no-op on the second invocation (idempotent)', () => {
@@ -125,61 +118,59 @@ describe('AddonContainer', () => {
       cb(null, 'first');
       cb(null, 'second');
 
-      expect(tx.complete.calledOnce).to.equal(true);
-      expect(tx.complete.firstCall.args).to.deep.equal(['first']);
+      expect(tx.complete).toHaveBeenCalledTimes(1);
+      expect(tx.complete.mock.calls[0]).toEqual(['first']);
     });
 
     it('should ignore complete-after-error and error-after-complete', () => {
       const cbA = container.createTxCallback(tx);
       cbA(new Error('first'));
       cbA(null, 'second');
-      expect(tx.error.calledOnce).to.equal(true);
-      expect(tx.complete.notCalled).to.equal(true);
+      expect(tx.error).toHaveBeenCalledTimes(1);
+      expect(tx.complete).not.toHaveBeenCalled();
 
-      const tx2 = { complete: sinon.stub(), error: sinon.stub() };
+      const tx2 = { complete: vi.fn(), error: vi.fn() };
       const cbB = container.createTxCallback(tx2);
       cbB(null, 'first');
       cbB(new Error('second'));
-      expect(tx2.complete.calledOnce).to.equal(true);
-      expect(tx2.error.notCalled).to.equal(true);
+      expect(tx2.complete).toHaveBeenCalledTimes(1);
+      expect(tx2.error).not.toHaveBeenCalled();
     });
 
     it('should swallow jschannel "nonexistent message" string throws from tx.complete', () => {
-      tx.complete.callsFake(() => { throw 'complete called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
+      tx.complete.mockImplementation(() => { throw 'complete called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
       const cb = container.createTxCallback(tx);
 
-      expect(() => cb(null, 'x')).to.not.throw();
+      expect(() => cb(null, 'x')).not.toThrow();
     });
 
     it('should swallow jschannel "nonexistent message" string throws from tx.error', () => {
-      tx.error.callsFake(() => { throw 'error called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
+      tx.error.mockImplementation(() => { throw 'error called for nonexistent message: 42'; }); // eslint-disable-line no-throw-literal
       const cb = container.createTxCallback(tx);
 
-      expect(() => cb(new Error('boom'))).to.not.throw();
+      expect(() => cb(new Error('boom'))).not.toThrow();
     });
 
     it('should propagate non-lifecycle errors from tx.complete', () => {
-      tx.complete.throws(new Error('real bug'));
+      tx.complete.mockImplementation(() => { throw new Error('real bug'); });
       const cb = container.createTxCallback(tx);
 
-      expect(() => cb(null, 'x')).to.throw('real bug');
+      expect(() => cb(null, 'x')).toThrow('real bug');
     });
 
     it('should propagate non-matching string throws', () => {
-      tx.complete.callsFake(() => { throw 'something else entirely'; }); // eslint-disable-line no-throw-literal
+      tx.complete.mockImplementation(() => { throw 'something else entirely'; }); // eslint-disable-line no-throw-literal
       const cb = container.createTxCallback(tx);
 
-      expect(() => cb(null, 'x')).to.throw();
+      expect(() => cb(null, 'x')).toThrow();
     });
   });
 
   describe('.destroy()', () => {
     it("should call channel's destroy", () => {
       container.destroy();
-      const spyCall = container.channel.destroy.lastCall;
+      expect(container.channel.destroy).toHaveBeenCalled();
       container = undefined;
-
-      expect(spyCall).to.exist;
     });
   });
 });

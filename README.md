@@ -42,6 +42,10 @@ Then include this in your add-on page:
 <script src="/path/to/dist/addon.min.js"></script>
 ```
 
+### Browser support
+
+The browser bundles target Vite's `baseline-widely-available`: Chrome/Edge 111+, Firefox 114+, Safari/iOS 16.4+. Version 1.x additionally shipped `*.es5.*` builds; they were removed in 2.0.0.
+
 ## APIs
 
 ### class: Addon
@@ -507,28 +511,24 @@ addon.request({...}).then(function (response) { }).catch(function (err) { });
 
 ## Development
 
-### Install
+### Install, build, test
+
+Building and testing require Node >= 22 (see `.nvmrc`). The published package itself has no Node version restriction.
 
 ```
 yarn install
+yarn build          # dist/ — IIFE bundles for <script>, ES + CJS for bundlers
+yarn test           # unit (vitest + jsdom), build checks, integration (puppeteer)
 ```
 
-### Build
-
-```
-yarn build
-```
-
-### Test
-
-```
-yarn build
-yarn test
-```
+`yarn test` checks the built `dist/`, so run `yarn build` first.
 
 ### Release
+
+`dist/` is not committed; `prepublishOnly` builds it from a clean tree on `npm publish`.
+
 ```
-npm version patch # or minor/major
+npm version patch # or minor/major (major for 2.0.0)
 git push --tags
 # wait until merged then
 npm publish

@@ -3,7 +3,7 @@ import Channel from '@wealthica/js-channel';
 import EventEmitter from 'eventemitter3';
 import { Promise } from 'es6-promise';
 import { iframeResizer } from 'iframe-resizer';
-import * as _ from 'lodash';
+import isObject from 'lodash/isObject';
 
 class AddonContainer extends EventEmitter {
   constructor(options = {}) {
@@ -109,7 +109,7 @@ class AddonContainer extends EventEmitter {
 
   update(data) {
     return new Promise((resolve, reject) => {
-      if (!_.isObject(data)) throw new Error('Data must be an object');
+      if (!isObject(data)) throw new Error('Data must be an object');
 
       this.channel.call({
         method: 'update',
@@ -162,4 +162,4 @@ class AddonContainer extends EventEmitter {
   }
 }
 
-module.exports = AddonContainer;
+export default AddonContainer;

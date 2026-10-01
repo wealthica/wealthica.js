@@ -7,3 +7,9 @@ yarn-error.log*
 .idea
 cert.pem
 key.pem
+
+# Build output. dist/addon.min.js is the 1.0.11 build kept only so GitHub Pages keeps serving
+# https://wealthica.github.io/wealthica.js/dist/addon.min.js until PaperGrowth moves to unpkg (WP-1910).
+# `yarn build` overwrites it locally — restore with `git checkout dist/addon.min.js`, do not commit the 2.x build.
+/dist/*
+!/dist/addon.min.js

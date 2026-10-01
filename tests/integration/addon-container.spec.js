@@ -1,10 +1,31 @@
+import {
+  describe, it, expect, beforeAll, afterAll, beforeEach, afterEach,
+} from 'vitest';
+import puppeteer from 'puppeteer';
 import _ from 'lodash';
+
+const url = 'http://localhost:9898/tests/integration/addon-container.html';
+let browser;
+
+beforeAll(async () => {
+  browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+});
+
+afterAll(async () => {
+  await browser.close();
+});
 
 describe('AddonContainer', () => {
   let page;
   let addonFrame;
 
   const getSpyCall = async (eventName) => {
+    // Events travel through postMessage; wait for the one we expect instead of relying on slowMo
+    await addonFrame.waitForFunction(
+      (name) => addon.emit.getCalls().some((c) => c.args[0] === name),
+      { timeout: 5000 },
+      eventName,
+    ).catch(() => {});
     const spyCallsHandle = await addonFrame.evaluateHandle(() => new Promise((resolve) => {
       setTimeout(() => {
         resolve(addon.emit.getCalls().map((c) => c.args));
@@ -15,13 +36,16 @@ describe('AddonContainer', () => {
     return _.find(spyCalls, (c) => c[0] === eventName);
   };
 
-  before(async () => {
+  beforeAll(async () => {
     page = await browser.newPage();
     await page.goto(url);
+    // the addon iframe must have booted before the tests poke at window.container / addon
+    await page.waitForFunction(() => window.container !== undefined);
     [, addonFrame] = await page.frames();
+    await addonFrame.waitForFunction(() => window.addonOptions !== undefined);
   });
 
-  after(async () => {
+  afterAll(async () => {
     await page.close();
   });
 
@@ -45,7 +69,7 @@ describe('AddonContainer', () => {
         .evaluateHandle(() => Promise.resolve(window.addonOptions));
       const options = await optionsHandle.jsonValue();
 
-      expect(options).to.deep.equal({ test: 'test' });
+      expect(options).toEqual({ test: 'test' });
     });
   });
 
@@ -58,8 +82,8 @@ describe('AddonContainer', () => {
       }, eventName, eventData);
       const call = await getSpyCall(eventName);
 
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(eventData);
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(eventData);
     });
   });
 
@@ -70,8 +94,8 @@ describe('AddonContainer', () => {
         container.update(data);
       }, data);
       const call = await getSpyCall('update');
-      expect(call).to.exist;
-      expect(call[1]).to.deep.equal(data);
+      expect(call).toBeDefined();
+      expect(call[1]).toEqual(data);
     });
   });
 
@@ -82,7 +106,7 @@ describe('AddonContainer', () => {
       });
       const call = await getSpyCall('reload');
 
-      expect(call).to.exist;
+      expect(call).toBeDefined();
     });
   });
 });
