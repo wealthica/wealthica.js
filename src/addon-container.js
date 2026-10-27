@@ -132,6 +132,16 @@ class AddonContainer extends EventEmitter {
 
   destroy() {
     this.channel.destroy();
+    this.removeAllListeners();
+
+    // iframe-resizer keeps every iframe it set up, with its resizedCallback (and
+    // through it this container and the host's listeners), in a module-level table
+    // until close() is called. close() also removes the iframe from its parent, so
+    // only call it once the iframe has left the document: a host re-creating the
+    // container for a reloaded iframe keeps both the iframe and its resizer.
+    const { iframe } = this.options;
+    // (`=== false` keeps browsers without isConnected on the safe side.)
+    if (iframe.isConnected === false && iframe.iFrameResizer) iframe.iFrameResizer.close();
   }
 
   // Build the (err, result) callback handed to each registered host handler.

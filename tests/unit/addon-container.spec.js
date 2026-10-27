@@ -172,5 +172,48 @@ describe('AddonContainer', () => {
       expect(container.channel.destroy).toHaveBeenCalled();
       container = undefined;
     });
+
+    describe('iframe-resizer and listeners', () => {
+      let iframe;
+      let instance;
+
+      beforeEach(() => {
+        iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        instance = new AddonContainer({ iframe });
+      });
+
+      it('should remove its listeners', () => {
+        instance.on('init', () => {});
+        iframe.remove();
+        instance.destroy();
+        expect(instance.eventNames()).toEqual([]);
+      });
+
+      it('should close the resizer once the iframe has left the document', () => {
+        const close = vi.spyOn(iframe.iFrameResizer, 'close');
+        iframe.remove();
+        instance.destroy();
+        expect(close).toHaveBeenCalledTimes(1);
+      });
+
+      it('should keep the iframe and its resizer while the iframe is in the document', () => {
+        const close = vi.spyOn(iframe.iFrameResizer, 'close');
+        instance.destroy();
+        expect(close).not.toHaveBeenCalled();
+        expect(iframe.isConnected).toBe(true);
+        iframe.remove();
+      });
+
+      it('should keep a reloaded iframe when a new container is created for it', () => {
+        instance.destroy();
+        const next = new AddonContainer({ iframe });
+        expect(iframe.isConnected).toBe(true);
+        expect(typeof iframe.iFrameResizer.close).toBe('function');
+        iframe.remove();
+        next.destroy();
+        expect(iframe.isConnected).toBe(false);
+      });
+    });
   });
 });
