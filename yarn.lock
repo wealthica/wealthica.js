@@ -362,10 +362,10 @@
     convert-source-map "^2.0.0"
     tinyrainbow "^3.1.0"
 
-"@wealthica/js-channel@1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@wealthica/js-channel/-/js-channel-1.0.5.tgz#990c2156d324e33c79e1ac51290cce89db0caea6"
-  integrity sha512-qvbcVuOF9CfCbkQqtLzZ1OcShAwdqlUz9oInkMBkdWbqmwhySyDLgbcz6OK5EsaaDfh7S/p1WtzppD5u38Wa7g==
+"@wealthica/js-channel@1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@wealthica/js-channel/-/js-channel-1.0.6.tgz#f497bcf917a543fb2ab7f4f83d197f6c5cbe70e4"
+  integrity sha512-ghmWI1Vn5kWxkduGkqxi5vYpRN9AiOTk7YRouYX/oHbTBj1f7P9WC1d1t3Oy6iob7pqbhmje+/nGbpYmXPbpxQ==
 
 "@zeit/schemas@2.36.0":
   version "2.36.0"
