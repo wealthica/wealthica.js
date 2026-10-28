@@ -58,15 +58,17 @@ Building and testing need Node >= 22 (pinned in `.nvmrc`). The published package
 
 Published to npm as `@wealthica/wealthica.js` (see `name` in `package.json`).
 
-`prepublishOnly` runs `yarn build`, so `dist/` is built on publish (Node 22):
+The version bump and the CHANGELOG entry go into the change's PR (bump `version` in `package.json` by hand). After it is merged, tag the merge commit and publish from master (Node 22; `prepublishOnly` runs `yarn build`, so `dist/` is built on publish):
 
 ```bash
-npm version patch        # or minor / major — bumps package.json + creates git tag
-git push && git push --tags
-npm publish              # prepublishOnly runs yarn build
+git checkout master && git pull
+git tag v<version> && git push origin v<version>   # the version from package.json
+npm publish
 ```
 
-After a local `yarn build`, run `git checkout dist/addon.min.js` before committing, so the 1.0.11 file that GitHub Pages serves is not replaced.
+Do not use `npm version`: it commits the bump straight to master, outside a PR.
+
+After a local `yarn build` (including the one `npm publish` runs), run `git checkout dist/addon.min.js`, so the 1.0.11 file that GitHub Pages serves is not replaced.
 
 Verify the new version is live on https://www.npmjs.com/package/@wealthica/wealthica.js.
 

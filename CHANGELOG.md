@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.1]
+- `@wealthica/js-channel` 1.0.5 -> 1.0.6: `destroy()` also drops the channel's unanswered outbound requests from jschannel's module-level transaction table. Before, every request still waiting for a reply when a container was destroyed (e.g. an `update` right before the host switched addons) kept the channel and the addon's window alive for good (~76 MB per holdings <-> portfolio-evaluation switch in the Wealthica app).
+- AddonContainer: `destroy()` now removes the container's listeners and, once the iframe has left the document, closes its iframe-resizer. iframe-resizer kept every iframe with its `resizedCallback` in a module-level table, so each destroyed container kept its iframe, the host's listeners and through them the host page that embedded it (~40 MB per dashboard visit in the Wealthica app). While the iframe is still in the document (a container re-created for a reloaded iframe), the resizer is kept, because iframe-resizer 3 `close()` also removes the iframe. Hosts should therefore call `destroy()` after removing the iframe (e.g. in Vue `unmounted`, not `beforeUnmount`). Note: iframe-resizer keeps the first container's callback for an iframe, so `iframeResized` never reached a container re-created for the same iframe; it now also stops on the destroyed one.
+
 ## [2.0.0] - 2026-10-01
 - Build moved from webpack 5.31 / Babel 6 to Vite 8; tests from mocha/chai/sinon to vitest.
 - **Breaking:** the ES5 builds (`dist/*.es5.*`), the `lib/` directory and the root `index.js` are gone.

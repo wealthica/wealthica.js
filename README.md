@@ -527,9 +527,11 @@ yarn test           # unit (vitest + jsdom), build checks, integration (puppetee
 
 `dist/` is not committed; `prepublishOnly` builds it from a clean tree on `npm publish`.
 
+Bump `version` in `package.json` and add the CHANGELOG entry in the change's PR. After it is merged:
+
 ```
-npm version patch # or minor/major (major for 2.0.0)
-git push --tags
-# wait until merged then
+git checkout master && git pull
+git tag v<version> && git push origin v<version>
 npm publish
+git checkout dist/addon.min.js # keep the 1.0.11 file GitHub Pages serves
 ```

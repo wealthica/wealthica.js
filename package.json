@@ -1,6 +1,6 @@
 {
   "name": "@wealthica/wealthica.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Official Wealthica Add-on Library",
   "author": "Wealthica Financial Technology Inc. <hello@wealthica.com> (https://wealthica.com/)",
   "license": "MIT",
@@ -25,7 +25,7 @@
     "lint-fix": "eslint --fix ."
   },
   "dependencies": {
-    "@wealthica/js-channel": "1.0.5",
+    "@wealthica/js-channel": "1.0.6",
     "es6-promise": "~4.2.8",
     "eventemitter3": "3.0.0",
     "iframe-resizer": "3.5.15",
